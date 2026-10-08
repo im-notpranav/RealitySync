@@ -37,7 +37,7 @@ The implementation plan, split into discrete tasks that individual agents can cl
 ## Summary table
 | ID | Title | Epic | Pri | Size | Depends | Wave | Status |
 |----|-------|------|-----|------|---------|------|--------|
-| T-001 | Repo scaffolding & tooling | E0 | P0 | L | — | 0 | in_progress |
+| T-001 | Repo scaffolding & tooling | E0 | P0 | L | — | 0 | review |
 | T-002 | Backend skeleton | E0 | P0 | M | T-001 | 1 | todo |
 | T-003 | Database foundation | E0 | P0 | M | T-002 | 2 | todo |
 | T-004 | Frontend skeleton | E0 | P0 | M | T-001 | 1 | todo |
@@ -166,7 +166,7 @@ The implementation plan, split into discrete tasks that individual agents can cl
 # E0 — Foundation
 
 ### T-001 — Repo scaffolding & tooling
-- Status: in_progress | Priority: P0 | Size: L | Depends: — | Wave: 0 | Agent: gemini-1 | Claimed: 2026-10-08
+- Status: review | Priority: P0 | Size: L | Depends: — | Wave: 0 | Agent: gemini-1 | Claimed: 2026-10-08
 - Blocks: T-002, T-004
 - Touches: repo root, `.github/`, `backend/` (empty package + `pyproject.toml`), `frontend/` (`package.json` only), `docker-compose.yml`, `Makefile`, `.env.example`, `.gitignore`, `.pre-commit-config.yaml`, `.secrets.baseline`, `README.md` (stub), `LICENSE`
 - Requirements: NFR-OPS-001/002/003, NFR-MNT-001/002/004, NFR-SEC-001/008

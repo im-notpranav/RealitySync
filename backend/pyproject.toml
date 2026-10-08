@@ -1,0 +1,80 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "realitysync-backend"
+version = "0.1.0"
+requires-python = ">=3.12"
+dependencies = [
+    "fastapi",
+    "uvicorn[standard]",
+    "pydantic",
+    "pydantic-settings",
+    "sqlalchemy",
+    "asyncpg",
+    "alembic",
+    "structlog",
+    "python-ulid",
+    "argon2-cffi",
+    "PyJWT",
+    "rapidfuzz",
+    "phonenumbers",
+    "email-validator",
+    "jellyfish",
+    "Faker",
+    "google-genai"
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest",
+    "pytest-asyncio",
+    "pytest-cov",
+    "httpx",
+    "testcontainers[postgres]",
+    "schemathesis",
+    "ruff",
+    "mypy",
+    "import-linter",
+    "pip-audit",
+    "pre-commit",
+    "detect-secrets"
+]
+
+[tool.ruff]
+line-length = 100
+
+[tool.mypy]
+strict = true
+
+[tool.importlinter]
+root_package = "app"
+
+[[tool.importlinter.contracts]]
+name = "Domain layer is pure"
+type = "independence"
+modules = [
+    "app.domain"
+]
+ignore_imports = []
+
+[[tool.importlinter.contracts]]
+name = "Domain does not import external or other internal layers"
+type = "forbidden"
+source_modules = ["app.domain"]
+forbidden_modules = [
+    "app.api",
+    "app.services",
+    "app.models",
+    "app.db",
+    "app.ai",
+    "app.realtime",
+    "app.workers",
+    "app.simulation",
+    "sqlalchemy",
+    "fastapi",
+    "httpx",
+    "asyncpg",
+    "google.genai"
+]
