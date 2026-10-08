@@ -153,7 +153,7 @@ Add a row when you start a task that creates a migration; remove it when the PR 
 ### 2026-10-08 18:15 UTC — gemini-1 — T-001 Repo scaffolding & tooling
 - **Outcome:** done
 - **Branch / PR:** agent/T-001-repo-scaffolding / not opened
-- **Last commit:** (pending commit)
+- **Last commit:** 024d2ffcbe1ef8f6f31649d172a512c0c52b1032
 - **What I did:** 
   - Scaffolded the repository with backend/ and frontend/ folders.
   - Added Makefile, docker-compose.yml, .env.example, README.md, LICENSE, .gitignore, .pre-commit-config.yaml.
