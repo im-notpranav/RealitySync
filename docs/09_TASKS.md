@@ -89,7 +89,7 @@ The implementation plan, split into discrete tasks that individual agents can cl
 | T-049 | Settings page (profile, users, API keys, audit) | E8 | P1 | M | T-008, T-011, T-027 | 11 | todo |
 | T-050 | PgNotify EventBus & separate worker mode | E6 | P2 | M | T-025 | 12 | todo |
 | T-051 | Foundation repair (backend, infra, CI) | E0 | P0 | M | T-001, T-002, T-003 | 3 | review |
-| T-052 | Contract update: investigation features | E10 | P0 | L | T-051 | 4 | blocked |
+| T-052 | Contract update: investigation features | E10 | P0 | L | T-051 | 4 | in_progress |
 | T-053 | As-of snapshot service (Time Machine) | E10 | P0 | L | T-017, T-019, T-052 | 9 | todo |
 | T-054 | Missing-evidence rules R016–R018 & feed watermarks | E10 | P1 | M | T-012, T-019, T-024, T-052 | 10 | todo |
 | T-055 | Risk signals module (M12) | E10 | P0 | L | T-024, T-045, T-052 | 11 | todo |
@@ -800,8 +800,8 @@ The implementation plan, split into discrete tasks that individual agents can cl
 Added 2026-10-09 by `claude-code-1` from the product owner's new feature direction. Design and rationale: `docs/notes/2026-10-09-investigation-features-plan.md`. Requirement IDs (`FR-TMX`, `FR-TRL`, `FR-MEV`, `FR-INV`, `FR-RSK`) are defined by T-052.
 
 ### T-052 — Contract update: investigation features
-- Status: blocked | Priority: P0 | Size: L | Depends: T-051 | Wave: 4 | Agent: unassigned | Claimed: —
-- Blocked: awaiting product-owner answers to **Q-006…Q-011** in `08 §7` (recommendations are in the plan note §8). Start only once they are answered or explicitly accepted as defaults.
+- Status: in_progress | Priority: P0 | Size: L | Depends: T-051 | Wave: 4 | Agent: claude-code-1 | Claimed: 2026-10-10
+- Note: Q-006…Q-011 answered 2026-10-10 (product owner accepted every recommendation). Stacked on the unmerged T-051 branch; merge T-051 first.
 - Blocks: T-009, T-013, T-014, T-019, T-024, T-029, T-047, T-053, T-054, T-055, T-057
 - Touches: `docs/00_PRD.md` … `docs/06_UI_STYLE_GUIDE.md` (06: data contracts only; visual design waits for the product owner's frontend changes), `docs/08_PROGRESS_HANDOFF.md`, `docs/09_TASKS.md`
 - Requirements: PRD positioning; new FR groups

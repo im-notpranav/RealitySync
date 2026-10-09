@@ -116,12 +116,12 @@
 | Q-003 | Public demo deployment? | No (Docker Compose local only) | Pranav | open |
 | Q-004 | Project/repo name and license | `realitysync`, MIT | Pranav | open |
 | Q-005 | Currency and plan prices for synthetic data | INR; `starter` 499, `pro` 1299, `enterprise` 4999 per month (03 §M2) | Pranav | open |
-| Q-006 | Missing-evidence scope: customer domain only (R016–R018) or also HR/IT employee offboarding (new systems, record types, entity type)? | Customer domain only (plan note §3.4) | Pranav | **open — blocks T-052** |
-| Q-007 | "Orders declined" signal: proxy from subscription downgrade / quantity / invoice amount, or add an `order` record type? | Proxy, no new record type | Pranav | **open — blocks T-052** |
-| Q-008 | Retention: keep all record versions (the Time Machine needs them) or a configurable history horizon? | Keep all; prune only processed ingest events | Pranav | **open — blocks T-052** |
-| Q-009 | Replay with today's rule config (recorded in each result) or keep a config history and replay with then-current config? | Today's config, recorded | Pranav | **open — blocks T-052** |
-| Q-010 | Investigation incident types first: churn only, or also "first appearance of a finding"? | Both | Pranav | **open — blocks T-052** |
-| Q-011 | Adopt "RealitySync — Organizational Reality Intelligence" and the new USP in the PRD? | Yes | Pranav | **open — blocks T-052** |
+| Q-006 | Missing-evidence scope: customer domain only (R016–R018) or also HR/IT employee offboarding (new systems, record types, entity type)? | Customer domain only (plan note §3.4) | Pranav | answered 2026-10-10: product owner accepted the recommendation (default column) |
+| Q-007 | "Orders declined" signal: proxy from subscription downgrade / quantity / invoice amount, or add an `order` record type? | Proxy, no new record type | Pranav | answered 2026-10-10: product owner accepted the recommendation (default column) |
+| Q-008 | Retention: keep all record versions (the Time Machine needs them) or a configurable history horizon? | Keep all; prune only processed ingest events | Pranav | answered 2026-10-10: product owner accepted the recommendation (default column) |
+| Q-009 | Replay with today's rule config (recorded in each result) or keep a config history and replay with then-current config? | Today's config, recorded | Pranav | answered 2026-10-10: product owner accepted the recommendation (default column) |
+| Q-010 | Investigation incident types first: churn only, or also "first appearance of a finding"? | Both | Pranav | answered 2026-10-10: product owner accepted the recommendation (default column) |
+| Q-011 | Adopt "RealitySync — Organizational Reality Intelligence" and the new USP in the PRD? | Yes | Pranav | answered 2026-10-10: product owner accepted the recommendation (default column) |
 
 ## 8. Locks (exclusive resources)
 
