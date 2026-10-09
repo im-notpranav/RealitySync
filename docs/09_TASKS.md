@@ -87,6 +87,7 @@ The implementation plan, split into discrete tasks that individual agents can cl
 | T-048 | API contract tests | E9 | P1 | M | T-011, T-015, T-018, T-027, T-028, T-030, T-039, T-046 | 12 | todo |
 | T-049 | Settings page (profile, users, API keys, audit) | E8 | P1 | M | T-008, T-011, T-027 | 10 | todo |
 | T-050 | PgNotify EventBus & separate worker mode | E6 | P2 | M | T-025 | 11 | todo |
+| T-051 | Foundation repair (backend, infra, CI) | E0 | P0 | M | T-001, T-002, T-003 | 3 | in_progress |
 
 ## Milestone mapping (PRD §11)
 | Milestone | Tasks |
@@ -244,6 +245,22 @@ The implementation plan, split into discrete tasks that individual agents can cl
   - All shown on `/styleguide`; respect `prefers-reduced-motion`.
   - Unit tests: ConfidenceMeter colour ramp (< 0.6 / 0.6–0.85 / ≥ 0.85) and breakdown tooltip; DiffRow highlights only differing cells; ColumnBars highlighted bar + tooltip chip.
   - Visual comparison against `reference-dashboard.png` in the PR (screenshots).
+
+### T-051 — Foundation repair (backend, infra, CI)
+- Status: in_progress | Priority: P0 | Size: M | Depends: T-001, T-002, T-003 | Wave: 3 | Agent: claude-code-1 | Claimed: 2026-10-09
+- Blocks: (in practice every later backend task; `make check` and CI must work first)
+- Touches: `backend/pyproject.toml`, `backend/Dockerfile`, `backend/.dockerignore`, `backend/app/domain/__init__.py`, `backend/app/db/base.py`, `backend/tests/**`, `docker-compose.yml`, `Makefile`, `.github/workflows/ci.yml`, `.gitignore`, `.gitattributes`, `.pre-commit-config.yaml`, `.secrets.baseline`, `README.md`, `docs/08_PROGRESS_HANDOFF.md`, `docs/09_TASKS.md`
+- Requirements: NFR-OPS-001/002, NFR-MNT-001/002/004, NFR-REL-003, NFR-SEC-008
+- Note: Added 2026-10-09 by `claude-code-1` after an audit found that T-001…T-003 were marked done but `pip install -e`, `pytest`, import-linter, CI and `make dev` did not work. Frontend tooling gaps are deliberately **not** in scope (the product owner is revising the frontend); they were moved into T-004.
+- Acceptance:
+  - `pip install -e "backend[dev]"` works (setuptools package discovery limited to `app`); every Python dependency pinned to an exact version; `greenlet` replaced by the approved `sqlalchemy[asyncio]`.
+  - `pytest` runs from a clean install with no manual env vars (tests provide a dummy `JWT_SECRET`, `APP_ENV=test`).
+  - DB fixtures use `postgres:16` and the asyncpg driver; at least one test exercises a **real** database (`/health/ready` → 200 with DB up, 503 with DB down) and the migration upgrade/downgrade round trip.
+  - `lint-imports` passes (`app.domain` package exists; contract checks external packages) and runs as part of `make lint`.
+  - `backend/Dockerfile` exists; `make dev` starts `db` + `backend` and `GET /health` is healthy; `make migrate` runs inside Docker. The `frontend` service sits behind a compose profile until T-004 provides its Dockerfile.
+  - CI: backend job installs the package, sets test env, runs lint (incl. import-linter), mypy, pytest against the Postgres service, `alembic upgrade head` and `alembic check`.
+  - `.gitattributes` forces LF; `.gitignore` no longer ignores `frontend/src/lib/`; detect-secrets baseline regenerated with real plugins; pre-commit hook revisions match the pinned tools.
+  - `08_PROGRESS_HANDOFF.md` current state, status board and session log corrected.
 
 ---
 
