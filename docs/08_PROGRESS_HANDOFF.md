@@ -118,7 +118,7 @@ Add a row when you start a task that creates a migration; remove it when the PR 
 
 | Epic | Todo | In progress | In review | Done |
 |------|------|-------------|-----------|------|
-| E0 Foundation (T-001…T-005, T-043) | 5 | 0 | 1 | 0 |
+| E0 Foundation (T-001…T-005, T-043) | 5 | 0 | 0 | 1 |
 | E1 Auth (T-006…T-008) | 3 | 0 | 0 | 0 |
 | E2 Data & ingest (T-009…T-012, T-044, T-047) | 6 | 0 | 0 | 0 |
 | E3 Simulation (T-013…T-015) | 3 | 0 | 0 | 0 |
