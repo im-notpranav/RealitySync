@@ -6,42 +6,46 @@ build-backend = "setuptools.build_meta"
 name = "realitysync-backend"
 version = "0.1.0"
 requires-python = ">=3.12"
+# Exact pins per 02 §2.1. Upgrade deliberately, one package per PR, and run `make audit`.
 dependencies = [
-    "fastapi",
-    "uvicorn[standard]",
-    "pydantic",
-    "pydantic-settings",
-    "sqlalchemy",
-    "asyncpg",
-    "greenlet",
-    "alembic",
-    "structlog",
-    "python-ulid",
-    "argon2-cffi",
-    "PyJWT",
-    "rapidfuzz",
-    "phonenumbers",
-    "email-validator",
-    "jellyfish",
-    "Faker",
-    "google-genai"
+    "fastapi==0.143.0",
+    "uvicorn[standard]==0.54.0",
+    "pydantic==2.14.0",
+    "pydantic-settings==2.15.0",
+    "sqlalchemy[asyncio]==2.1.4",
+    "asyncpg==0.32.0",
+    "alembic==1.20.0",
+    "structlog==26.1.0",
+    "python-ulid==4.0.1",
+    "argon2-cffi==25.1.0",
+    "PyJWT==2.15.1",
+    "rapidfuzz==3.14.6",
+    "phonenumbers==9.0.41",
+    "email-validator==2.3.0",
+    "jellyfish==1.2.1",
+    "Faker==40.42.0",
+    "google-genai==2.29.0",
 ]
 
 [project.optional-dependencies]
 dev = [
-    "pytest",
-    "pytest-asyncio",
-    "pytest-cov",
-    "httpx",
-    "testcontainers[postgres]",
-    "schemathesis",
-    "ruff",
-    "mypy",
-    "import-linter",
-    "pip-audit",
-    "pre-commit",
-    "detect-secrets"
+    "pytest==9.1.1",
+    "pytest-asyncio==1.4.0",
+    "pytest-cov==7.1.0",
+    "httpx==0.28.1",
+    "testcontainers[postgres]==4.15.0",
+    "schemathesis==4.30.0",
+    "ruff==0.16.10",
+    "mypy==2.4.0",
+    "import-linter==2.15",
+    "pip-audit==2.10.1",
+    "pre-commit==4.6.2",
+    "detect-secrets==1.5.0",
 ]
+
+# `alembic/` sits next to `app/`; without this, setuptools refuses to guess the package.
+[tool.setuptools.packages.find]
+include = ["app*"]
 
 [tool.ruff]
 line-length = 100
@@ -49,19 +53,21 @@ line-length = 100
 [tool.mypy]
 strict = true
 
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+# One event loop for the whole session so the session-scoped DB engine can be shared.
+asyncio_default_fixture_loop_scope = "session"
+asyncio_default_test_loop_scope = "session"
+markers = [
+    "db: needs a real PostgreSQL (DATABASE_URL_TEST or a Docker test container)",
+]
+
 [tool.importlinter]
 root_package = "app"
+include_external_packages = true
 
 [[tool.importlinter.contracts]]
-name = "Domain layer is pure"
-type = "independence"
-modules = [
-    "app.domain"
-]
-ignore_imports = []
-
-[[tool.importlinter.contracts]]
-name = "Domain does not import external or other internal layers"
+name = "Domain is pure: no other app layers, DB, HTTP or LLM libraries"
 type = "forbidden"
 source_modules = ["app.domain"]
 forbidden_modules = [
@@ -77,5 +83,5 @@ forbidden_modules = [
     "fastapi",
     "httpx",
     "asyncpg",
-    "google.genai"
+    "google",
 ]

@@ -1,6 +1,6 @@
 from sqlalchemy import MetaData
 from sqlalchemy.ext.asyncio import AsyncAttrs
-from sqlalchemy.orm import DeclarativeBase, declared_attr
+from sqlalchemy.orm import DeclarativeBase
 
 # Naming convention for Alembic auto-generation
 POSTGRES_NAMING_CONVENTION = {
@@ -15,8 +15,10 @@ metadata = MetaData(naming_convention=POSTGRES_NAMING_CONVENTION)
 
 
 class Base(AsyncAttrs, DeclarativeBase):
-    metadata = metadata
+    """Declarative base. Every model sets `__tablename__` explicitly to the name in 05.
 
-    @declared_attr.directive
-    def __tablename__(cls) -> str:
-        return cls.__name__.lower() + "s"
+    Table names are not derived from class names: naive pluralisation produced names such as
+    `entitys` that do not match the schema contract.
+    """
+
+    metadata = metadata
