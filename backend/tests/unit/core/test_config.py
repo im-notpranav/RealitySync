@@ -7,13 +7,13 @@ def test_worker_mode_validation() -> None:
     from app.core.config import Settings
 
     # Default should work
-    settings = Settings(JWT_SECRET="test", WORKER_MODE="inline", EVENT_BUS="memory")  # type: ignore
+    settings = Settings(JWT_SECRET="test", WORKER_MODE="inline", EVENT_BUS="memory")
     assert settings.WORKER_MODE == "inline"
 
     # separate + pg_notify should work
-    settings = Settings(JWT_SECRET="test", WORKER_MODE="separate", EVENT_BUS="pg_notify")  # type: ignore
+    settings = Settings(JWT_SECRET="test", WORKER_MODE="separate", EVENT_BUS="pg_notify")
     assert settings.WORKER_MODE == "separate"
 
     # separate + memory should fail
     with pytest.raises(ValueError, match="WORKER_MODE=separate requires EVENT_BUS=pg_notify"):
-        Settings(JWT_SECRET="test", WORKER_MODE="separate", EVENT_BUS="memory")  # type: ignore
+        Settings(JWT_SECRET="test", WORKER_MODE="separate", EVENT_BUS="memory")

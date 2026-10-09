@@ -13,6 +13,7 @@ dependencies = [
     "pydantic-settings",
     "sqlalchemy",
     "asyncpg",
+    "greenlet",
     "alembic",
     "structlog",
     "python-ulid",

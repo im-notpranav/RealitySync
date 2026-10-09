@@ -1,9 +1,13 @@
+from collections.abc import AsyncGenerator, Generator
+from unittest.mock import AsyncMock
+
 import pytest
 from fastapi import APIRouter
 from httpx import AsyncClient
 from pydantic import BaseModel
 
 from app.core.errors import NotFoundError, RateLimited
+from app.db.session import get_session
 from app.main import app
 
 # Add test routes to verify error handlers
@@ -33,6 +37,19 @@ async def route_429() -> dict[str, str]:
 app.include_router(test_router)
 
 
+@pytest.fixture(autouse=True)
+def mock_db_session() -> Generator[None, None, None]:
+    # Mock the DB session for API tests so they don't need Docker
+    async def _mock_get_session() -> AsyncGenerator[AsyncMock, None]:
+        mock_session = AsyncMock()
+        # SELECT 1 will succeed silently
+        yield mock_session
+
+    app.dependency_overrides[get_session] = _mock_get_session
+    yield
+    app.dependency_overrides.clear()
+
+
 @pytest.mark.asyncio
 async def test_health_check(async_client: AsyncClient) -> None:
     response = await async_client.get("/health")
@@ -44,7 +61,7 @@ async def test_health_check(async_client: AsyncClient) -> None:
 async def test_ready_check(async_client: AsyncClient) -> None:
     response = await async_client.get("/health/ready")
     assert response.status_code == 200
-    assert response.json() == {"status": "ok", "db": "unknown"}
+    assert response.json() == {"status": "ok", "db": "ok"}
 
 
 @pytest.mark.asyncio
