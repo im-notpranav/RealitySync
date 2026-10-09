@@ -10,8 +10,8 @@ dist/
 downloads/
 eggs/
 .eggs/
-lib/
-lib64/
+/backend/lib/
+/backend/lib64/
 parts/
 sdist/
 var/
@@ -60,3 +60,4 @@ htmlcov/
 .pytest_cache/
 .mypy_cache/
 .ruff_cache/
+.import_linter_cache/
