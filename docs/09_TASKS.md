@@ -39,7 +39,7 @@ The implementation plan, split into discrete tasks that individual agents can cl
 |----|-------|------|-----|------|---------|------|--------|
 | T-001 | Repo scaffolding & tooling | E0 | P0 | L | — | 0 | done |
 | T-002 | Backend skeleton | E0 | P0 | M | T-001 | 1 | done |
-| T-003 | Database foundation | E0 | P0 | M | T-002 | 2 | todo |
+| T-003 | Database foundation | E0 | P0 | M | T-002 | 2 | in_progress |
 | T-004 | Frontend skeleton | E0 | P0 | M | T-001 | 1 | todo |
 | T-005 | Design system — core primitives | E0 | P0 | L | T-004 | 2 | todo |
 | T-006 | Auth data model | E1 | P0 | S | T-003 | 3 | todo |
@@ -197,7 +197,7 @@ The implementation plan, split into discrete tasks that individual agents can cl
   - CORS from env with credentials only for listed origins. pytest + httpx async client fixture; tests for health and error envelope.
 
 ### T-003 — Database foundation
-- Status: todo | Priority: P0 | Size: M | Depends: T-002 | Wave: 2 | Agent: unassigned | Claimed: —
+- Status: in_progress | Priority: P0 | Size: M | Depends: T-002 | Wave: 2 | Agent: gemini-3 | Claimed: 2026-10-09
 - Blocks: T-006, T-009
 - Touches: `backend/app/db/*`, `backend/alembic*`, `backend/tests/conftest.py`, `backend/app/api/health.py` (ready check only)
 - Requirements: NFR-REL-003
