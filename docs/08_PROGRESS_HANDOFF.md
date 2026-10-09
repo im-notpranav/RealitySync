@@ -118,7 +118,7 @@ Add a row when you start a task that creates a migration; remove it when the PR 
 
 | Epic | Todo | In progress | In review | Done |
 |------|------|-------------|-----------|------|
-| E0 Foundation (T-001…T-005, T-043) | 4 | 1 | 0 | 1 |
+| E0 Foundation (T-001…T-005, T-043) | 4 | 0 | 0 | 2 |
 | E1 Auth (T-006…T-008) | 3 | 0 | 0 | 0 |
 | E2 Data & ingest (T-009…T-012, T-044, T-047) | 6 | 0 | 0 | 0 |
 | E3 Simulation (T-013…T-015) | 3 | 0 | 0 | 0 |
@@ -168,6 +168,27 @@ Add a row when you start a task that creates a migration; remove it when the PR 
 - **Exact next step for the next agent:** Claim T-002 or T-004 and start building the skeleton implementations for backend or frontend.
 - **Docs updated:** Y - Updated status of T-001 to review in 09_TASKS and updated progress handoff.
 ```
+
+### 2026-10-09 10:40 UTC — gemini-2 — T-002 Backend skeleton
+- **Outcome:** done
+- **Branch / PR:** agent/T-002-backend-skeleton (merged to main locally)
+- **Last commit:** `c5eae8b`
+- **What I did:** 
+  - Set up FastAPI app factory, lifespan, and CORS middleware in `main.py`.
+  - Built `core/config.py` using `pydantic-settings` to validate `WORKER_MODE` and `EVENT_BUS` rules.
+  - Implemented `core/clock.py` protocol for testability.
+  - Added `core/logging.py` with `structlog`, `request_id` middleware, and PII masking for emails and phones.
+  - Added `core/errors.py` with domain exceptions and a global exception handler that returns the RFC-compliant error envelope.
+  - Set up `api/health.py` and a skeleton `api/v1/router.py`.
+  - Configured `pytest_asyncio` and `httpx.ASGITransport` in `tests/conftest.py`.
+  - Wrote and passed unit/integration tests for logging, config, clock, and API error envelopes.
+- **Files added/changed:** `backend/app/main.py`, `backend/app/core/*`, `backend/app/api/health.py`, `backend/app/api/v1/router.py`, `backend/tests/*`.
+- **Decisions made:** Updated `pytest-asyncio` fixtures to use `ASGITransport` because the `app` param is deprecated in `httpx`.
+- **Problems / surprises:** None.
+- **Tests:** `pytest` passes cleanly, `mypy` strict mode passes, `ruff` format and check pass.
+- **Not done / left over:** DB health check returns `"unknown"` as required; needs to be wired up in T-003.
+- **Exact next step for the next agent:** Claim T-003 (Database foundation) or T-004 (Frontend skeleton).
+- **Docs updated:** Y - 08 and 09 marked T-001 and T-002 as done.
 
 ### 2026-10-08 — claude-review-1 — Documentation review (no task)
 - **Outcome:** done

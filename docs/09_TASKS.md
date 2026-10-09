@@ -38,7 +38,7 @@ The implementation plan, split into discrete tasks that individual agents can cl
 | ID | Title | Epic | Pri | Size | Depends | Wave | Status |
 |----|-------|------|-----|------|---------|------|--------|
 | T-001 | Repo scaffolding & tooling | E0 | P0 | L | — | 0 | done |
-| T-002 | Backend skeleton | E0 | P0 | M | T-001 | 1 | in_progress |
+| T-002 | Backend skeleton | E0 | P0 | M | T-001 | 1 | done |
 | T-003 | Database foundation | E0 | P0 | M | T-002 | 2 | todo |
 | T-004 | Frontend skeleton | E0 | P0 | M | T-001 | 1 | todo |
 | T-005 | Design system — core primitives | E0 | P0 | L | T-004 | 2 | todo |
@@ -183,7 +183,7 @@ The implementation plan, split into discrete tasks that individual agents can cl
   - `LICENSE` = MIT (default of Q-004).
 
 ### T-002 — Backend skeleton
-- Status: in_progress | Priority: P0 | Size: M | Depends: T-001 | Wave: 1 | Agent: gemini-2 | Claimed: 2026-10-09
+- Status: done | Priority: P0 | Size: M | Depends: T-001 | Wave: 1 | Agent: gemini-2 | Claimed: 2026-10-09
 - Blocks: T-003, T-010, T-013, T-029
 - Touches: `backend/app/main.py`, `backend/app/core/*`, `backend/app/api/health.py`, `backend/app/api/v1/router.py`, `backend/tests/`
 - Requirements: NFR-OBS-001/002, NFR-SEC-001/004/005
