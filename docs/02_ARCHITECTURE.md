@@ -23,7 +23,8 @@ flowchart LR
         REST[REST API]
         WS[WebSocket manager]
         AI[AI explanation service]
-        DOM[(domain/ pure logic:<br/>normalize, match, rules, scoring)]
+        TMX[As-of snapshot +<br/>investigation services]
+        DOM[(domain/ pure logic:<br/>normalize, match, rules,<br/>scoring + trail, risk)]
     end
 
     ING -->|persist event| DB[(PostgreSQL)]
@@ -36,6 +37,10 @@ flowchart LR
     WRK -->|queue explain| AI
     AI --> DB
     REST --> DB
+    REST --> TMX
+    TMX -->|versions recorded ≤ T| DB
+    TMX -->|replay with now = T| DOM
+    TMX -->|investigation.*| BUS
 
     UI[React SPA] -->|HTTPS| REST
     UI <-->|WebSocket| WS
@@ -88,7 +93,8 @@ Pin exact versions in lock files. Anything not on this list needs a Decision row
 |-------|------|----------|
 | `/login` | Login | public |
 | `/` | Dashboard | viewer |
-| `/entities` · `/entities/:id` | Entities list · Entity detail | viewer |
+| `/entities` · `/entities/:id` (`?at=<ISO8601>` shows the Time Machine as-of view) | Entities list · Entity detail | viewer |
+| `/investigations` · `/investigations/:id` | Investigations list · Investigation result (starting one needs analyst) | viewer |
 | `/findings` (`?finding=<id>` opens the drawer; filters live in the query string) | Findings | viewer |
 | `/review` | Link review | analyst |
 | `/alerts` | Alerts | viewer |
@@ -108,7 +114,7 @@ api/v1 (routers)        ← HTTP/WS, auth deps, request/response schemas only
    ↓
 services/               ← use-cases, transactions, orchestration, audit
    ↓
-domain/                 ← PURE logic: normalize, matching, rules, scoring (no I/O, no DB, no HTTP)
+domain/                 ← PURE logic: normalize, matching, rules, scoring + trail, risk (no I/O, no DB, no HTTP)
    ↓
 models/ + db/           ← SQLAlchemy models, session; repositories live in services/ or db/repos
 ```
@@ -129,7 +135,7 @@ The worker runs **two loops**, each with its own durable queue in Postgres:
 | Loop | Queue | Claims with | Does |
 |------|-------|-------------|------|
 | Ingest loop | `ingest_events` where `status='pending'` | `FOR UPDATE SKIP LOCKED` | normalize → upsert record + version → resolve links → set `entities.detection_requested_at` for every affected entity → mark event `processed` — **all in one transaction** |
-| Detection loop | `entities` where `detection_requested_at <= now() - 500 ms` | `FOR UPDATE SKIP LOCKED` | build context → run rules → score → upsert findings + alerts → clear `detection_requested_at` (only if unchanged since claim) — **one transaction**; publish events after commit |
+| Detection loop | `entities` where `detection_requested_at <= now() - 500 ms` | `FOR UPDATE SKIP LOCKED` | build context → run rules → score (+ trail) → upsert findings + alerts → recompute entity risk (03 §M12) → clear `detection_requested_at` (only if unchanged since claim) — **one transaction**; publish events after commit |
 
 Why two loops: a burst of events for one customer only sets the same timestamp again, so detection runs once (coalescing) — and because the request is a database row, a crash cannot lose it. Rule changes and re-evaluation use the same mechanism (set `detection_requested_at` for the affected entities in batches).
 
@@ -178,13 +184,13 @@ sequenceDiagram
   - `pg_notify` → `PgNotifyEventBus`: publish = `NOTIFY rs_events, '<envelope json>'`; each API process `LISTEN`s and fans out locally. Envelopes over 7 KB are sent as `{id, type, topic, ref}` and the receiving process re-reads the row before forwarding. Required for `WORKER_MODE=separate`.
   - Future: `RedisEventBus` (same interface) for many API instances.
 - `WSManager` keeps connections, topic subscriptions, and per-connection role. Slow clients are dropped (bounded send queue, 100 messages).
-- **Topic permissions:** `findings`, `alerts`, `entities`, `ingest`, `system` → viewer+; `simulation` → admin.
+- **Topic permissions:** `findings`, `alerts`, `entities`, `ingest`, `system`, `investigations` → viewer+; `simulation` → admin.
 - Envelope, topics, and event types: see 04_API_SPEC §WebSocket.
 
 ### 3.5 AI explanation service
 - Input: finding + evidence JSON (redacted).
 - Calls Gemini with a **system instruction** that treats evidence as data, a **response schema** (JSON), `temperature ≤ 0.3`, `max_output_tokens` limit, 15 s timeout.
-- Output validated with Pydantic; on failure one retry, then fallback template renderer (deterministic text from rule metadata).
+- Output validated with Pydantic; on failure one retry, then fallback template renderer (deterministic text from rule metadata). Validation includes `cited_fact_ids` ⊆ the finding's trail fact ids (non-empty); the model can cite facts but never add them.
 - Stored with `model`, `prompt_version`, `input_hash`, `is_fallback`, `raw_response`.
 - Guardrails: concurrency semaphore, exponential backoff with jitter, daily call budget (`GEMINI_DAILY_BUDGET`), circuit breaker (5 failures → 60 s open).
 - **Job queue:** an in-process priority queue (highest `priority_score` first, max 1,000 jobs). It is only a fast path. A **sweeper** (every 30 s) re-queues any active finding whose `explained_evidence_hash` differs from its `evidence_hash`, so dropped jobs and restarts lose nothing. Fallback explanations from a Gemini failure are retried by the sweeper at most once every 10 min, within the budget and only while the circuit is closed. With no `GEMINI_API_KEY`, the fallback is final.
@@ -197,6 +203,20 @@ class SourceConnector(Protocol):
     async def fetch_changes(self, since: datetime | None) -> list[IngestEvent]: ...
 ```
 MVP ships `SimulatorConnector`. Future connectors (Stripe, Salesforce, Zendesk) implement the same protocol and push through the same ingest path, so detection code never changes.
+
+### 3.7 Time Machine and investigations
+The Time Machine is **replay, not a second engine**: rules and risk signals are pure functions of an `EntityContext` that carries `now`, and every record version keeps its recorded time. So "what could RealitySync have concluded at T?" = build the context from versions recorded ≤ T, set `now = T`, run the same domain code.
+
+| Component | Responsibility |
+|-----------|----------------|
+| `services/snapshot_service.py` | `build_context_as_of(session, entity_id, T) → EntityContext` (03 §M13): winning version per record by recorded time, as-of account membership recomputed with the pure matcher (no identity lookahead), feed watermarks as of T, `now = T`. Read-only. The live context builder (T-019) is the special case `T = now` over current state. |
+| `services/risk_service.py` | Computes risk (03 §M12) from a context and the context 90 days earlier; writes `entity_risk` / `risk_events` **only** in live mode (detection loop transaction). |
+| `services/investigation_service.py` | Builds checkpoints, replays each one through the snapshot service + rules + risk, persists `investigations` and `investigation_checkpoints`, publishes `investigation.progress` / `investigation.completed`. |
+
+- **Execution:** investigations run as background asyncio tasks in the API process (at most 2 concurrently; more wait in an in-process FIFO). They are read-only over source data and deterministic, so on restart any `running` investigation is marked `failed` and can simply be requested again.
+- **Isolation:** as-of evaluation never writes findings, alerts or entity state (FR-TMX-005); each checkpoint runs in a read-only transaction.
+- **Time axis:** only `record_versions.source_updated_at` (recorded time). `ingest_events.received_at` is never used for replay, because the simulator compresses months of business time into minutes (ADR-12).
+- **Configuration:** replay uses today's rule configuration and records a `rule_set` (keys, versions, config hash) in every result (Q-009). Risk weights and level thresholds are code constants in `domain/risk/` for the MVP (not admin-editable), so no new env vars are needed.
 
 ## 4. Database
 PostgreSQL 16, single database `realitysync`. Full schema in `05_DATABASE_SCHEMA.md`.
@@ -248,14 +268,15 @@ realitysync/
 │  │  ├─ db/                      # base.py, session.py
 │  │  ├─ models/                  # SQLAlchemy models (one file per aggregate)
 │  │  ├─ schemas/                 # Pydantic request/response models
-│  │  ├─ api/v1/                  # router.py, auth.py, users.py, api_keys.py, ingest.py, entities.py, records.py, links.py, findings.py, alerts.py, rules.py, source_systems.py, dashboard.py, simulation.py, audit.py
+│  │  ├─ api/v1/                  # router.py, auth.py, users.py, api_keys.py, ingest.py, entities.py, records.py, links.py, findings.py, alerts.py, rules.py, source_systems.py, dashboard.py, simulation.py, audit.py, investigations.py
 │  │  ├─ api/                     # health.py, ws.py (mounted at the server root)
-│  │  ├─ services/                # auth_service.py, user_service.py, audit_service.py, ingest_service.py, record_service.py, resolution_service.py, link_service.py, context_builder.py, rule_runner.py, detection_service.py, finding_service.py, alert_service.py, explanation_service.py, dashboard_service.py, simulation_service.py, evaluation_service.py, retention_service.py
+│  │  ├─ services/                # auth_service.py, user_service.py, audit_service.py, ingest_service.py, record_service.py, resolution_service.py, link_service.py, context_builder.py, rule_runner.py, detection_service.py, finding_service.py, alert_service.py, explanation_service.py, dashboard_service.py, simulation_service.py, evaluation_service.py, retention_service.py, snapshot_service.py (as-of contexts), risk_service.py, investigation_service.py
 │  │  ├─ domain/
 │  │  │  ├─ normalize/            # names.py, nicknames.py, emails.py, phones.py, statuses.py, plans.py (plan catalog), amounts.py, timestamps.py
 │  │  │  ├─ matching/             # blocking.py, features.py, scorer.py, primary.py (primary-account order)
-│  │  │  ├─ rules/                # base.py, registry.py, field_rules.py, status_rules.py, temporal_rules.py, structural_rules.py
-│  │  │  └─ scoring/              # confidence.py, priority.py, fingerprint.py
+│  │  │  ├─ rules/                # base.py, registry.py, field_rules.py, status_rules.py, temporal_rules.py, structural_rules.py, missing_evidence_rules.py
+│  │  │  ├─ scoring/              # confidence.py, priority.py, fingerprint.py, trail.py (facts → inferences → conclusion)
+│  │  │  └─ risk/                 # signals.py (four signals), model.py (weights, levels, risk confidence)
 │  │  ├─ realtime/                # bus.py (interface + InMemoryEventBus), pg_bus.py (PgNotifyEventBus), ws_manager.py, events.py
 │  │  ├─ workers/                 # queue.py (ingest loop), detection_loop.py, explain_worker.py, run.py, pipeline.py
 │  │  ├─ ai/                      # gemini_client.py, prompts/, schemas.py, fallback.py, redaction.py
@@ -269,7 +290,7 @@ realitysync/
    └─ src/
       ├─ app/                     # router, providers, layout shell
       ├─ components/ui/           # design-system primitives (Button, GlassCard, PillNav, ...)
-      ├─ features/                # auth/, dashboard/, entities/, findings/, links/, alerts/, rules/, systems/, simulation/, settings/
+      ├─ features/                # auth/, dashboard/, entities/, findings/, links/, alerts/, rules/, systems/, simulation/, settings/, investigations/
       ├─ lib/                     # api/ (generated client), ws/, format/, cn.ts
       ├─ hooks/
       ├─ store/                   # zustand stores
@@ -329,7 +350,8 @@ scripts/                          # load test, demo seed helpers (T-041)
 | Integration | pytest + httpx + Postgres test container | Routers → services → DB; worker pipeline end-to-end |
 | Contract | Schemathesis / OpenAPI diff in CI | API conforms to 04_API_SPEC |
 | Frontend unit | Vitest + Testing Library | Components and hooks |
-| E2E | Playwright | Login → simulate → see live finding → open detail |
+| Property | pytest (hand-written generators, seeded) | **No lookahead** (03 invariant 9): ingest history up to T → as-of T; ingest the rest → as-of T again → identical |
+| E2E | Playwright | Login → simulate → see live finding → open detail → investigate a churn |
 | Evaluation | `evaluation_service` | Precision/recall on seeded simulation (regression guard: fail CI if F1 drops > 3 points) |
 
 ## 12. Architecture decision records (summary)
@@ -346,3 +368,6 @@ scripts/                          # load test, demo seed helpers (T-041)
 | ADR-09 | Durable detection queue (`entities.detection_requested_at`) instead of an in-memory debounce | Coalesces bursts and survives crashes; also used for rule-change re-evaluation |
 | ADR-10 | `PgNotifyEventBus` for multi-process mode | Lets the worker run separately without adding Redis |
 | ADR-11 | Postgres advisory locks for per-record ordering and entity creation | Safe with several workers; no extra infrastructure |
+| ADR-12 | Time travel = replay of the pure domain on the **recorded-time** axis (`record_versions.source_updated_at`), with as-of re-matching and `now = T` | No second engine; determinism makes past conclusions exactly reproducible and testable (no-lookahead property test). Effective dates and RealitySync receive time are not knowledge times. |
+| ADR-13 | Absence is not evidence of non-occurrence: missing-evidence rules fire only when the expected system's **feed watermark** is past the deadline; otherwise `cannot_assess` | Avoids accusing a process of failing when the data feed is merely silent. Watermarks are computed from an index, not a counter row, so ingest has no hot row. |
+| ADR-14 | Risk and confidence are separate outputs; risk signals are deterministic weighted formulas (no ML) | Inspectable, testable, consistent with ADR-06; "how concerning" and "how well supported" answer different questions |
