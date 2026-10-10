@@ -35,6 +35,11 @@ erDiagram
     simulation_runs ||--o{ injected_issues : labels
     simulation_runs ||--o{ evaluation_runs : evaluated_by
     simulation_runs ||--o{ simulation_ground_truth : maps
+    entities ||--o| entity_risk : "current risk"
+    entities ||--o{ risk_events : "risk level changes"
+    entities ||--o{ investigations : investigated
+    users ||--o{ investigations : requests
+    investigations ||--o{ investigation_checkpoints : has
 ```
 
 ## 2. Tables
@@ -144,15 +149,19 @@ Indexes: `(source_system_id, record_type, parent_external_id)`; GIN on `normaliz
 |--------|------|-------------|
 | id | uuid | PK |
 | source_record_id | uuid | NOT NULL, FK → source_records(id) ON DELETE CASCADE |
+| source_system_id | uuid | NOT NULL, FK → source_systems(id) (denormalized from the record; feed watermarks, 03 §M13) |
 | version | int | NOT NULL |
 | payload | jsonb | NOT NULL |
 | normalized | jsonb | NOT NULL |
 | changed_fields | text[] | NOT NULL DEFAULT '{}' |
-| source_updated_at | timestamptz | NOT NULL |
+| source_updated_at | timestamptz | NOT NULL — the **recorded time**, the Time Machine's only time axis (FR-TMX-001) |
+| is_deleted | boolean | NOT NULL DEFAULT false (this version is a `delete` event; FR-TMX-002) |
 | out_of_order | boolean | NOT NULL DEFAULT false |
 | created_at | timestamptz | NOT NULL DEFAULT now() |
 
-Constraints: `UNIQUE (source_record_id, version)`. Index: `(source_record_id, source_updated_at DESC)`.
+Constraints: `UNIQUE (source_record_id, version)`.
+Indexes: `(source_record_id, source_updated_at DESC)` (history load); `idx_versions_system_recorded` `(source_system_id, source_updated_at DESC)` (feed watermark = max recorded time ≤ T per system, an index-only backward scan; no counter row is kept).
+**Never pruned** (FR-TMX-007).
 
 ### 2.7 `entities`
 | Column | Type | Constraints |
@@ -207,7 +216,7 @@ Constraint: `CHECK (record_a_id < record_b_id)`, `UNIQUE (record_a_id, record_b_
 | key | text | NOT NULL, UNIQUE (`R001`…) |
 | name | text | NOT NULL |
 | description | text | NOT NULL |
-| category | text | NOT NULL, CHECK in (`field_conflict`,`logic`,`temporal`,`structural`) |
+| category | text | NOT NULL, CHECK in (`field_conflict`,`logic`,`temporal`,`structural`,`missing_evidence`) |
 | default_severity | text | NOT NULL, CHECK severity |
 | severity | text | NOT NULL, CHECK severity (override; = default initially) |
 | certainty | numeric(3,2) | NOT NULL, CHECK 0 ≤ x ≤ 1 |
@@ -217,7 +226,7 @@ Constraint: `CHECK (record_a_id < record_b_id)`, `UNIQUE (record_a_id, record_b_
 | updated_by | uuid | NULL FK → users |
 | created_at / updated_at | timestamptz | NOT NULL |
 
-Seeded by migration/seed script from the code registry (R001–R015).
+Seeded by migration/seed script from the code registry (R001–R018).
 
 ### 2.11 `findings`
 | Column | Type | Constraints |
@@ -293,14 +302,14 @@ Indexes: `(finding_id, created_at DESC)`, `idx_explanations_cache` `(input_hash,
 | Column | Type | Constraints |
 |--------|------|-------------|
 | id | uuid | PK |
-| type | text | NOT NULL, CHECK in (`finding_created`,`finding_escalated`,`finding_resolved`,`link_needs_review`) |
+| type | text | NOT NULL, CHECK in (`finding_created`,`finding_escalated`,`finding_resolved`,`link_needs_review`,`risk_threshold_crossed`) |
 | severity | text | NOT NULL, CHECK severity |
 | title | text | NOT NULL |
 | body | text | NOT NULL |
 | finding_id | uuid | NULL, FK → findings(id) ON DELETE CASCADE |
 | entity_id | uuid | NULL, FK → entities(id) ON DELETE CASCADE |
 | link_id | uuid | NULL, FK → entity_links(id) ON DELETE CASCADE |
-| dedup_key | text | NOT NULL (`finding:<fingerprint>:<type>` or `link:<link_id>:link_needs_review`, 03 §M7) |
+| dedup_key | text | NOT NULL (`finding:<fingerprint>:<type>`, `link:<link_id>:link_needs_review` or `risk:<entity_id>:<level>`, 03 §M7) |
 | created_at | timestamptz | NOT NULL DEFAULT now() |
 
 Indexes: `(created_at DESC)`, `(dedup_key, created_at DESC)`.
@@ -335,13 +344,15 @@ PK `(alert_id, user_id)`; index `(user_id)`.
 | simulation_run_id | uuid | NOT NULL FK → simulation_runs ON DELETE CASCADE |
 | issue_type | text | NOT NULL |
 | ground_truth_key | text | NOT NULL (e.g., `GT-0231`) |
-| expected_rule_key | text | NULL (NULL for decoys) |
+| expected_rule_key | text | NULL (NULL for decoys and scenarios) |
 | acceptable_rule_keys | text[] | NOT NULL DEFAULT '{}' (side-effect rules that count as neither TP nor FP, 03 §M9) |
 | is_decoy | boolean | NOT NULL DEFAULT false |
-| system_key | text | NOT NULL, CHECK in (`crm`,`billing`,`support`) |
-| details | jsonb | NOT NULL |
+| is_scenario | boolean | NOT NULL DEFAULT false (investigation scenario, 03 §M9; excluded from precision/recall) |
+| system_key | text | NULL, CHECK in (`crm`,`billing`,`support`); NOT NULL unless `is_scenario` (scenarios span systems) |
+| details | jsonb | NOT NULL (scenarios: `{incident_at, expected_crossing_at}`, ISO 8601 or null) |
 | injected_at | timestamptz | NOT NULL DEFAULT now() |
 
+Constraints: `CHECK (is_scenario OR system_key IS NOT NULL)`, `CHECK (NOT (is_scenario AND is_decoy))`.
 Indexes: `(simulation_run_id, issue_type)`, `(ground_truth_key)`.
 
 ### 2.17.1 `simulation_ground_truth` (which source record belongs to which real customer)
@@ -365,6 +376,7 @@ PK `(simulation_run_id, system_key, record_type, external_id)`. Index: `(simulat
 | f1 | numeric(5,4) | NOT NULL |
 | true_positives / false_positives / false_negatives / ignored | int | NOT NULL |
 | matching | jsonb | NOT NULL DEFAULT '{}' (`auto_precision`, `recall_auto_or_review`, `true_pairs`) |
+| investigation | jsonb | NOT NULL DEFAULT '{}' (`lead_time_mae_hours`, `lead_time_within_1d_rate`, `detection_rate`, `no_false_hindsight_rate`, `signals_without_churn_detection_rate`, `outage_missing_evidence_findings`, `lookahead_violations`, `scenario_counts`; 03 §M9) |
 | by_type | jsonb | NOT NULL |
 | misses | jsonb | NOT NULL |
 | false_positive_findings | jsonb | NOT NULL |
@@ -382,6 +394,77 @@ PK `(simulation_run_id, system_key, record_type, external_id)`. Index: `(simulat
 | created_at | timestamptz | NOT NULL DEFAULT now() |
 
 Indexes: `(created_at DESC)`, `(actor_id, created_at DESC)`, `(action)`.
+
+### 2.20 `entity_risk` (current live risk per entity, 03 §M12)
+| Column | Type | Constraints |
+|--------|------|-------------|
+| entity_id | uuid | PK, FK → entities(id) ON DELETE CASCADE |
+| score | numeric(4,3) | NOT NULL, CHECK 0 ≤ x ≤ 1 |
+| level | text | NOT NULL, CHECK in (`low`,`watch`,`warning`,`critical`) |
+| confidence | numeric(4,3) | NOT NULL, CHECK 0 ≤ x ≤ 1 |
+| signals | jsonb | NOT NULL (`{name: {value, available, weight}}`) |
+| trail | jsonb | NOT NULL (03 §M5 schema) |
+| model_version | int | NOT NULL |
+| assessed_at | timestamptz | NOT NULL (the context's `now`) |
+| updated_at | timestamptz | NOT NULL |
+
+Index: `idx_entity_risk_level` `(level, score DESC)`. Written only by live detection, never by as-of evaluation.
+
+### 2.21 `risk_events` (risk level changes)
+| Column | Type | Constraints |
+|--------|------|-------------|
+| id | uuid | PK |
+| entity_id | uuid | NOT NULL, FK → entities(id) ON DELETE CASCADE |
+| from_level | text | NULL (first assessment), CHECK risk level |
+| to_level | text | NOT NULL, CHECK risk level |
+| score | numeric(4,3) | NOT NULL |
+| confidence | numeric(4,3) | NOT NULL |
+| at | timestamptz | NOT NULL (assessment time) |
+| created_at | timestamptz | NOT NULL DEFAULT now() |
+
+Index: `(entity_id, at DESC)`.
+
+### 2.22 `investigations` (03 §M14)
+| Column | Type | Constraints |
+|--------|------|-------------|
+| id | uuid | PK |
+| entity_id | uuid | NOT NULL, FK → entities(id) ON DELETE CASCADE |
+| incident_kind | text | NOT NULL, CHECK in (`churn`,`finding`) |
+| finding_id | uuid | NULL, FK → findings(id) ON DELETE SET NULL |
+| finding_fingerprint | text | NULL (copied at request time; survives deletion of the finding) |
+| incident_at | timestamptz | NOT NULL (resolved when the request is accepted) |
+| lookback_days | int | NOT NULL, CHECK 1 ≤ x ≤ 365 |
+| warning_threshold | numeric(3,2) | NOT NULL, CHECK 0 < x ≤ 1 |
+| status | text | NOT NULL DEFAULT 'queued', CHECK in (`queued`,`running`,`completed`,`failed`) |
+| inputs_hash | text | NOT NULL (64 hex, FR-INV-006) |
+| rule_set | jsonb | NOT NULL |
+| checkpoints_total | int | NOT NULL |
+| checkpoints_done | int | NOT NULL DEFAULT 0 |
+| outcome | text | NULL, CHECK in (`crossed`,`never_crossed`); set when completed |
+| first_detectable_at | timestamptz | NULL |
+| lead_time_hours | numeric(8,1) | NULL |
+| result | jsonb | NULL (03 §M14 result, including the caveat) |
+| error_code | text | NULL (no PII) |
+| requested_by | uuid | NULL, FK → users(id) ON DELETE SET NULL |
+| created_at | timestamptz | NOT NULL DEFAULT now() |
+| started_at / completed_at | timestamptz | NULL |
+
+Constraints: `CHECK (incident_kind = 'churn' OR finding_fingerprint IS NOT NULL)`; partial unique `uq_investigations_inputs` `(inputs_hash)` **WHERE** `status <> 'failed'` (an identical request returns the existing one; failed ones can be retried).
+Indexes: `(entity_id, created_at DESC)`; `(status)` **WHERE** `status IN ('queued','running')` (restart sweep: both → `failed`, 02 §3.7).
+
+### 2.23 `investigation_checkpoints`
+| Column | Type | Constraints |
+|--------|------|-------------|
+| investigation_id | uuid | NOT NULL, FK → investigations(id) ON DELETE CASCADE |
+| seq | int | NOT NULL (0-based, ascending `at`) |
+| at | timestamptz | NOT NULL |
+| risk_score | numeric(4,3) | NOT NULL |
+| risk_level | text | NOT NULL, CHECK risk level |
+| risk_confidence | numeric(4,3) | NOT NULL |
+| finding_fingerprints | text[] | NOT NULL DEFAULT '{}' |
+| target_present | boolean | NULL (only for `finding` incidents) |
+
+PK `(investigation_id, seq)`; `UNIQUE (investigation_id, at)`.
 
 ## 3. Extensions required
 `pgcrypto` (or PG ≥ 13 built-in `gen_random_uuid`), `citext`, `pg_trgm`. Enabled in the first migration.
@@ -403,6 +486,13 @@ Indexes: `(created_at DESC)`, `(actor_id, created_at DESC)`, `(action)`.
 | injected_issues | simulation_runs | N:1 | CASCADE |
 | simulation_ground_truth | simulation_runs | N:1 | CASCADE |
 | evaluation_runs | simulation_runs | N:1 | CASCADE |
+| record_versions | source_systems | N:1 | RESTRICT |
+| entity_risk | entities | 1:1 | CASCADE |
+| risk_events | entities | N:1 | CASCADE |
+| investigations | entities | N:1 | CASCADE |
+| investigations | findings | N:1 | SET NULL |
+| investigations | users | N:1 | SET NULL |
+| investigation_checkpoints | investigations | N:1 | CASCADE |
 | refresh_tokens | users | N:1 | CASCADE |
 | api_keys | source_systems | N:1 | SET NULL |
 | audit_logs | users | N:1 | SET NULL |
@@ -416,6 +506,11 @@ Child→parent record relation is logical (`parent_external_id` within the same 
 4. `source_records.version` equals max `record_versions.version` for in-order updates.
 5. Ingest `idempotency_key` uniqueness prevents duplicate processing.
 6. An entity with `detection_requested_at` set is eventually processed and cleared (no request older than 60 s in a healthy system).
+7. `record_versions.source_system_id` equals its record's `source_system_id`; `record_versions` rows are never deleted or updated after insert (FR-TMX-007).
+8. As-of evaluation and investigations never insert, update or delete rows in `findings`, `finding_events`, `alerts`, `entity_links`, `entities`, `entity_risk` or `risk_events` (FR-TMX-005).
+9. `entity_risk` holds the assessment from the entity's latest live detection; every level change has a `risk_events` row.
+
+**Retention:** `ingest_events` with `status = 'processed'` older than 90 days MAY be pruned by an admin job; nothing else is pruned (NFR-DAT-002).
 
 ## 6. Initial seed data
 **Bootstrap (runs on every API startup, idempotent — not in migrations):**
@@ -442,3 +537,7 @@ Child→parent record relation is logical (`parent_external_id` within the same 
 | Entity detail (links, findings) | `entity_links(entity_id)`, `findings(entity_id)` |
 | Alert dedup lookup | `(dedup_key, created_at DESC)` |
 | Entity search | trigram GIN on name/email |
+| Feed watermark per system as of T (live and per checkpoint) | `idx_versions_system_recorded` |
+| Time Machine history load | `record_versions(source_record_id, source_updated_at DESC)` |
+| Riskiest entities | `idx_entity_risk_level` |
+| Investigation idempotency | `uq_investigations_inputs` |

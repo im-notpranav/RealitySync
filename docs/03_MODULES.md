@@ -52,7 +52,8 @@ Dependency rule: a module may only call modules **upstream** of it in this diagr
    - **Existing & newer timestamp** (or equal timestamp and this event was received later) → update current payload; compute `changed_fields`; insert new version if changed.
    - All of the above happens under a per-record advisory lock (02 §3.3, concurrency rule 1).
    - **Existing & older timestamp** → insert version flagged `out_of_order = true`; do not touch current state.
-   - `delete` event → set `is_deleted = true` (soft delete) and record a version.
+   - `delete` event → set `is_deleted = true` (soft delete) and record a version with `is_deleted = true` (the Time Machine treats the record as absent from that recorded time on).
+   - Every version stores the record's `source_system_id` and its recorded time `source_updated_at` (05 §2.6.1).
 3. If current state changed → run M3 resolution for the record **in the same transaction**, then set `entities.detection_requested_at = now()` for every entity touched (the record's entity, plus the previous entity if a link moved). The detection loop picks these up after 500 ms (coalescing, 02 §3.3).
 4. On exception: mark event `failed`, store error text (no PII), increment `attempts`; after 5 attempts stay `failed` (admin can retry).
 
