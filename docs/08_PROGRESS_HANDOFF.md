@@ -9,19 +9,19 @@
 
 | Field | Value |
 |-------|-------|
-| Last updated | 2026-10-09 by `claude-code-1` (T-051 foundation repair; investigation features planned) |
+| Last updated | 2026-10-10 by `claude-code-1` (T-052 contract update for the investigation features, in review) |
 | Project phase | **Phase 1 — Foundation.** Backend skeleton + DB foundation work and are verified (`make check-backend`, `make dev`, `make migrate`). No business features yet. |
-| Repository state | Local git repo initialised 2026-10-09 (the earlier agents' history was not available; their work was imported as-is). **No remote yet.** T-051 is on branch `agent/T-051-foundation-repair`, not merged. |
+| Repository state | Local git repo initialised 2026-10-09 (the earlier agents' history was not available; their work was imported as-is). **No remote yet.** T-051 is on branch `agent/T-051-foundation-repair`; T-052 is on `agent/T-052-investigation-contract`, **stacked on T-051**. Neither is merged. |
 | Default branch | `main` |
 | Last known green commit | head of `agent/T-051-foundation-repair` (see session log). `main` itself does **not** pass `make check` until T-051 is merged. |
 | CI status | Workflow fixed but never run (no remote) |
 | Next milestone | M0 Foundation (T-006, T-007 backend; frontend held — see below) |
 | Demo-able today? | No |
 | **Frontend** | **Held by the product owner (2026-10-09).** Do not start any frontend task until they share their frontend changes and confirm in a session (T-004 is `blocked`). |
-| **New direction** | Product owner added four signature features (Time Machine, Evidence Trail, Missing Evidence, "Could We Have Known?"). Plan: `docs/notes/2026-10-09-investigation-features-plan.md`; tasks T-052…T-059 (epic E10). |
+| **New direction** | Product owner added four signature features (Time Machine, Evidence Trail, Missing Evidence, "Could We Have Known?"). Plan: `docs/notes/2026-10-09-investigation-features-plan.md`; tasks T-052…T-059 (epic E10). **The contract (docs 00–06) now specifies them** (T-052, branch above): modules M12 Risk, M13 Time Machine, M14 Investigation in `03`; API `04 §17`; tables `05 §2.20–2.23`. |
 
 ### What exists
-- Contract docs `00`–`07`, task plan `09`, notes in `docs/notes/` (doc review, investigation features plan).
+- Contract docs `00`–`07` (on the T-052 branch: including the investigation features), task plan `09`, notes in `docs/notes/` (doc review, investigation features plan).
 - Backend: FastAPI app factory, settings, clock, structlog with PII scrubbing, error envelope, `/health` + `/health/ready` (04 §13 shape), async SQLAlchemy + Alembic (one migration: `pgcrypto`, `citext`, `pg_trgm`), test fixtures against a real Postgres 16, import-linter purity contract for `app.domain`.
 - Infra: `backend/Dockerfile`, `docker-compose.yml` (db + backend; frontend behind a profile), Makefile with backend/frontend sub-targets, CI workflow, pre-commit, detect-secrets baseline, `.gitattributes` (LF).
 - Frontend: only `package.json`, lockfile, `tsconfig.json`, an empty `src/index.ts`.
@@ -33,9 +33,9 @@
 
 ## 2. Next step for the next agent
 
-1. **Product owner first:** answer **Q-006…Q-011** (§7) to unblock **T-052**, and share the frontend changes to unblock **T-004**.
-2. Review and merge `agent/T-051-foundation-repair` into `main` (local repo, no remote yet): `git checkout main && git merge --no-ff agent/T-051-foundation-repair`.
-3. Backend tasks that can start now (all `Depends` done): **T-006** Auth data model (critical path) and **T-010** Normalization library; then T-007, T-016, T-026. T-009/T-013/T-014/T-019/T-024/T-029/T-047 now also wait for T-052 so they are built against the investigation contract.
+1. **Product owner:** review and approve merging `agent/T-051-foundation-repair`, then `agent/T-052-investigation-contract` (stacked), into `main`: `git checkout main && git merge --no-ff agent/T-051-foundation-repair && git merge --no-ff agent/T-052-investigation-contract`. Share the frontend changes to unblock **T-004** (and T-059).
+2. After the merges, backend tasks whose `Depends` are done: **T-006** Auth data model (critical path), **T-010** Normalization library; then T-007, T-016, T-026, T-009, T-013, T-029.
+3. Read `03 §M12–M14` and `04 §17` before any E10 task; the critical path now runs T-009 → T-011 → T-012 → T-019 → T-024 → T-053 → T-055 → T-056 (≈ 96 h total).
 4. Setup: `README.md` → "Local development (backend)". Docker Desktop must be running for DB tests (`docker version` must show a server).
 
 ---
@@ -53,6 +53,7 @@
 | Task | Agent | Branch | Since | Notes |
 |------|-------|--------|-------|-------|
 | T-051 | claude-code-1 | `agent/T-051-foundation-repair` | 2026-10-09 | Status `review`; all acceptance criteria met; awaiting merge |
+| T-052 | claude-code-1 | `agent/T-052-investigation-contract` | 2026-10-10 | Status `review`; contract docs 00–06 + 09 updated; awaiting merge (after T-051) |
 
 ## 5. Known issues
 
@@ -106,6 +107,14 @@
 | D-036 | 2026-10-09 | `make migrate` / `make migration` run inside Docker; the compose `frontend` service sits behind a profile until T-004 | T-003 required migrations in Docker; no frontend Dockerfile yet | T-051 |
 | D-037 | 2026-10-09 | **Frontend held:** no frontend task starts until the product owner shares their frontend changes; frontend tooling fixes moved into T-004 | Product owner instruction | T-004, T-059 |
 | D-038 | 2026-10-09 | New direction (Time Machine, Evidence Trail, Missing Evidence, "Could We Have Known?") planned as epic E10 (T-052…T-059); T-052 (contract update) added to the `Depends` of T-009, T-013, T-014, T-019, T-024, T-029, T-047 so they are built against the new contract | Avoid building core pieces twice | plan note, 09 |
+| D-039 | 2026-10-10 | Time axis = recorded time (`record_versions.source_updated_at`) only; winning version per record = max (recorded time, version) ≤ T; as-of membership recomputed by the pure matcher from an anchor account (decisions count only if made ≤ T); `now = T`; today's rule config with a recorded `rule_set` hash; nothing written | No lookahead, deterministic replay (ADR-12) | 01 FR-TMX, 03 §M13 |
+| D-040 | 2026-10-10 | As-of builder is pure (`domain/timemachine/asof.py`) over a history loaded once by `snapshot_service`; invariant 14 keeps live and as-of(now) in parity. Known limit: candidates come from current links (no link history) | Testable without a DB; investigations replay hundreds of checkpoints from one load | 02 §3.7, 03 §M13 |
+| D-041 | 2026-10-10 | Evidence trail (facts `record_field`/`absence` → inferences → conclusion) built by scoring, excluded from `evidence_hash`; AI must return `cited_fact_ids` ⊆ fact ids (else retry, then fallback citing all facts); risk shown as severity next to confidence, never combined | Fact vs inference separation; trail edits must not reopen findings | 03 §M5/M8, 05 §2.13 |
+| D-042 | 2026-10-10 | Missing evidence = rules R016–R018 (category `missing_evidence`, certainty 0.85) with outcomes `pending`/`unconfirmed`/`cannot_assess` against a per-system feed watermark computed from an index (no counter row); only `unconfirmed` is a finding; copy says "unconfirmed"/"cannot assess"; R004/R005 get `propagation_grace_days` (default 0) | Absence of data ≠ absence of the event | 03 §M4, 05 §2.6.1 |
+| D-043 | 2026-10-10 | Risk = 4 deterministic signals (payment delay 0.40, complaint trend 0.30, commercial decline 0.20, open inconsistencies 0.10), levels 0.40/0.60/0.80, confidence = signal coverage × freshness; worked example 0.696 → warning; `entity_risk` + `risk_events`; alert `risk_threshold_crossed` (24 h dedup) | Explainable, no ML (PRD non-goal); risk ≠ confidence | 03 §M12, 05 §2.20–2.21 |
+| D-044 | 2026-10-10 | Investigations: incident `churn` (earliest churned/cancelled version) or `finding`; checkpoints = version times + daily UTC boundaries, lookback ≤ 365 d, ≤ 1,000 checkpoints; `inputs_hash` idempotency; background tasks (≤ 2), restart → `failed`; mandatory caveat | Bounded, reproducible, honest retrospective | 03 §M14, 04 §17, 05 §2.22–2.23 |
+| D-045 | 2026-10-10 | Simulator: month-scale histories (`history_days` 365) emitted in recorded-time order, 3 new anomaly types, 3 scenarios (`is_scenario`, excluded from precision/recall) with `expected_crossing_at`, decoy `late_within_grace`, run option `feed_outage`; investigation metrics in `evaluation_runs.investigation` | Lead time and no-lookahead must be measurable | 03 §M9, 04 §11 |
+| D-046 | 2026-10-10 | Record versions are never pruned; retention prunes only processed ingest events (Q-008) | The Time Machine needs the full history | 01 NFR-DAT-002, T-047 |
 
 ## 7. Open questions (answer or confirm; defaults apply meanwhile)
 
@@ -154,8 +163,8 @@ Add a row when you start a task that creates a migration; remove it when the PR 
 | E7 AI (T-029…T-030) | 2 | 0 | 0 | 0 | 0 |
 | E8 Frontend features (T-031…T-038, T-049) | 9 | 0 | 0 | 0 | 0 |
 | E9 Quality & polish (T-039…T-042, T-048) | 5 | 0 | 0 | 0 | 0 |
-| E10 Investigation (T-052…T-059) | 6 | 2 | 0 | 0 | 0 |
-| **Total (59)** | **52** | **3** | **0** | **1** | **3** |
+| E10 Investigation (T-052…T-059) | 6 | 1 | 0 | 1 | 0 |
+| **Total (59)** | **52** | **2** | **0** | **2** | **3** |
 
 E8 tasks are `todo` but cannot start while T-004 is blocked (frontend held, D-037).
 
@@ -179,6 +188,22 @@ E8 tasks are `todo` but cannot start while T-004 is blocked (frontend held, D-03
 - **Exact next step for the next agent:** (one imperative sentence + command if useful)
 - **Docs updated:** (contract changes? Y/N and which)
 ```
+
+### 2026-10-10 — claude-code-1 — T-052 Contract update: investigation features
+- **Outcome:** done (T-052 in `review`); docs only, no code; nothing merged.
+- **Branch / PR:** `agent/T-052-investigation-contract` (stacked on `agent/T-051-foundation-repair`) / no PR (no remote).
+- **Last commit:** head of `agent/T-052-investigation-contract` (`git log -1 agent/T-052-investigation-contract`).
+- **What I did:**
+  - Product owner accepted every recommended default for Q-006…Q-011 ("take you recommendations"); recorded as answered.
+  - Wrote the four features into the contract, one `docs(contract): …` commit per doc: PRD positioning/goals G7–G8/demo (`00`), requirement groups FR-TMX/TRL/MEV/RSK/INV plus FR-SIM-009…011 (`01`), architecture §3.7 + ADR-12…14 + `domain/timemachine/` (`02`), rules R016–R018, trail schema, new modules M12 Risk / M13 Time Machine / M14 Investigation, simulator scenarios and metrics, invariants 9–14 (`03`), schema changes and four new tables (`05`), API `§17` plus enum/payload/WS changes (`04`), wording-only rules in `06 §7.8`.
+  - Updated task acceptance in `09` for every affected task, added traceability rows and milestone M5, new dependencies, recomputed waves and the critical path (scratchpad script).
+- **Files added/changed:** `docs/00`–`06`, `docs/08`, `docs/09`.
+- **Decisions made:** D-039 … D-046.
+- **Problems / surprises:** large markdown edits via bash heredocs fail in this shell; used small Python scripts run from the scratchpad instead. The GateGuard hook asks for facts before the first edit of each file.
+- **Tests:** none (docs only). `make check` not affected.
+- **Not done / left over:** visual design for the new screens (held for the product owner's frontend changes; T-059 blocked). Merging T-051 and T-052 awaits the product owner.
+- **Exact next step for the next agent:** after the product owner approves the merges, claim **T-006** (or **T-010**) per `07 §2`; read `03 §M12–M14` before any E10 task.
+- **Docs updated:** Y — contract docs 00–06, plus 08 and 09.
 
 ### 2026-10-09 — claude-code-1 — T-051 Foundation repair + investigation features plan
 - **Outcome:** done (T-051 in `review`); plan for the new features written; nothing merged to `main` except the task claim.
