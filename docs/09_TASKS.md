@@ -41,7 +41,7 @@ The implementation plan, split into discrete tasks that individual agents can cl
 | T-001 | Repo scaffolding & tooling | E0 | P0 | L | — | 0 | done |
 | T-002 | Backend skeleton | E0 | P0 | M | T-001 | 1 | done |
 | T-003 | Database foundation | E0 | P0 | M | T-002 | 2 | done |
-| T-004 | Frontend skeleton | E0 | P0 | M | T-001, T-060 | 6 | todo |
+| T-004 | Frontend skeleton | E0 | P0 | M | T-001, T-060 | 6 | in_progress |
 | T-005 | Design system — core primitives | E0 | P0 | L | T-004 | 7 | todo |
 | T-006 | Auth data model | E1 | P0 | S | T-003 | 3 | todo |
 | T-007 | Auth & users backend | E1 | P0 | L | T-006 | 4 | todo |
@@ -90,7 +90,7 @@ The implementation plan, split into discrete tasks that individual agents can cl
 | T-050 | PgNotify EventBus & separate worker mode | E6 | P2 | M | T-025 | 12 | todo |
 | T-051 | Foundation repair (backend, infra, CI) | E0 | P0 | M | T-001, T-002, T-003 | 3 | review |
 | T-052 | Contract update: investigation features | E10 | P0 | L | T-051 | 4 | review |
-| T-060 | Frontend visual direction v2 (contract) | E0 | P0 | S | T-052 | 5 | in_progress |
+| T-060 | Frontend visual direction v2 (contract) | E0 | P0 | S | T-052 | 5 | review |
 | T-053 | As-of snapshot service (Time Machine) | E10 | P0 | L | T-017, T-019, T-024, T-052 | 10 | todo |
 | T-054 | Missing-evidence rules R016–R018 & expectations | E10 | P1 | M | T-012, T-019, T-024, T-027, T-052 | 11 | todo |
 | T-055 | Risk signals module (M12) | E10 | P0 | L | T-024, T-045, T-052, T-053 | 11 | todo |
@@ -237,7 +237,7 @@ The implementation plan, split into discrete tasks that individual agents can cl
   - **Holds the migration lock until merged.**
 
 ### T-004 — Frontend skeleton
-- Status: todo | Priority: P0 | Size: M | Depends: T-001, T-060 | Wave: 6 | Agent: unassigned | Claimed: —
+- Status: in_progress | Priority: P0 | Size: M | Depends: T-001, T-060 | Wave: 6 | Agent: claude-code-1 | Claimed: 2026-10-10
 - Note: Unblocked 2026-10-10 — the product owner shared the new frontend reference (`docs/assets/reference-dashboard-v2.png`) and asked to build on it (D-047). Build against `06` v2.
 - Blocks: T-005
 - Touches: `frontend/**` (excluding `components/ui/*` internals beyond what the shell needs), `docker-compose.yml` (remove the `frontend` profile), `.pre-commit-config.yaml` (eslint hook), `.github/workflows/ci.yml` (frontend job only)
@@ -280,7 +280,7 @@ The implementation plan, split into discrete tasks that individual agents can cl
   - Visual comparison against `reference-dashboard-v2.png` in the PR (screenshots).
 
 ### T-060 — Frontend visual direction v2 (contract)
-- Status: in_progress | Priority: P0 | Size: S | Depends: T-052 | Wave: 5 | Agent: claude-code-1 | Claimed: 2026-10-10
+- Status: review | Priority: P0 | Size: S | Depends: T-052 | Wave: 5 | Agent: claude-code-1 | Claimed: 2026-10-10
 - Note: Product owner shared a new reference (`docs/assets/reference-dashboard-v2.png`, "Capsule" dashboard) and asked to use it and to improve UI/UX and motion. Stacked on the unmerged T-052 branch.
 - Blocks: T-004
 - Touches: `docs/06_UI_STYLE_GUIDE.md`, `docs/02_ARCHITECTURE.md` (§2.1 one dependency), `docs/assets/reference-dashboard-v2.png`, `docs/08_PROGRESS_HANDOFF.md`, `docs/09_TASKS.md`

@@ -38,8 +38,6 @@ services:
       - ./backend:/app
 
   frontend:
-    # TODO(T-004): remove this profile once frontend/Dockerfile and the Vite app exist.
-    profiles: ["frontend"]
     build:
       context: ./frontend
     ports:
@@ -48,6 +46,8 @@ services:
       VITE_API_BASE_URL: http://localhost:8000
     volumes:
       - ./frontend:/app
+      # Keep the container's own (Linux) node_modules instead of the host's.
+      - /app/node_modules
 
 volumes:
   pgdata:

@@ -1,0 +1,93 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    -webkit-text-size-adjust: 100%;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  body {
+    @apply font-sans text-body text-ink-900 antialiased;
+    background: var(--scene-fallback);
+    font-feature-settings: "cv11", "ss01";
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--ink-950);
+    outline-offset: 2px;
+  }
+
+  .on-dark :focus-visible {
+    outline-color: var(--on-dark);
+  }
+
+  ::selection {
+    background: var(--indigo-bg);
+    color: var(--indigo-fg);
+  }
+}
+
+@layer components {
+  /* Scene (06 §2.4): fixed background with a faint grain so large gradients do not band. */
+  .scene {
+    background: var(--scene);
+  }
+  .scene::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    opacity: 0.035;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+
+  .glass-dark {
+    background: rgba(22, 25, 22, 0.46);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    -webkit-backdrop-filter: blur(28px) saturate(140%);
+    backdrop-filter: blur(28px) saturate(140%);
+  }
+
+  .glass-panel {
+    background: rgba(242, 244, 240, 0.74);
+    border: 1px solid rgba(255, 255, 255, 0.55);
+    -webkit-backdrop-filter: blur(32px) saturate(150%);
+    backdrop-filter: blur(32px) saturate(150%);
+  }
+
+  .glass-control {
+    background: rgba(255, 255, 255, 0.46);
+    border: 1px solid rgba(255, 255, 255, 0.6);
+  }
+
+  @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+    .glass-dark {
+      background: #232723;
+    }
+    .glass-panel {
+      background: #eef0ec;
+    }
+    .glass-control {
+      background: var(--paper);
+    }
+  }
+
+  @media (prefers-reduced-transparency: reduce) {
+    .glass-dark {
+      background: #232723;
+    }
+    .glass-panel {
+      background: #eef0ec;
+    }
+    .glass-control {
+      background: var(--paper);
+    }
+  }
+}
+
+@layer utilities {
+  .tabular {
+    font-variant-numeric: tabular-nums;
+  }
+}

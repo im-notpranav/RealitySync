@@ -44,7 +44,7 @@ seed:
 	@echo "not yet implemented (T-041)"
 
 api-types:
-	@echo "not yet implemented (T-004)"
+	cd frontend && npm run api-types
 
 audit:
 	cd backend && pip-audit
