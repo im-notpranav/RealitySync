@@ -41,8 +41,8 @@ The implementation plan, split into discrete tasks that individual agents can cl
 | T-001 | Repo scaffolding & tooling | E0 | P0 | L | — | 0 | done |
 | T-002 | Backend skeleton | E0 | P0 | M | T-001 | 1 | done |
 | T-003 | Database foundation | E0 | P0 | M | T-002 | 2 | done |
-| T-004 | Frontend skeleton | E0 | P0 | M | T-001, T-060 | 6 | review |
-| T-005 | Design system — core primitives | E0 | P0 | L | T-004 | 7 | review |
+| T-004 | Frontend skeleton | E0 | P0 | M | T-001, T-060 | 6 | done |
+| T-005 | Design system — core primitives | E0 | P0 | L | T-004 | 7 | done |
 | T-006 | Auth data model | E1 | P0 | S | T-003 | 3 | todo |
 | T-007 | Auth & users backend | E1 | P0 | L | T-006 | 4 | todo |
 | T-008 | Frontend auth | E1 | P0 | M | T-005, T-007, T-061 | 10 | todo |
@@ -80,7 +80,7 @@ The implementation plan, split into discrete tasks that individual agents can cl
 | T-040 | End-to-end tests | E9 | P1 | M | T-031, T-033, T-036 | 14 | todo |
 | T-041 | Demo seed, README, performance check | E9 | P1 | M | T-030, T-036, T-039 | 14 | todo |
 | T-042 | Hardening & security review | E9 | P1 | M | T-011, T-015, T-018, T-027, T-028, T-030, T-039, T-046, T-056 | 13 | todo |
-| T-043 | Design system — data-viz & composite components | E0 | P0 | M | T-005 | 8 | review |
+| T-043 | Design system — data-viz & composite components | E0 | P0 | M | T-005 | 8 | done |
 | T-044 | Ingest worker loop | E2 | P0 | M | T-009 | 6 | todo |
 | T-045 | Alert service & policy | E5 | P0 | M | T-024 | 10 | todo |
 | T-046 | Dashboard endpoints | E6 | P0 | M | T-017, T-024, T-026 | 10 | todo |
@@ -88,10 +88,10 @@ The implementation plan, split into discrete tasks that individual agents can cl
 | T-048 | API contract tests | E9 | P1 | M | T-011, T-015, T-018, T-027, T-028, T-030, T-039, T-046, T-053, T-054, T-055, T-056 | 13 | todo |
 | T-049 | Settings page (profile, users, API keys, audit) | E8 | P1 | M | T-008, T-011, T-027, T-061 | 11 | todo |
 | T-050 | PgNotify EventBus & separate worker mode | E6 | P2 | M | T-025 | 12 | todo |
-| T-051 | Foundation repair (backend, infra, CI) | E0 | P0 | M | T-001, T-002, T-003 | 3 | review |
-| T-052 | Contract update: investigation features | E10 | P0 | L | T-051 | 4 | review |
-| T-061 | Screen designs with demo data | E8 | P0 | L | T-043 | 9 | review |
-| T-060 | Frontend visual direction v2 (contract) | E0 | P0 | S | T-052 | 5 | review |
+| T-051 | Foundation repair (backend, infra, CI) | E0 | P0 | M | T-001, T-002, T-003 | 3 | done |
+| T-052 | Contract update: investigation features | E10 | P0 | L | T-051 | 4 | done |
+| T-061 | Screen designs with demo data | E8 | P0 | L | T-043 | 9 | done |
+| T-060 | Frontend visual direction v2 (contract) | E0 | P0 | S | T-052 | 5 | done |
 | T-053 | As-of snapshot service (Time Machine) | E10 | P0 | L | T-017, T-019, T-024, T-052 | 10 | todo |
 | T-054 | Missing-evidence rules R016–R018 & expectations | E10 | P1 | M | T-012, T-019, T-024, T-027, T-052 | 11 | todo |
 | T-055 | Risk signals module (M12) | E10 | P0 | L | T-024, T-045, T-052, T-053 | 11 | todo |
@@ -238,7 +238,7 @@ The implementation plan, split into discrete tasks that individual agents can cl
   - **Holds the migration lock until merged.**
 
 ### T-004 — Frontend skeleton
-- Status: review | Priority: P0 | Size: M | Depends: T-001, T-060 | Wave: 6 | Agent: claude-code-1 | Claimed: 2026-10-10
+- Status: done | Priority: P0 | Size: M | Depends: T-001, T-060 | Wave: 6 | Agent: claude-code-1 | Claimed: 2026-10-10
 - Note: Unblocked 2026-10-10 — the product owner shared the new frontend reference (`docs/assets/reference-dashboard-v2.png`) and asked to build on it (D-047). Build against `06` v2.
 - Blocks: T-005
 - Touches: `frontend/**` (excluding `components/ui/*` internals beyond what the shell needs), `docker-compose.yml` (remove the `frontend` profile), `.pre-commit-config.yaml` (eslint hook), `.github/workflows/ci.yml` (frontend job only)
@@ -256,7 +256,7 @@ The implementation plan, split into discrete tasks that individual agents can cl
   - ESLint (incl. jsx-a11y), Prettier, Vitest, Testing Library configured; one smoke test.
 
 ### T-005 — Design system — core primitives
-- Status: review | Priority: P0 | Size: L | Depends: T-004 | Wave: 7 | Agent: claude-code-1 | Claimed: 2026-10-10
+- Status: done | Priority: P0 | Size: L | Depends: T-004 | Wave: 7 | Agent: claude-code-1 | Claimed: 2026-10-10
 - Blocks: T-008, T-043
 - Touches: `frontend/src/components/ui/**`, `frontend/src/app/styleguide/**`
 - Requirements: NFR-UX-001/002/004
@@ -269,7 +269,7 @@ The implementation plan, split into discrete tasks that individual agents can cl
   - Unit tests: SeverityBadge shape + label per severity; Button variants; Dialog Esc/focus trap.
 
 ### T-043 — Design system — data-viz & composite components
-- Status: review | Priority: P0 | Size: M | Depends: T-005 | Wave: 8 | Agent: claude-code-1 | Claimed: 2026-10-10
+- Status: done | Priority: P0 | Size: M | Depends: T-005 | Wave: 8 | Agent: claude-code-1 | Claimed: 2026-10-10
 - Blocks: T-031, T-032, T-033, T-034, T-036, T-038, T-059, T-061
 - Touches: `frontend/src/components/ui/**` (new files + exports only), `frontend/src/app/styleguide/**`
 - Requirements: NFR-UX-001/002
@@ -281,7 +281,7 @@ The implementation plan, split into discrete tasks that individual agents can cl
   - Visual comparison against `reference-dashboard-v2.png` in the PR (screenshots).
 
 ### T-060 — Frontend visual direction v2 (contract)
-- Status: review | Priority: P0 | Size: S | Depends: T-052 | Wave: 5 | Agent: claude-code-1 | Claimed: 2026-10-10
+- Status: done | Priority: P0 | Size: S | Depends: T-052 | Wave: 5 | Agent: claude-code-1 | Claimed: 2026-10-10
 - Note: Product owner shared a new reference (`docs/assets/reference-dashboard-v2.png`, "Capsule" dashboard) and asked to use it and to improve UI/UX and motion. Stacked on the unmerged T-052 branch.
 - Blocks: T-004
 - Touches: `docs/06_UI_STYLE_GUIDE.md`, `docs/02_ARCHITECTURE.md` (§2.1 one dependency), `docs/assets/reference-dashboard-v2.png`, `docs/08_PROGRESS_HANDOFF.md`, `docs/09_TASKS.md`
@@ -291,7 +291,7 @@ The implementation plan, split into discrete tasks that individual agents can cl
   - `motion` added to the approved list (D-047); decisions D-047/D-048 in `08`; frontend tasks unblocked and their acceptance updated to v2.
 
 ### T-051 — Foundation repair (backend, infra, CI)
-- Status: review | Priority: P0 | Size: M | Depends: T-001, T-002, T-003 | Wave: 3 | Agent: claude-code-1 | Claimed: 2026-10-09
+- Status: done | Priority: P0 | Size: M | Depends: T-001, T-002, T-003 | Wave: 3 | Agent: claude-code-1 | Claimed: 2026-10-09
 - Blocks: T-052
 - Touches: `backend/pyproject.toml`, `backend/Dockerfile`, `backend/.dockerignore`, `backend/app/{api,api/v1,core,db,domain}/__init__.py`, `backend/app/db/base.py`, `backend/app/core/config.py` (CORS_ORIGINS parsing only), `backend/app/api/health.py` (04 §13 response shape), `backend/tests/**`, `docker-compose.yml`, `Makefile`, `.github/workflows/ci.yml`, `.gitignore`, `.gitattributes`, `.pre-commit-config.yaml`, `.secrets.baseline`, `README.md`, `docs/08_PROGRESS_HANDOFF.md`, `docs/09_TASKS.md`
 - Requirements: NFR-OPS-001/002, NFR-MNT-001/002/004, NFR-REL-003, NFR-SEC-008
@@ -694,7 +694,7 @@ The implementation plan, split into discrete tasks that individual agents can cl
 > Since T-061 every screen below is already designed against demo data (`lib/demo`). Each task's job is now to wire its screen to the real endpoints — remove the demo branch of its hooks in `lib/api/queries.ts`, add live updates and tests — without redesigning it.
 
 ### T-061 — Screen designs with demo data
-- Status: review | Priority: P0 | Size: L | Depends: T-043 | Wave: 9 | Agent: claude-code-1 | Claimed: 2026-10-10
+- Status: done | Priority: P0 | Size: L | Depends: T-043 | Wave: 9 | Agent: claude-code-1 | Claimed: 2026-10-10
 - Note: Product owner asked to complete the frontend design on the v2 reference (2026-10-10). Every route is designed and interactive against synthetic data shaped like `04` (D-049); the feature tasks below now wire their screen to the real API.
 - Blocks: T-008, T-031, T-033, T-034, T-035, T-036, T-037, T-038, T-049, T-059
 - Touches: `frontend/src/features/**`, `frontend/src/lib/{api/queries.ts,api/types.ts,demo/**,format.ts}`, `frontend/src/app/routes.tsx`, `frontend/src/pages/LoginPage.tsx`
@@ -860,7 +860,7 @@ The implementation plan, split into discrete tasks that individual agents can cl
 Added 2026-10-09 by `claude-code-1` from the product owner's new feature direction. Design and rationale: `docs/notes/2026-10-09-investigation-features-plan.md`. Requirement IDs (`FR-TMX`, `FR-TRL`, `FR-MEV`, `FR-INV`, `FR-RSK`) are defined by T-052.
 
 ### T-052 — Contract update: investigation features
-- Status: review | Priority: P0 | Size: L | Depends: T-051 | Wave: 4 | Agent: claude-code-1 | Claimed: 2026-10-10
+- Status: done | Priority: P0 | Size: L | Depends: T-051 | Wave: 4 | Agent: claude-code-1 | Claimed: 2026-10-10
 - Note: Q-006…Q-011 answered 2026-10-10 (product owner accepted every recommendation). Stacked on the unmerged T-051 branch; merge T-051 first.
 - Blocks: T-009, T-013, T-014, T-019, T-024, T-026, T-029, T-047, T-053, T-054, T-055, T-057, T-060
 - Touches: `docs/00_PRD.md` … `docs/06_UI_STYLE_GUIDE.md` (06: data contracts only; visual design waits for the product owner's frontend changes), `docs/08_PROGRESS_HANDOFF.md`, `docs/09_TASKS.md`
