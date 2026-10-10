@@ -291,6 +291,7 @@ Index: `(finding_id, created_at)`.
 | likely_correct_system | text | NOT NULL, CHECK in (`crm`,`billing`,`support`,`undetermined`) |
 | suggested_actions | jsonb | NOT NULL (array of strings, ≤ 3) |
 | caveats | text | NULL |
+| cited_fact_ids | text[] | NOT NULL DEFAULT '{}' (trail fact ids the explanation relies on; FR-AIX-009) |
 | is_fallback | boolean | NOT NULL DEFAULT false |
 | raw_response | jsonb | NULL |
 | latency_ms | int | NULL |
