@@ -615,7 +615,7 @@ Score and confidence are always returned together and never combined (FR-RSK-002
   "outcome": "crossed",
   "incident_at": "2026-08-14T09:00:00Z",
   "first_detectable_at": "2026-07-02T00:00:00Z",
-  "lead_time_hours": 1017,
+  "lead_time_hours": 1041,
   "at_crossing": {"risk": { "…RiskAssessment" }, "findings": [ { "…as-of finding with trail" } ]},
   "not_yet_linkable": [],
   "rule_set": { "…" },
