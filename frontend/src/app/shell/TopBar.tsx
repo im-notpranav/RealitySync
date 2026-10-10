@@ -3,16 +3,19 @@ import { useEffect, useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
 
 import { Avatar, IconLink } from "../../components/ui";
+import { env } from "../../lib/env";
 import { useSession } from "../../store/session";
 
 const isApplePlatform = typeof navigator !== "undefined" && /Mac|iPhone|iPad/i.test(navigator.userAgent);
 
 function ConnectionStatus() {
-  // TODO(T-032): reflect the WebSocket state (moss pulsing dot when connected).
+  // TODO(T-032): reflect the real WebSocket state; the demo feed counts as connected.
+  const connected = env.demoData;
+  const label = connected ? "Live updates connected" : "Live updates not connected";
   return (
-    <span className="grid size-10 place-items-center" title="Live updates not connected">
-      <span aria-hidden="true" className="size-2 rounded-pill bg-ink-400" />
-      <span className="sr-only">Live updates not connected</span>
+    <span className="grid size-10 place-items-center" title={label}>
+      <span aria-hidden="true" className={connected ? "live-dot size-2 rounded-pill bg-moss-500" : "size-2 rounded-pill bg-ink-400"} />
+      <span className="sr-only">{label}</span>
     </span>
   );
 }

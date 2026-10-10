@@ -44,6 +44,7 @@ services:
       - "5173:5173"
     environment:
       VITE_API_BASE_URL: http://localhost:8000
+      VITE_WATCH_POLLING: "true"
     volumes:
       - ./frontend:/app
       # Keep the container's own (Linux) node_modules instead of the host's.
