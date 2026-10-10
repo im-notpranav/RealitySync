@@ -1,4 +1,5 @@
 import type { Config } from "tailwindcss";
+import plugin from "tailwindcss/plugin";
 
 // Every value maps to a token in src/styles/tokens.css (06 §2–§4, §8). No raw colors in components.
 const tint = (name: string) => ({ bg: `var(--${name}-bg)`, fg: `var(--${name}-fg)` });
@@ -63,8 +64,11 @@ export default {
         slow: "var(--dur-slow)",
       },
       maxWidth: { content: "1360px" },
-      screens: { pointer: { raw: "(hover: hover) and (pointer: fine)" } },
     },
   },
-  plugins: [],
+  plugins: [
+    // `pointer:hover:*` — hover styles only on devices with a real pointer (06 §6.1). A variant, not a
+    // screen: a raw screen would disable Tailwind's max-* breakpoint variants.
+    plugin(({ addVariant }) => addVariant("pointer", "@media (hover: hover) and (pointer: fine)")),
+  ],
 } satisfies Config;
