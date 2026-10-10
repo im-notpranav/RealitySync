@@ -1,0 +1,234 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    -webkit-text-size-adjust: 100%;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  body {
+    @apply font-sans text-body text-ink-900 antialiased;
+    background: var(--scene-fallback);
+    font-feature-settings: "cv11", "ss01";
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--ink-950);
+    outline-offset: 2px;
+  }
+
+  .on-dark :focus-visible {
+    outline-color: var(--on-dark);
+  }
+
+  ::selection {
+    background: var(--indigo-bg);
+    color: var(--indigo-fg);
+  }
+}
+
+@layer components {
+  /* Scene (06 §2.4): fixed background with a faint grain so large gradients do not band. */
+  .scene {
+    background: var(--scene);
+  }
+  .scene::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    opacity: 0.035;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+
+  .glass-dark {
+    background: rgba(22, 25, 22, 0.46);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    -webkit-backdrop-filter: blur(28px) saturate(140%);
+    backdrop-filter: blur(28px) saturate(140%);
+  }
+
+  .glass-panel {
+    background: rgba(242, 244, 240, 0.74);
+    border: 1px solid rgba(255, 255, 255, 0.55);
+    -webkit-backdrop-filter: blur(32px) saturate(150%);
+    backdrop-filter: blur(32px) saturate(150%);
+  }
+
+  .glass-control {
+    background: rgba(255, 255, 255, 0.46);
+    border: 1px solid rgba(255, 255, 255, 0.6);
+  }
+
+  @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+    .glass-dark {
+      background: #232723;
+    }
+    .glass-panel {
+      background: #eef0ec;
+    }
+    .glass-control {
+      background: var(--paper);
+    }
+  }
+
+  @media (prefers-reduced-transparency: reduce) {
+    .glass-dark {
+      background: #232723;
+    }
+    .glass-panel {
+      background: #eef0ec;
+    }
+    .glass-control {
+      background: var(--paper);
+    }
+  }
+}
+
+@layer utilities {
+  .tabular {
+    font-variant-numeric: tabular-nums;
+  }
+}
+
+/* ------------------------------------------------------------------ motion catalogue (06 §8) */
+
+@keyframes pop-in {
+  from {
+    opacity: 0;
+    transform: scale(0.96);
+  }
+}
+@keyframes pop-out {
+  to {
+    opacity: 0;
+    transform: scale(0.96);
+  }
+}
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+}
+@keyframes fade-out {
+  to {
+    opacity: 0;
+  }
+}
+@keyframes toast-in {
+  from {
+    opacity: 0;
+    transform: translateY(100%);
+  }
+}
+@keyframes toast-out {
+  to {
+    opacity: 0;
+    transform: translateY(16px) scale(0.98);
+  }
+}
+@keyframes toast-swipe-out {
+  to {
+    transform: translateX(calc(var(--radix-toast-swipe-end-x) + 24px));
+    opacity: 0;
+  }
+}
+@keyframes shimmer {
+  to {
+    background-position: -200% 0;
+  }
+}
+@keyframes live-pulse {
+  0% {
+    transform: scale(1);
+    opacity: 0.55;
+  }
+  70%,
+  100% {
+    transform: scale(2.2);
+    opacity: 0;
+  }
+}
+@keyframes row-flash {
+  from {
+    background-color: var(--moss-bg);
+  }
+  to {
+    background-color: transparent;
+  }
+}
+
+/* Tooltip: delay on first hover, instant for neighbours (Radix sets `instant-open`). */
+.tooltip-content {
+  transform-origin: var(--radix-tooltip-content-transform-origin);
+}
+.tooltip-content[data-state="delayed-open"] {
+  animation: pop-in 125ms var(--ease-out);
+}
+
+/* Popovers scale from their trigger; exits are faster than enters. */
+.popover-content {
+  transform-origin: var(--radix-select-content-transform-origin);
+}
+.popover-content[data-state="open"] {
+  animation: pop-in var(--dur-fast) var(--ease-out);
+}
+.popover-content[data-state="closed"] {
+  animation: pop-out 120ms var(--ease-out);
+}
+
+.toast[data-state="open"] {
+  animation: toast-in 360ms ease;
+}
+.toast[data-state="closed"] {
+  animation: toast-out 200ms var(--ease-out);
+}
+.toast[data-swipe="move"] {
+  transform: translateX(var(--radix-toast-swipe-move-x));
+}
+.toast[data-swipe="cancel"] {
+  transform: translateX(0);
+  transition: transform 200ms var(--ease-out);
+}
+.toast[data-swipe="end"] {
+  animation: toast-swipe-out 200ms var(--ease-out);
+}
+
+.skeleton {
+  background: linear-gradient(90deg, var(--ink-100) 25%, rgba(255, 255, 255, 0.9) 37%, var(--ink-100) 63%);
+  background-size: 200% 100%;
+  animation: shimmer 1.4s ease infinite;
+}
+
+.live-dot {
+  position: relative;
+}
+.live-dot::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 999px;
+  background: var(--moss-500);
+  animation: live-pulse 2s var(--ease-out) infinite;
+}
+
+.row-flash {
+  animation: row-flash 1.2s ease-out;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tooltip-content[data-state="delayed-open"],
+  .popover-content[data-state="open"],
+  .toast[data-state="open"] {
+    animation: fade-in 150ms ease;
+  }
+  .popover-content[data-state="closed"],
+  .toast[data-state="closed"] {
+    animation: fade-out 150ms ease;
+  }
+  .skeleton,
+  .live-dot::after {
+    animation: none;
+  }
+}

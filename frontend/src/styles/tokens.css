@@ -1,0 +1,63 @@
+/* Design tokens — the single source of colors, radii, shadows and motion (06 §2–§4, §8, §11). */
+:root {
+  /* Ink and paper */
+  --ink-950: #121412;
+  --ink-900: #1c1f1c;
+  --ink-700: #3a3e3a;
+  --ink-500: #6a6f69;
+  --ink-400: #9a9f98;
+  --ink-200: #e3e6e1;
+  --ink-100: #f1f3ef;
+  --paper: #ffffff;
+  --on-dark: #f4f6f3;
+  --on-dark-muted: rgba(244, 246, 243, 0.62);
+
+  /* Accent */
+  --moss-500: #8db33a;
+  --moss-600: #73952a;
+
+  /* Tint pairs (bg + text of the same hue) */
+  --peach-bg: #fce6d6;
+  --peach-fg: #a8521e;
+  --rose-bg: #fbe1de;
+  --rose-fg: #b3352b;
+  --amber-bg: #faefcb;
+  --amber-fg: #8a6100;
+  --indigo-bg: #e9e8fd;
+  --indigo-fg: #4b45c2;
+  --sky-bg: #e1ecfd;
+  --sky-fg: #2e62c4;
+  --moss-bg: #e4efd3;
+  --moss-fg: #4c6a16;
+  --neutral-bg: #f1f3ef;
+  --neutral-fg: #5a5f59;
+
+  /* Scene: generated, blurred, dimmed (no stock photo) */
+  --scene:
+    radial-gradient(60% 50% at 18% 22%, #9aa58f 0%, transparent 70%),
+    radial-gradient(45% 40% at 78% 18%, #c9c4b6 0%, transparent 70%),
+    radial-gradient(55% 55% at 70% 80%, #5e6a5a 0%, transparent 70%),
+    radial-gradient(50% 45% at 20% 85%, #3e463d 0%, transparent 70%),
+    linear-gradient(160deg, #7f8a78 0%, #a9aa9c 45%, #4a5348 100%);
+  --scene-fallback: #4a5348;
+
+  /* Radii */
+  --r-panel: 28px;
+  --r-card: 18px;
+  --r-control: 12px;
+
+  /* Elevation */
+  --shadow-card: 0 1px 2px rgba(18, 20, 18, 0.04), 0 8px 24px rgba(18, 20, 18, 0.06);
+  --shadow-raised: 0 2px 4px rgba(18, 20, 18, 0.06), 0 16px 40px rgba(18, 20, 18, 0.12);
+  --shadow-panel: 0 24px 80px rgba(10, 12, 10, 0.25);
+  --shadow-button: inset 0 1px 0 rgba(255, 255, 255, 0.12), 0 6px 16px rgba(18, 20, 18, 0.25);
+
+  /* Motion */
+  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+  --ease-in-out: cubic-bezier(0.77, 0, 0.175, 1);
+  --ease-drawer: cubic-bezier(0.32, 0.72, 0, 1);
+  --dur-press: 140ms;
+  --dur-fast: 180ms;
+  --dur-base: 240ms;
+  --dur-slow: 320ms;
+}

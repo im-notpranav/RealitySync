@@ -1,0 +1,9 @@
+# Force LF everywhere so scripts, Makefiles and Dockerfiles work inside Linux containers
+# regardless of the contributor's core.autocrlf setting.
+* text=auto eol=lf
+*.png binary
+*.jpg binary
+*.gif binary
+*.ico binary
+*.woff binary
+*.woff2 binary
