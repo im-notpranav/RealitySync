@@ -1,337 +1,357 @@
 # 06 — UI Style Guide
 
-**Reference design:** the "Crextio" HR dashboard supplied by the product owner. RealitySync adopts its visual language — soft frosted-glass cards on a warm gradient, a single yellow accent, charcoal pills, big light numerals — and re-maps its layout to data-consistency content.
+**Version 2 (2026-10-10).** Reference design: the "Capsule" operations dashboard supplied by the product owner. RealitySync adopts its visual language — a dark frosted sidebar and a large light frosted work panel floating over a soft, blurred scene; solid white cards with generous radii; one dark primary button; soft tinted pills for status — and re-maps it to data-consistency content. It replaces the v1 "Crextio" direction (D-047).
 
-![Reference dashboard](assets/reference-dashboard.png)
+![Reference dashboard](assets/reference-dashboard-v2.png)
 
-*Reference: `docs/assets/reference-dashboard.png`. Agents MUST open this image before building any page.*
+*Reference: `docs/assets/reference-dashboard-v2.png`. Agents MUST open this image before building any page. The v1 image `reference-dashboard.png` is kept only for history.*
 
 ---
 
 ## 1. Design principles
 
-1. **Calm surfaces, one loud color.** Everything is soft grey/white glass; yellow (`accent`) marks what matters now (selected day, active progress, primary highlight). Charcoal (`ink`) marks the primary action and the "live" card.
-2. **Big light numbers.** Key metrics are huge, weight 300, with a tiny label beside them. Numbers are the hero, not chrome around them.
-3. **Pills and rounded blocks.** Navigation, buttons, chips, inputs and progress bars are pill-shaped; content cards use large radii. No sharp corners anywhere.
-4. **Bento layout.** Pages are built from a 12-column grid of differently-sized cards with consistent gaps; each card does one job.
-5. **Dark card = live.** The one dark card on a page (Live feed on the dashboard) is the "happening now" surface; do not scatter dark cards.
-6. **Evidence beside every claim.** Whenever AI text or a score is shown, the underlying evidence is visible next to it.
-7. **Accessible by default.** Yellow is only ever a background for dark text. Meaning is never conveyed by color alone.
+1. **Two layers of glass, one layer of paper.** The scene (background) → glass (sidebar, work panel, top-bar controls) → paper (solid white cards that hold data). Data never sits directly on glass; glass never sits on paper.
+2. **Calm ink, quiet tints.** Text and the primary action are near-black ink. Meaning is carried by soft tinted pills (peach, indigo, sky, moss, rose) with a dark text of the same hue — never by saturated fills.
+3. **The number is the hero.** Each KPI card has one big medium-weight number, a short label above it, one context line below it and at most one chip.
+4. **One primary action per view.** Exactly one dark button (`Button variant="primary"`) per page header; everything else is secondary glass or ghost.
+5. **Evidence beside every claim.** Whenever AI text, a score or a risk level is shown, the underlying evidence (or the trail) is one click away and visibly linked.
+6. **Motion explains, never decorates repeated actions.** See §8: fast, ease-out, interruptible; no animation on keyboard-driven or high-frequency actions.
+7. **Accessible by default.** Meaning is never conveyed by color alone (pills carry text, severity carries a shape); glass always has a solid fallback.
 
 ## 2. Color tokens
 
 Define as CSS variables in `src/styles/tokens.css`; expose in Tailwind (`tailwind.config.ts`). **Never use raw hex values in components.**
 
-### 2.1 Core palette
+### 2.1 Ink and paper
 | Token | Hex | Usage |
 |-------|-----|-------|
-| `--ink-900` | `#1C1C1E` | Primary text, dark cards, primary buttons, active nav pill |
-| `--ink-800` | `#2B2B2E` | Dark card inner rows, hover on dark |
-| `--ink-600` | `#5C5C61` | Secondary text |
-| `--ink-400` | `#9A9AA0` | Muted text, inactive bars, disabled |
-| `--ink-200` | `#D9D9DD` | Dividers on light surfaces |
-| `--paper-0` | `#FFFFFF` | Pure white |
-| `--accent-300` | `#FBE38A` | Accent tint / hover tint |
-| `--accent-400` | `#F8D347` | **Primary accent** (highlight bar, progress fill, chip) |
-| `--accent-500` | `#F2C12E` | Accent pressed / strong |
-| `--accent-100` | `#FFF6D6` | Accent wash backgrounds |
+| `--ink-950` | `#121412` | Primary button fill, headings, big numbers |
+| `--ink-900` | `#1C1F1C` | Body text on paper |
+| `--ink-700` | `#3A3E3A` | Strong secondary text, icons on paper |
+| `--ink-500` | `#6A6F69` | Secondary text, table headers, sub-lines |
+| `--ink-400` | `#9A9F98` | Placeholders, disabled, decorative only |
+| `--ink-200` | `#E3E6E1` | Borders on paper, progress track |
+| `--ink-100` | `#F1F3EF` | Row dividers, hover wash on paper, neutral pill bg |
+| `--paper` | `#FFFFFF` | Cards |
+| `--on-dark` | `#F4F6F3` | Text on the sidebar / dark button |
+| `--on-dark-muted` | `rgba(244,246,243,0.62)` | Inactive sidebar items |
 
-### 2.2 Background gradient (page)
-```css
---bg-page: linear-gradient(135deg, #E9EAEC 0%, #F1EFE7 45%, #F8E9A6 100%);
-```
-Page background is fixed (`background-attachment: fixed`) so cards float over the gradient.
+### 2.2 Tints (pills, badges, chips)
+Each tint is a pair: background + text of the same hue. Text on its own tint passes WCAG AA (≥ 4.5:1).
 
-### 2.3 Surfaces
+| Token pair | Bg | Text | Used for |
+|------------|----|------|----------|
+| `peach` | `#FCE6D6` | `#A8521E` | High severity, `warning` risk, "Preparing"-style in-progress states |
+| `rose` | `#FBE1DE` | `#B3352B` | Critical severity, `critical` risk, errors |
+| `amber` | `#FAEFCB` | `#8A6100` | Medium severity, `pending` expectation |
+| `indigo` | `#E9E8FD` | `#4B45C2` | Positive deltas, AI-generated badge, `watch` risk |
+| `sky` | `#E1ECFD` | `#2E62C4` | Info, "Ready"/resolved-by-system states, links |
+| `moss` | `#E4EFD3` | `#4C6A16` | Success, consistent, resolved |
+| `neutral` | `#F1F3EF` | `#5A5F59` | Low severity, pending/unknown, `cannot_assess` |
+
+### 2.3 Accent
+| Token | Hex | Usage |
+|-------|-----|-------|
+| `--moss-500` | `#8DB33A` | Progress fills, sparkline highlight, "live" dot |
+| `--moss-600` | `#73952A` | Progress fill hover / pressed |
+
+The accent is never used for text and never as a button fill.
+
+### 2.4 Scene and glass
 | Token | Value | Usage |
 |-------|-------|-------|
-| `--surface-glass` | `rgba(255,255,255,0.55)` | Standard card |
-| `--surface-glass-strong` | `rgba(255,255,255,0.78)` | Drawer, modal, dropdown, tables |
-| `--surface-border` | `rgba(255,255,255,0.65)` | 1px card border |
-| `--surface-dark` | `#1C1C1E` | Live feed card |
-| `--blur-glass` | `blur(24px) saturate(140%)` | `backdrop-filter` |
+| `--scene` | layered blurred gradient (§11) in sage, stone and charcoal | Fixed full-viewport background |
+| `--glass-dark` | `rgba(22,25,22,0.46)` + `blur(28px) saturate(140%)` | Sidebar, toasts on scene |
+| `--glass-dark-border` | `rgba(255,255,255,0.10)` | Sidebar border |
+| `--glass-dark-active` | `rgba(255,255,255,0.12)` + border `rgba(255,255,255,0.16)` | Active sidebar item |
+| `--glass-panel` | `rgba(242,244,240,0.74)` + `blur(32px) saturate(150%)` | The work panel |
+| `--glass-panel-border` | `rgba(255,255,255,0.55)` | Work panel border |
+| `--glass-control` | `rgba(255,255,255,0.46)` + border `rgba(255,255,255,0.6)` | Search, icon buttons, secondary buttons, filter button on the panel |
 
-Fallback when `backdrop-filter` is unsupported: use `rgba(255,255,255,0.88)`.
+**Fallback** (no `backdrop-filter`, or `prefers-reduced-transparency: reduce`): sidebar `#232723`, panel `#EEF0EC`, controls `#FFFFFF`.
 
-### 2.4 Semantic colors
-| Token | Hex | Tint bg (badge) | Usage |
-|-------|-----|-----------------|-------|
-| `--sev-critical` | `#D9453D` | `#FBE3E1` | Critical severity |
-| `--sev-high` | `#E8832A` | `#FCE9D6` | High |
-| `--sev-medium` | `#F2C12E` | `#FFF3CC` | Medium (same as accent) |
-| `--sev-low` | `#8E9096` | `#ECECEE` | Low |
-| `--success` | `#3FAE7A` | `#DDF3E8` | Resolved, consistent |
-| `--info` | `#4A7BD0` | `#E3ECFA` | Info, links, AI badge |
-| `--danger` | `#D9453D` | `#FBE3E1` | Errors/destructive |
+The scene is a generated abstract image (no stock photo). A product-owner-supplied photo may replace it later through the single `--scene` token; it must be blurred ≥ 40px and dimmed so glass contrast rules still pass.
 
-Severity badges always show **icon + text** (`●` shape differs: critical = filled triangle, high = filled diamond, medium = filled circle, low = hollow circle) so color is not the only signal.
-
-### 2.5 Contrast rules (must pass WCAG AA)
-- `--ink-900` on `--accent-400`, `--paper-0`, glass: ✅
-- `--paper-0` on `--ink-900`: ✅
-- White text on yellow: ❌ never
-- `--ink-400` is for non-essential text only (≥ 18px or decorative); use `--ink-600` for readable secondary text.
+### 2.5 Contrast rules (WCAG AA)
+- `--ink-900`/`--ink-950` on `--paper`, `--glass-panel` and `--glass-control`: ✅
+- `--on-dark` on `--glass-dark` (over the scene) and on `--ink-950`: ✅ — the scene is dimmed so this holds at every point.
+- Tint text on its own tint bg: ✅ (pairs in §2.2 only; do not mix pairs).
+- `--ink-400` is for placeholders/decoration only; readable secondary text uses `--ink-500` or darker.
 
 ## 3. Typography
 
-**Family:** `Inter` variable (self-hosted via `@fontsource-variable/inter`; no CDN). Fallback: `ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif`. Optional OpenType: `font-feature-settings: "cv11", "ss03"`.
+**Family:** `Inter` variable (self-hosted via `@fontsource-variable/inter`; no CDN). Fallback: `ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif`. `font-feature-settings: "cv11", "ss01"`; numbers in tables, KPIs and timestamps use `tabular-nums`.
 
 | Token | Size / line-height | Weight | Tracking | Use |
 |-------|-------------------|--------|----------|-----|
-| `display-xl` | 64 / 64 | 300 | −0.03em | KPI big numbers (78, 56, 203 in reference) |
-| `display-lg` | 48 / 52 | 300 | −0.025em | Card hero numbers (6.1 h, 18%) |
-| `h1` | 40 / 44 | 300 | −0.02em | Page greeting ("Welcome back, Pranav") |
-| `h2` | 28 / 34 | 400 | −0.01em | Section headings |
-| `h3` | 20 / 28 | 500 | 0 | Card titles ("Live feed", "Progress") |
-| `body` | 15 / 24 | 400 | 0 | Default |
-| `body-strong` | 15 / 24 | 500 | 0 | Emphasis |
-| `small` | 13 / 20 | 400 | 0 | Secondary info, table cells |
-| `caption` | 12 / 16 | 400 | 0.01em | Hints, timestamps |
+| `display` | 44 / 48 | 500 | −0.035em | Page title ("Overview") |
+| `kpi` | 36 / 40 | 500 | −0.025em | KPI number ("142", "22/28") |
+| `h2` | 20 / 28 | 600 | −0.01em | Section titles ("Live findings", "Quick actions") |
+| `h3` | 15 / 22 | 600 | 0 | Card titles, list item titles |
+| `body` | 14 / 20 | 400 | 0 | Default |
+| `body-strong` | 14 / 20 | 500 | 0 | Table primary cell, nav items |
+| `small` | 13 / 18 | 400 | 0 | Sub-lines, secondary cells |
+| `caption` | 12 / 16 | 500 | 0.005em | Table headers, pill text, timestamps |
 
 Rules
-- **Sentence case everywhere.** No ALL CAPS labels, no letter-spaced eyebrows.
-- Numerals in tables/timelines use `tabular-nums`; display numerals do not.
-- Line length ≤ 70 characters for paragraphs (AI explanations).
-- Light weight (300) only at ≥ 36px; below that use 400+.
+- **Sentence case everywhere.** No ALL CAPS, no letter-spaced eyebrows.
+- Weight 500–600 for anything ≤ 20px that must be scanned; never 300.
+- Line length ≤ 70 characters for paragraphs (AI explanations, caveats).
 
 ## 4. Spacing, radius, elevation, grid
 
 **Spacing scale (4px base):** `4, 8, 12, 16, 20, 24, 32, 40, 48, 64`.
 | Context | Value |
 |---------|-------|
-| Card inner padding | 20 (compact) / 24 (default) |
+| Viewport inset around sidebar and panel | 12 |
+| Panel inner padding | 32 (desktop) / 20 (tablet) / 16 (mobile) |
+| Card inner padding | 20 |
 | Gap between cards | 16 |
-| Page horizontal padding | 16 (mobile) / 24 (tablet) / 32 (desktop) |
-| Section vertical gap | 24 |
-| Max content width | 1440 |
+| Section vertical gap | 32 |
+| Max content width inside the panel | 1360 |
 
 **Radius**
 | Token | px | Use |
 |-------|----|-----|
-| `r-card` | 28 | Cards |
-| `r-inner` | 20 | Cards inside cards, rows on dark card |
-| `r-control` | 999 | Buttons, inputs, chips, nav, progress bars |
-| `r-drawer` | 28 | Drawer/ modal corners |
+| `r-panel` | 28 | Work panel, sidebar |
+| `r-card` | 18 | Cards, drawer, dialog |
+| `r-control` | 12 | Buttons, inputs, search, sidebar items, filter button |
+| `r-pill` | 999 | Pills, badges, progress bars, avatar, icon buttons |
 
 **Elevation**
 | Token | Value |
 |-------|-------|
-| `shadow-glass` | `0 8px 32px rgba(28,28,30,0.06), inset 0 1px 0 rgba(255,255,255,0.7)` |
-| `shadow-dark` | `0 16px 40px rgba(28,28,30,0.22)` |
-| `shadow-pop` | `0 12px 40px rgba(28,28,30,0.16)` (dropdowns, toasts) |
+| `shadow-card` | `0 1px 2px rgba(18,20,18,0.04), 0 8px 24px rgba(18,20,18,0.06)` |
+| `shadow-raised` | `0 2px 4px rgba(18,20,18,0.06), 0 16px 40px rgba(18,20,18,0.12)` (hovered interactive card, popovers) |
+| `shadow-panel` | `0 24px 80px rgba(10,12,10,0.25)` (work panel over the scene) |
+| `shadow-button` | `0 1px 0 rgba(255,255,255,0.12) inset, 0 6px 16px rgba(18,20,18,0.25)` (primary button) |
 
-**Grid:** 12 columns, 16px gutter, bento rows `auto`. Cards declare `col-span` per breakpoint.
-
-**Breakpoints:** `sm 640 · md 768 · lg 1024 · xl 1280 · 2xl 1536`.
+**Grid:** 12 columns inside the panel, 16px gutter. Breakpoints: `sm 640 · md 768 · lg 1024 · xl 1280 · 2xl 1536`.
 
 ## 5. App shell and navigation
 
-Top bar (sticky, transparent over gradient), left → right, matching the reference:
-1. **Logo pill** — outlined pill (1px `--ink-900`, radius 999) with the wordmark "RealitySync".
-2. **Primary nav pill group** — one white-glass pill containing text items; the **active item is a filled `--ink-900` pill with white text**. Items: Dashboard · Entities · Findings · Review · Alerts · Rules · Systems · Simulation. Review (with a small count chip for links needing review) is analyst+; Rules, Systems and Simulation are admin-only. Items a role cannot use are hidden. Routes are listed in 02 §3.1.
-3. **Right actions** — "Settings" outlined pill with gear icon, circular bell button (unread dot in `--accent-400`, count badge), circular user avatar button (menu: profile, users (admin), sign out).
+```
+┌ scene ─────────────────────────────────────────────────────────────────────────────┐
+│ ┌ sidebar (glass-dark, 248) ┐ ┌ work panel (glass-panel, r-panel) ─────────────────┐ │
+│ │ ◆ RealitySync             │ │ [⌕ Search customers, findings, records…]   🔔 ⚙ (PS)│ │
+│ │ ▣ Overview   ← active     │ │                                                    │ │
+│ │ ◎ Findings          12    │ │ Overview                    [⇩ Export] [+ New inv.]│ │
+│ │ ◉ Customers               │ │ Live consistency — 10 Oct 2026                     │ │
+│ │ ⟲ Investigations          │ │ ┌ KPI ┐ ┌ KPI ┐ ┌ KPI ┐ ┌ KPI ┐                     │ │
+│ │ ⇄ Link review        9    │ │ ┌ Live findings (table) ────────┐ ┌ Quick actions ┐ │ │
+│ │ ◔ Alerts                  │ │ │                               │ │ ›  ›  ›  ›    │ │ │
+│ │ ── Admin                  │ │ └───────────────────────────────┘ └───────────────┘ │ │
+│ │ ≡ Rules  ▤ Systems  ▶ Sim │ │                                                    │ │
+│ │ ⚙ Settings  ⇥ Sign out    │ │                                                    │ │
+│ │ [ + New investigation ]   │ │                                                    │ │
+│ └───────────────────────────┘ └────────────────────────────────────────────────────┘ │
+└────────────────────────────────────────────────────────────────────────────────────┘
+```
 
-Mobile (< 768): logo pill + hamburger + bell; nav becomes a full-height glass sheet.
-
-Connection status: a tiny dot in the bell area — green when WebSocket connected, grey with tooltip "Reconnecting…" otherwise.
+- **Sidebar** (fixed, full height minus the 12px inset, `--glass-dark`, `r-panel`): logo mark + wordmark "RealitySync"; nav items (icon 20 + label, height 40, `r-control`); the active item uses `--glass-dark-active` and a moving indicator (§8); items may show a count pill (Findings = open, Link review = needs review). Group "Admin" (Rules, Systems, Simulation) visible to admins only; Link review analyst+. Bottom: Settings, Sign out, then the **primary action** button "New investigation" (analyst+; viewers see nothing there).
+- **Work panel** (`--glass-panel`, `r-panel`, `shadow-panel`, scrolls internally): top bar with search (glass control, `⌘K`/`Ctrl K` hint), connection dot, bell (unread count), settings icon button, avatar (initials, menu: profile, users (admin), sign out).
+- **Page header:** `display` title + `small` subtitle (context or date) on the left; secondary glass button(s) and the one primary button on the right.
+- **Tablet (768–1279):** sidebar collapses to a 72px icon rail (labels in tooltips).
+- **Mobile (< 768):** no sidebar; the panel fills the viewport with an 8px inset; a glass bottom bar holds Overview, Findings, Customers, Alerts and a "More" sheet.
+- Routes are listed in 02 §3.1.
 
 ## 6. Components
 
-All primitives live in `src/components/ui/` and are the **only** place raw styles for these elements are defined.
+All primitives live in `src/components/ui/` and are the **only** place raw styles for these elements are defined. Names match the v1 list where the job is the same.
 
-| Component | Spec (from reference) |
-|-----------|----------------------|
-| `GlassCard` | `--surface-glass`, blur, 1px border, `r-card`, `shadow-glass`, padding 24. Header row: `h3` title left, optional circular arrow/“open” icon button right (36px, white). |
-| `DarkCard` | `--surface-dark`, white text, `r-card`, `shadow-dark`. Inner rows use `--ink-800` + `r-inner`. |
-| `PillNav` / `NavItem` | Container white-glass pill, height 44, padding 4. Item: padding 0 16, `body-strong`; active = ink-900 fill, white text. |
-| `Button` | Height 44, pill. **primary**: ink-900 fill, white text. **accent**: accent-400 fill, ink-900 text. **secondary**: transparent, 1px ink-900 border. **ghost**: no border, hover glass. **danger**: danger fill, white. Disabled: 40% opacity. |
-| `IconButton` | 44px circle, white-glass; sm = 36px. Always `aria-label`. |
-| `StatNumber` | Big number (`display-xl`) + small icon-label to its left/below ("Employee" with icon in reference → "Entities"). |
-| `PillMeter` | Labeled horizontal pill (height 40) filled with accent/dark/hatched grey; value shown inside ("15%"). Used in the KPI strip. Hatched pattern = unknown/pending. |
-| `ColumnBars` | Vertical rounded bars (ink-900) with a dot on the baseline; highlighted bar in accent-400 with a small floating tooltip chip above (like "5h 23m"). Weekday letters under bars. |
-| `RingGauge` | Thick circular arc in accent-400 on a faint track, tick marks around, big center value in `display-lg`; play/pause style round controls underneath (here: pause live updates, refresh). |
-| `AccordionRow` | Collapsible list rows with chevrons inside a glass card (reference "Pension contributions / Devices"). |
-| `TimelineGrid` | Day columns with hour rows; events as pills (dark = primary, white = secondary) with tiny avatar stack. Used for the Entity timeline. |
-| `LiveFeedItem` | On DarkCard: circular icon (40) + title + small time + trailing status circle (accent check when handled). Resolved items show strike-through title (as in reference "Team meeting"). |
-| `SeverityBadge` | Pill, tint bg + dark text + shape icon + label ("High"). |
-| `ConfidenceMeter` | Small ring (24–48px) + percentage; color ramp: < 0.6 grey, 0.6–0.85 accent, ≥ 0.85 ink-900. Tooltip shows breakdown (link / rule / evidence / recency). |
-| `SystemChip` | Pill with system dot + name (CRM, Billing, Support). Each system has a fixed icon; colors stay neutral (do not introduce new hues). |
-| `DiffRow` | Three-column row: field name · CRM value · Billing value · Support value; differing cells get accent-100 fill + accent-400 left border; matching cells plain. |
-| `Avatar` | Circle with initials on soft gradient (accent-300 → paper). Entities have no photos. |
-| `Input` / `Select` / `Search` | Height 44, pill, white-glass, 1px `--ink-200` border, focus ring. Search has leading magnifier icon. |
-| `Tabs` | Pill segmented control, active = ink-900 fill. |
-| `Table` | Glass-strong card; row height 56; no zebra; hover = accent-100 wash; sticky header; sortable headers with chevron. |
-| `Drawer` | Right side, 560px (full-screen on mobile), glass-strong, `r-drawer` on left corners. |
-| `Toast` | Glass-strong pill-card, bottom-right; severity icon; critical toasts persist. |
-| `Skeleton` | Glass block with 1.4 s shimmer (disabled under reduced motion). |
-| `EmptyState` | Soft icon circle + one sentence + one action button. |
-| `ErrorState` | Like `EmptyState`, with a danger-tint icon circle, the error sentence (§9 copy rules) and a "Retry" secondary button. |
-| `Switch` | Radix Switch; pill track 44×24, off = `--ink-200`, on = `--ink-900`, white thumb; label always visible. |
-| `Slider` | Radix Slider; pill track (height 8) in `--ink-200`, fill `--accent-400`, 24px `--ink-900` thumb; value shown next to it with `tabular-nums`. |
-| `Dialog` | Radix Dialog; centered, max-width 480, glass-strong, `r-card`, `shadow-pop`; used for confirmations (reset) and one-time secrets (API key). Esc closes. |
+| Component | Spec |
+|-----------|------|
+| `Scene` | Fixed background layer (`--scene` + a 3% grain overlay). Rendered once in the app shell. |
+| `Sidebar` / `NavItem` | §5. Active indicator is one shared element that moves between items. Count pill: `neutral` tint on dark (white 12% bg, `--on-dark` text). |
+| `Panel` | The work panel surface. |
+| `Card` | `--paper`, `r-card`, `shadow-card`, padding 20. Header row: `h3` (or `small` label for KPIs) left, optional chip/action right. Interactive cards lift to `shadow-raised` on hover (pointer devices only). |
+| `KpiCard` | Label (`small`, `--ink-500`) + optional `Pill` top-right; `kpi` number (count-up on first load, §8); context line (`small`); optional `ProgressBar`. |
+| `Button` | Height 40 (sm 32), `r-control`, `body-strong`, icon 16 left. **primary**: `--ink-950` fill, `--on-dark` text, `shadow-button`. **secondary**: `--glass-control` (on panel) or `--paper` with `--ink-200` border (on cards), `--ink-900` text. **ghost**: no fill, hover `--ink-100`. **danger**: `--rose-fg` text on `--rose-bg`. **destructive** (confirm button inside a `Dialog` only): `--rose-fg` fill, white text. Disabled 45% opacity. |
+| `IconButton` | 40px circle, `--glass-control`; sm 32. Always `aria-label`; tooltip with the same text. |
+| `Pill` | Height 24, padding 0 10, `r-pill`, `caption`, a tint pair from §2.2; optional leading 6px dot or 12px icon. |
+| `SeverityBadge` | `Pill` + shape icon (critical ▲ rose, high ◆ peach, medium ● amber, low ○ neutral) + label. |
+| `RiskBadge` | `Pill` with gauge icon + level ("Warning") **and** the confidence as a second segment ("· 100%"); levels: low moss, watch indigo, warning peach, critical rose. Never shown without confidence (§7.8). |
+| `StatusPill` | Finding status: open neutral-dark, acknowledged sky, resolved moss, false positive neutral, auto-resolved moss outline. Changes crossfade (§8). |
+| `ConfidenceMeter` | 20px ring + percentage `tabular-nums`; ring stroke `--ink-950` on `--ink-200` track. Tooltip shows breakdown (link / rule / evidence / recency). |
+| `ProgressBar` | Height 8, `r-pill`, track `--ink-200`, fill `--moss-500`; value text outside the bar. Grows in on first view (§8). |
+| `SystemChip` | `Pill` neutral with system icon + name (CRM, Billing, Support). |
+| `DataTable` | Inside a `Card` (padding 0, header padding 20). Header `caption` `--ink-500`, height 40; rows height 56, divider `--ink-100`, hover `--ink-100` wash; primary cell `body-strong`, secondary line `small` `--ink-500`; ids in `caption` `tabular-nums`; sortable headers with chevron; sticky header when scrolling. No zebra. |
+| `ActionList` | `Card` of stacked rows (title `h3`, sub-line `small`, trailing chevron 16), divider between rows, row hover `--ink-100`, chevron nudges 2px right on hover. ("Quick actions" in the reference.) |
+| `LiveFeed` | `Card` with a pulsing moss "live" dot in the header; items: icon circle 32 (tint by severity) + title + time; new items enter per §8. |
+| `DiffRow` | field · CRM · Billing · Support; differing cells use the `peach` tint with a 2px peach-text left border; matching cells plain. |
+| `TrailView` | Three stacked groups (§7.8): Facts (system chip, record id, recorded time), Inferences (each lists the fact ids it uses as small linked chips), Conclusion (severity/risk + confidence). Hovering a fact highlights the inferences that use it. |
+| `Avatar` | Circle, initials, `--ink-100` bg + `--ink-700` text (entities) or soft moss gradient (current user). |
+| `Search` / `Input` / `Select` | Height 40, `r-control`; on the panel `--glass-control`, on cards `--paper` + `--ink-200` border; focus ring §6.1. |
+| `Tabs` | Segmented control on `--ink-100`, active segment `--paper` + `shadow-card`, sliding indicator (§8). |
+| `Drawer` | Right side, 560px (full screen on mobile), `--paper`, `r-card` on the left corners, `shadow-raised`; scrim `rgba(18,20,18,0.28)`. |
+| `Dialog` | Centered, max 480, `--paper`, `r-card`; confirmations and one-time secrets. Esc closes. |
+| `Toast` | `--glass-dark` card, `--on-dark` text, bottom-right; severity icon; critical toasts persist; swipe/× to dismiss. |
+| `Tooltip` | `--ink-950` bg, `--on-dark` `caption`, radius 8, 400 ms delay on first hover, instant for subsequent ones (§8). |
+| `Skeleton` | `--ink-100` block with a soft shimmer (off under reduced motion). |
+| `EmptyState` / `ErrorState` | Icon circle (neutral / rose tint) + one sentence + one action. |
+| `Switch` / `Slider` | Radix. Switch track 40×24, off `--ink-200`, on `--ink-950`. Slider track `--ink-200`, fill `--moss-500`, thumb 20px `--paper` with `shadow-card`. |
+| `Chart` | Recharts styled with tokens: lines/bars `--ink-950` and `--moss-500`, gridlines `--ink-100`, tooltip = `Tooltip` style, axis labels `caption` `--ink-500`. |
 
-### Interaction states
-- Hover: surfaces +4% white; buttons darken one step. Pressed: scale 0.98.
-- Focus-visible: `outline: 2px solid var(--ink-900); outline-offset: 2px` (on dark surfaces: `--accent-400`).
-- Selected row/card: accent-400 left border 3px (cards) or accent-100 fill (rows).
+### 6.1 Interaction states
+- Hover (pointer devices only, `@media (hover: hover) and (pointer: fine)`): paper rows/cards wash `--ink-100` or lift; glass controls +12% white; primary button lightens to `--ink-700`.
+- Pressed: `scale(0.97)` on buttons, icon buttons, nav items and action rows.
+- Focus-visible: `outline: 2px solid var(--ink-950); outline-offset: 2px` on light surfaces; `--on-dark` on the sidebar.
+- Selected table row: `--ink-100` fill + 2px `--ink-950` left inset.
 
 ## 7. Page layouts
 
-### 7.1 Dashboard (maps the reference 1:1)
-
-Reference element → RealitySync element:
+### 7.1 Overview (dashboard) — reference mapping
 
 | Reference | RealitySync |
 |-----------|-------------|
-| "Welcome in, Nixtio" | "Welcome back, {first name}" + one-line status ("3 new findings since you left") |
-| KPI pills (Interviews 15%, Hired 15%, Project time 60%, Output 10%) | **PillMeters:** Consistency score, High & critical share, Explained by AI, Links needing review |
-| Big numbers 78 / 56 / 203 | **Entities**, **Systems** (3), **Open findings** |
-| Portrait card (Lora Piterson, salary chip) | **Spotlight entity** — highest-priority inconsistent entity: gradient avatar, name, role chip "3 systems", priority chip |
-| "Progress" bars by weekday | **Findings this week** — bars per day (created), today in accent with tooltip "12 new" |
-| "Time tracker" ring | **Ingest ring** — live events/sec with pause-live toggle; ring arc = pending queue depth |
-| "Onboarding" 18% + segmented pills | **Resolution progress** — resolved vs open vs false-positive segmented pills |
-| Accordion (Pension, Devices, Compensation…) | **System health accordion** — CRM, Billing, Support rows expand to per-system issue counts |
-| Calendar (Weekly Team Sync…) | **Recent activity timeline** — latest conflicting events across systems |
-| Dark "Onboarding Task 2/8" | **Live feed** (DarkCard) — streaming alerts, "handled 2/8" counter |
+| "Overview / Evening Service — date" | "Overview" / "Live consistency — {date}" (+ "{n} new findings since you left" when > 0) |
+| Export Report · New Order | "Export report" (secondary, findings CSV, analyst+) · **"New investigation"** (primary, analyst+) |
+| Total Revenue $14,280.50, +12.4% chip, "vs. yesterday" | **Open findings** 62 · chip "+8 today" (indigo) · "14 high or critical" |
+| Orders Completed 142, "84% Capacity" chip | **Consistency score** 91.4% · chip "▲ 1.2 pts" · `ProgressBar` |
+| Table Occupancy 22/28, "Peak Hour" chip, progress bar | **Customers at risk** 7 · chip "3 critical" (rose) · "avg. confidence 92%" |
+| — | **Explained by AI** 96% · chip "Gemini" or "Templates" · "38 of 40 active findings" |
+| Live Orders table (Table · Details · Id · Time · Status) + Filter | **Live findings** `DataTable`: Severity · Finding (title + rule/customer sub-line) · Systems · Confidence · Detected · Status; Filter button (severity/status/system); row → finding drawer |
+| Quick Actions (New Order, Table Map, Manage Menu, Order History) | **Quick actions** `ActionList`: Start an investigation · Open the Time Machine · Review links ({n} waiting) · Run a simulation (admin) |
+| — | Below: **Findings this week** (`Chart`, created vs resolved) · **System health** (CRM/Billing/Support rows with open issues and feed freshness) · **Live feed** |
 
-```
-┌────────────────────────────────────────────────────────────────────────────────┐
-│ (RealitySync)  [ Dashboard | Entities | Findings | Alerts | Rules | … ]  ⚙ 🔔 👤│
-│ Welcome back, Pranav                                  ▣ 500   ▣ 3    ▣ 62       │
-│ [Consistency 91%][High+crit 27%][Explained 96%][Review 9]  Entities Systems Open│
-│ ┌ Spotlight ─┐ ┌ Findings this week ┐ ┌ Ingest ring ─┐ ┌ Resolution 41% ─────┐ │
-│ │  avatar    │ │ ▮ ▮ ▮ ▮ ▮ ▮ ▮      │ │   ◔ 12/s     │ │ ▭▭▭▭ ▭▭ ▭           │ │
-│ └────────────┘ └────────────────────┘ └──────────────┘ │ ┏ Live feed 2/8 ━━┓ │ │
-│ ┌ System health ▾ ┐ ┌ Recent activity timeline ────────┐ │ ┃ ● R004 …      ✓ ┃ │ │
-│ │ CRM / Billing … │ │  Mon Tue Wed Thu Fri             │ │ ┃ ● R008 …      ○ ┃ │ │
-│ └─────────────────┘ └──────────────────────────────────┘ └─┗━━━━━━━━━━━━━━━━━┛─┘ │
-└────────────────────────────────────────────────────────────────────────────────┘
-```
+KPI grid: 4 columns ≥ xl, 2 columns md–lg, 1 column mobile. Live findings spans 8 of 12 columns ≥ lg; Quick actions + Live feed 4.
 
 ### 7.2 Findings
-Toolbar: search pill, filter pills (status, severity, system, rule, min confidence), sort select, bulk-action button, "Export CSV" secondary button (analyst+; uses the current filters). Table columns: severity badge · title · entity · systems chips · confidence meter · status · detected (relative) · SLA flag. Row click → **Drawer** (finding detail):
-1. Header: title, severity badge, status pill, confidence meter.
-2. **Evidence** panel (`DiffRow`s + timestamps).
-3. **AI explanation** card (summary, likely cause, suggested actions) with badge "AI-generated" (info tint) or "Template" and a "Regenerate" ghost button.
-4. History timeline.
-5. Action bar (sticky bottom): Acknowledge (secondary) · Resolve (primary) · Mark as false positive (ghost, requires note).
+Page header "Findings" + "Export CSV" (secondary). Toolbar: search, filter pills (status, severity, system, rule, min confidence), sort select, bulk-action button. `DataTable` columns: severity · title · customer · systems · confidence · status · detected (relative) · SLA flag. Row click → **Drawer**: header (title, severity, status, confidence) → Evidence (`DiffRow`s + timestamps) → **Trail** (`TrailView`) → AI explanation (badge "AI-generated" indigo or "Template" neutral, cited facts highlighted, "Regenerate" ghost) → History → sticky action bar: Acknowledge (secondary) · Resolve (primary) · Mark as false positive (ghost, note required).
 
-### 7.3 Entity detail
-Left: glass card with avatar, canonical name/email, health chip, open-findings count. Center: three **system columns** (CRM / Billing / Support) as stacked glass cards listing normalized fields, differing values highlighted; children (subscriptions, invoices, tickets) under each system. Right: findings list + `TimelineGrid`. Link cards show match confidence with expandable feature breakdown.
+### 7.3 Customer (entity) detail
+Header: avatar, canonical name/email, health pill, `RiskBadge`, "Open Time Machine" (secondary) and "Investigate" (primary, analyst+). Row of three system cards (CRM / Billing / Support) listing normalized fields, differing values tinted; children under each. Right column: open findings, expectations (pending / cannot assess, §7.8), timeline. Link rows show match confidence with an expandable feature breakdown.
 
 ### 7.4 Link review
-Queue list on the left (score descending); right side shows two records side by side with matching/different fields; buttons: "Same customer" (primary) / "Not the same" (secondary). Keyboard: `Y` confirm, `N` reject, `J/K` navigate.
+Queue on the left (score descending); two records side by side on the right with matching/different fields; "Same customer" (primary) / "Not the same" (secondary). Keyboard: `Y` confirm, `N` reject, `J/K` navigate — **no animation** on keyboard navigation (§8).
 
 ### 7.5 Alerts
-Full-page list grouped by day; unread have accent dot; filters by type/severity; "Mark all as read".
+List grouped by day inside a `Card`; unread rows have a moss dot; filters by type/severity; "Mark all as read".
 
-### 7.6 Rules / Systems / Simulation / Evaluation / Users (admin)
-- Rules: table with enable switch, severity select, config drawer (form generated from rule config schema).
-- Systems: card per system with reliability slider (pill track) and field-authority editor; below the cards, a "Failed events" table (from `GET /ingest/events?status=failed`) with a "Retry" button per row.
-- Simulation: form card (seed, customers, anomaly rate, speed, anomaly types) + run status ring + **Simulate drift** accent button.
-- Evaluation: big numerals for precision/recall/F1 (`display-xl`), matching precision/recall as smaller `display-lg` numbers, per-type bars, misses/false-positive list.
+### 7.6 Rules / Systems / Simulation / Evaluation (admin)
+- Rules: `DataTable` with Switch, severity Select, config drawer generated from `config_schema`.
+- Systems: one card per system (reliability Slider, field-authority editor, feed watermark "last data recorded {relative}") + "Failed events" table with Retry.
+- Simulation: form card (seed, customers, anomaly rate, speed, anomaly types, history days, scenario rate, feed outage) + run progress card + "Simulate drift" (secondary).
+- Evaluation: KPI cards for precision / recall / F1, matching and investigation metrics (03 §M9), per-type bars, misses and false positives.
 
 ### 7.7 Settings
-`Tabs`: **Profile** (name, email, role, change password form) · **Users** (admin: table + create/deactivate) · **API keys** (admin: list, create — secret shown once in a copyable field with a warning, revoke) · **Audit log** (admin: filterable table). Reached from the Settings pill and the avatar menu.
+`Tabs`: Profile (incl. change password) · Users (admin) · API keys (admin; secret shown once in a `Dialog`) · Audit log (admin).
 
-### 7.8 Time Machine, risk and investigations — content contract only
-**Visual design is pending:** the product owner will provide frontend changes before any UI work (T-059 is blocked until then). This section fixes only **what must be shown and how it is worded**; layout, components and tokens for these screens will be added later.
-- **Risk is never shown without confidence.** Wherever a risk level or score appears, the risk confidence appears next to it ("Risk: Warning · confidence 100%"). Never merge them into one number or one color.
-- Risk level labels: "Low", "Watch", "Warning", "Critical". Finding severity keeps its own labels; do not reuse severity colors for risk without a design decision.
+### 7.8 Time Machine, risk and investigations
+Content rules (binding):
+- **Risk is never shown without confidence** (`RiskBadge`). Never merge them into one number or one color.
+- Risk level labels: "Low", "Watch", "Warning", "Critical" (tints in §6 `RiskBadge`).
 - **Missing evidence wording** (FR-MEV-004): "Payment unconfirmed", "No response recorded", "Cannot assess — no Billing data recorded since {date}". Never "not paid", "ignored", "never responded".
-- Expectation outcomes: `pending` → "Waiting until {deadline}"; `cannot_assess` → "Cannot assess"; both shown in a separate group from findings.
-- **Trail:** facts, inferences and conclusion are visibly separate groups labelled "Facts (from source systems)", "What RealitySync inferred" and "Conclusion". Every fact shows its system, record id and recorded time. AI explanations highlight their cited facts.
-- **As-of view:** a persistent banner "Viewing as of {date time UTC} — data recorded by then, today's rules"; records not linkable yet are listed as "Not yet linkable at this time".
-- **Investigation result:** the caveat text from the API is always shown on screen and in exports, unedited and not collapsible. Outcome copy: `crossed` → "RealitySync could have flagged this {lead time} before the incident"; `never_crossed` → "With the data recorded before the incident, RealitySync would not have flagged this".
+- Expectation outcomes: `pending` → "Waiting until {deadline}" (amber); `cannot_assess` → "Cannot assess" (neutral); shown in a separate group from findings.
+- **Trail:** groups labelled "Facts (from source systems)", "What RealitySync inferred" and "Conclusion"; every fact shows system, record id and recorded time; AI explanations highlight their cited facts.
+- **Investigation result:** the API caveat is always shown on screen and in exports, unedited and not collapsible. Outcome copy: `crossed` → "RealitySync could have flagged this {lead time} before the incident"; `never_crossed` → "With the data recorded before the incident, RealitySync would not have flagged this".
+
+Layouts:
+- **Time Machine (customer as of T)** = the customer detail page in "as-of mode": a persistent dark glass banner at the top of the panel "Viewing as of {date time UTC} — data recorded by then, today's rules" with a date-time scrubber (slider over the customer's version times, snapping to them) and "Back to now". Records not linkable yet appear in a muted "Not yet linkable at this time" group. Values that differ from today show a small "changed since" sky pill.
+- **Investigations list:** `DataTable` (customer · incident · outcome pill · lead time · status · started).
+- **Investigation result:** header with outcome sentence (above) as the page subtitle; caveat card directly under the header (amber tint border, not dismissible); **replay chart** (risk score over checkpoints, threshold line at the warning level, crossing point marked with a dot and a label "{date} · {lead time} before"); below, "At the crossing": `RiskBadge`, signal breakdown (four rows with value bars) and the `TrailView`; checkpoint list on demand.
 
 ## 8. Motion
-- Duration 160–240 ms, easing `cubic-bezier(0.2, 0.8, 0.2, 1)`.
-- **One orchestrated moment:** on first dashboard load, KPI numbers count up (600 ms) and cards fade in with 40 ms stagger. Nothing else animates on load.
-- Motion that answers an action: drawer slide (240 ms), accordion expand, toast enter.
-- Live data: new feed item slides in from top (240 ms) with a yellow background flash (1.2 s fade). If the user has scrolled, do not move content; show a "N new" pill instead.
-- `prefers-reduced-motion: reduce` → disable all non-essential motion (counts show final value).
+
+Principles (from the design-engineering review, D-048): every animation has a purpose (feedback, spatial consistency, state change, preventing a jarring change); UI motion is fast and starts fast; frequent or keyboard-driven actions do not animate; only `transform`, `opacity` (and `filter` for short blur crossfades) are animated.
+
+**Tokens** (`tokens.css`)
+| Token | Value | Use |
+|-------|-------|-----|
+| `--ease-out` | `cubic-bezier(0.23, 1, 0.32, 1)` | Enters, presses, popovers (default) |
+| `--ease-in-out` | `cubic-bezier(0.77, 0, 0.175, 1)` | Elements moving on screen (nav indicator, tab indicator) |
+| `--ease-drawer` | `cubic-bezier(0.32, 0.72, 0, 1)` | Drawer, sheets |
+| `--dur-press` | 140ms | Press feedback |
+| `--dur-fast` | 180ms | Hover colour, tooltips, popovers, dropdowns |
+| `--dur-base` | 240ms | Indicators, crossfades, list item enter |
+| `--dur-slow` | 320ms | Drawer/sheet enter (exit 200ms) |
+
+Never use `ease-in` for UI. Never animate from `scale(0)` (start at `scale(0.96)` + opacity 0). Never `transition: all`.
+
+**Catalogue** (the only animations allowed; anything new needs a line here)
+| Where | What | How |
+|-------|------|-----|
+| Buttons, icon buttons, nav items, action rows | Press feedback | `scale(0.97)`, `--dur-press`, `--ease-out` |
+| Sidebar active indicator, `Tabs` | Spatial consistency between items | One shared element slides to the new item, `--dur-base`, `--ease-in-out` (spring `duration 0.3, bounce 0` with Motion) |
+| Popovers, dropdowns, Select | Enter/exit from the trigger | `scale(0.96)→1` + opacity, `transform-origin` = trigger side, `--dur-fast`; exit 120ms |
+| Tooltip | Enter | 400ms delay on first hover, then instant for neighbours; 125ms opacity + `scale(0.97)` |
+| Drawer | Enter from the right | `translateX(100%)→0`, `--dur-slow`, `--ease-drawer`; exit 200ms `--ease-out`; scrim opacity |
+| Dialog | Enter | `scale(0.96)→1` + opacity, 200ms, centered origin |
+| Toast | Enter/exit bottom-right | CSS transition (interruptible) `translateY(100%)→0` + opacity, 360ms `ease`; swipe to dismiss with velocity check (> 0.11 px/ms) |
+| First load of Overview (once per session) | Orchestration | Header, KPI cards, then cards fade + `translateY(8px)` with 40ms stagger, 300ms `--ease-out`; KPI numbers count up 700ms `--ease-out`; progress bars grow `scaleX` from the left 700ms. Never blocks interaction. |
+| Live findings table / live feed | New item arrives | Row enters (opacity + `translateY(-6px)`, `--dur-base`) and its background fades from `--moss` tint to transparent over 1.2s. If the user has scrolled down, rows are not inserted above the viewport; a "{n} new" pill appears instead. |
+| `StatusPill`, KPI value change | State change | Crossfade 200ms with `filter: blur(2px)` at the midpoint |
+| Live dot | "Connected" | Soft pulse (opacity + ring `scale` 1→1.8) every 2s; stops when disconnected |
+| Investigation replay chart | Explanation (rare) | Line draws left→right 900ms `--ease-in-out` on first render, then the crossing dot appears with a 200ms pop |
+| Time Machine scrubber | Direct manipulation | Values update instantly while dragging (no animation); changed values flash the sky tint 600ms after release |
+
+Not animated: page navigation (instant), keyboard navigation (`J/K`, `Y/N`, ⌘K open/close), table sorting/filtering (content swaps instantly; a 2px top progress line shows loading), hover on dense table rows (colour only, no movement).
+
+**Reduced motion** (`prefers-reduced-motion: reduce`): no movement — counts show final values, indicators jump, drawers/toasts fade only (150ms), shimmer and pulse off. Opacity crossfades stay.
+
+**Implementation:** CSS transitions first (interruptible, off the main thread). The `motion` library (D-047) is used only for shared-layout indicators, presence (exit) animations, the count-up and gesture/drag (toast swipe, scrubber); with Motion, animate `transform` strings for hardware acceleration where it matters.
 
 ## 9. Writing style (microcopy)
-- Sentence case, plain verbs, active voice. Buttons name the result: "Resolve finding", "Confirm match", "Start simulation".
+- Sentence case, plain verbs, active voice. Buttons name the result: "Resolve finding", "Confirm match", "Start investigation".
 - Keep action names consistent: button "Resolve" → toast "Finding resolved".
 - Errors say what happened and how to fix it; no apologies: "Couldn't load findings. Check your connection and retry."
 - Empty states invite action: "No findings yet. Start a simulation to generate data."
-- Use user language: "Customer", "mismatch", "match confidence" — not "entity resolution" or "idempotency".
+- Use user language: "Customer", "mismatch", "match confidence" — not "entity resolution" or "idempotency". The UI says **Customers** for entities.
 - AI text is always labeled and never the only explanation; evidence is adjacent.
 
 ## 10. Accessibility checklist (per component/page)
-- [ ] Keyboard reachable in logical order; no keyboard traps; Esc closes drawers/modals.
-- [ ] Visible focus on every interactive element.
-- [ ] `aria-label` on icon buttons; `aria-live="polite"` region for the live feed (critical = `assertive`).
+- [ ] Keyboard reachable in logical order; no keyboard traps; Esc closes drawers/dialogs/popovers.
+- [ ] Visible focus on every interactive element (incl. on the dark sidebar).
+- [ ] `aria-label` on icon buttons; `aria-live="polite"` for the live feed and live table (critical = `assertive`).
 - [ ] Tables use semantic `<table>` with scope headers.
-- [ ] Color contrast verified; severity has shape + text.
-- [ ] Touch targets ≥ 44 px.
-- [ ] Reduced motion respected.
+- [ ] Contrast verified on glass over the brightest point of the scene; severity/risk have shape + text.
+- [ ] Touch targets ≥ 44px on touch devices (controls grow from 40 to 44 under `pointer: coarse`).
+- [ ] Reduced motion and reduced transparency respected.
 
 ## 11. Implementation snippets
 
-`src/styles/tokens.css`
+`src/styles/tokens.css` (excerpt — the full file is the source of truth once T-005 lands)
 ```css
 :root {
-  --ink-900:#1C1C1E; --ink-800:#2B2B2E; --ink-600:#5C5C61; --ink-400:#9A9AA0; --ink-200:#D9D9DD;
-  --paper-0:#FFFFFF;
-  --accent-100:#FFF6D6; --accent-300:#FBE38A; --accent-400:#F8D347; --accent-500:#F2C12E;
-  --sev-critical:#D9453D; --sev-high:#E8832A; --sev-medium:#F2C12E; --sev-low:#8E9096;
-  --success:#3FAE7A; --info:#4A7BD0; --danger:#D9453D;
-  --bg-page:linear-gradient(135deg,#E9EAEC 0%,#F1EFE7 45%,#F8E9A6 100%);
-  --surface-glass:rgba(255,255,255,.55); --surface-glass-strong:rgba(255,255,255,.78);
-  --surface-border:rgba(255,255,255,.65);
-  --r-card:28px; --r-inner:20px;
-  --shadow-glass:0 8px 32px rgba(28,28,30,.06), inset 0 1px 0 rgba(255,255,255,.7);
-  --shadow-dark:0 16px 40px rgba(28,28,30,.22);
-  --shadow-pop:0 12px 40px rgba(28,28,30,.16);
-  --sev-critical-tint:#FBE3E1; --sev-high-tint:#FCE9D6; --sev-medium-tint:#FFF3CC; --sev-low-tint:#ECECEE;
-  --success-tint:#DDF3E8; --info-tint:#E3ECFA;
+  --ink-950:#121412; --ink-900:#1C1F1C; --ink-700:#3A3E3A; --ink-500:#6A6F69; --ink-400:#9A9F98;
+  --ink-200:#E3E6E1; --ink-100:#F1F3EF; --paper:#FFFFFF; --on-dark:#F4F6F3; --on-dark-muted:rgba(244,246,243,.62);
+  --moss-500:#8DB33A; --moss-600:#73952A;
+  --peach-bg:#FCE6D6; --peach-fg:#A8521E; --rose-bg:#FBE1DE; --rose-fg:#B3352B; --amber-bg:#FAEFCB; --amber-fg:#8A6100;
+  --indigo-bg:#E9E8FD; --indigo-fg:#4B45C2; --sky-bg:#E1ECFD; --sky-fg:#2E62C4; --moss-bg:#E4EFD3; --moss-fg:#4C6A16;
+  --neutral-bg:#F1F3EF; --neutral-fg:#5A5F59;
+  --scene:
+    radial-gradient(60% 50% at 18% 22%, #9AA58F 0%, transparent 70%),
+    radial-gradient(45% 40% at 78% 18%, #C9C4B6 0%, transparent 70%),
+    radial-gradient(55% 55% at 70% 80%, #5E6A5A 0%, transparent 70%),
+    radial-gradient(50% 45% at 20% 85%, #3E463D 0%, transparent 70%),
+    linear-gradient(160deg, #7F8A78 0%, #A9AA9C 45%, #4A5348 100%);
+  --r-panel:28px; --r-card:18px; --r-control:12px;
+  --shadow-card:0 1px 2px rgba(18,20,18,.04),0 8px 24px rgba(18,20,18,.06);
+  --shadow-raised:0 2px 4px rgba(18,20,18,.06),0 16px 40px rgba(18,20,18,.12);
+  --shadow-panel:0 24px 80px rgba(10,12,10,.25);
+  --ease-out:cubic-bezier(.23,1,.32,1); --ease-in-out:cubic-bezier(.77,0,.175,1); --ease-drawer:cubic-bezier(.32,.72,0,1);
+  --dur-press:140ms; --dur-fast:180ms; --dur-base:240ms; --dur-slow:320ms;
 }
-body { background: var(--bg-page); background-attachment: fixed; color: var(--ink-900);
-       font-family: "Inter Variable", ui-sans-serif, system-ui, sans-serif; }
-.glass { background: var(--surface-glass); border: 1px solid var(--surface-border);
-         border-radius: var(--r-card); box-shadow: var(--shadow-glass);
-         -webkit-backdrop-filter: blur(24px) saturate(140%); backdrop-filter: blur(24px) saturate(140%); }
-@supports not (backdrop-filter: blur(1px)) { .glass { background: rgba(255,255,255,.88); } }
-```
-
-`tailwind.config.ts` (excerpt)
-```ts
-export default {
-  theme: {
-    extend: {
-      colors: {
-        ink: { 900:'var(--ink-900)', 800:'var(--ink-800)', 600:'var(--ink-600)', 400:'var(--ink-400)', 200:'var(--ink-200)' },
-        accent: { 100:'var(--accent-100)', 300:'var(--accent-300)', 400:'var(--accent-400)', 500:'var(--accent-500)' },
-        sev: { critical:'var(--sev-critical)', high:'var(--sev-high)', medium:'var(--sev-medium)', low:'var(--sev-low)' },
-        paper: { 0:'var(--paper-0)' },
-        success:'var(--success)', info:'var(--info)', danger:'var(--danger)',
-        surface: { glass:'var(--surface-glass)', strong:'var(--surface-glass-strong)', border:'var(--surface-border)', dark:'var(--ink-900)' },
-      },
-      borderRadius: { card:'var(--r-card)', inner:'var(--r-inner)', drawer:'var(--r-card)' },
-      boxShadow: { glass:'var(--shadow-glass)', dark:'var(--shadow-dark)', pop:'var(--shadow-pop)' },
-      fontSize: {
-        'display-xl':['64px',{lineHeight:'64px',letterSpacing:'-0.03em',fontWeight:'300'}],
-        'display-lg':['48px',{lineHeight:'52px',letterSpacing:'-0.025em',fontWeight:'300'}],
-        h1:['40px',{lineHeight:'44px',letterSpacing:'-0.02em',fontWeight:'300'}],
-      },
-    },
-  },
-};
+.glass-dark  { background:rgba(22,25,22,.46); border:1px solid rgba(255,255,255,.10);
+               -webkit-backdrop-filter:blur(28px) saturate(140%); backdrop-filter:blur(28px) saturate(140%); }
+.glass-panel { background:rgba(242,244,240,.74); border:1px solid rgba(255,255,255,.55);
+               -webkit-backdrop-filter:blur(32px) saturate(150%); backdrop-filter:blur(32px) saturate(150%); }
+@supports not (backdrop-filter: blur(1px)) { .glass-dark{background:#232723} .glass-panel{background:#EEF0EC} }
+@media (prefers-reduced-transparency: reduce) { .glass-dark{background:#232723} .glass-panel{background:#EEF0EC} }
 ```
 
 ## 12. Design rules for agents (do / don't)
 **Do**
 - Compose pages from `components/ui` primitives and tokens only.
-- Keep one accent (yellow) and one dark surface per page.
-- Show loading, empty, and error states for every data view.
-- Use `lucide-react` line icons, 20px default, stroke 1.75.
+- Keep one primary (dark) button per page header; put data on paper cards, never directly on glass.
+- Show loading, empty and error states for every data view.
+- Use `lucide-react` line icons, 20px in navigation, 16px in buttons and rows, stroke 1.75.
+- Check every new animation against the §8 catalogue.
 
 **Don't**
-- Don't introduce new colors, gradients, shadows, or radii outside this guide.
-- Don't use ALL CAPS, letter-spaced labels, or decorative numbering.
-- Don't use stock photos; use initials avatars.
-- Don't put white text on yellow, or yellow text on light surfaces.
-- Don't add a dark mode in the MVP (dark cards are a component, not a theme).
-- Don't animate on load beyond the single dashboard sequence.
+- Don't introduce colors, tints, gradients, shadows or radii outside this guide.
+- Don't use ALL CAPS, letter-spaced labels or decorative numbering.
+- Don't use stock photos; avatars are initials.
+- Don't use the moss accent for text or button fills.
+- Don't add a dark mode in the MVP (the sidebar is a component, not a theme).
+- Don't animate page navigation, keyboard actions, sorting or filtering.

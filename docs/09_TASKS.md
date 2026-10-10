@@ -18,15 +18,15 @@ The implementation plan, split into discrete tasks that individual agents can cl
 | Wave | Tasks |
 |------|-------|
 | 0 | T-001 |
-| 1 | T-002, T-004 |
-| 2 | T-003, T-005, T-010 |
-| 3 | T-006, T-016, T-043, T-051 |
+| 1 | T-002 |
+| 2 | T-003, T-010 |
+| 3 | T-006, T-016, T-051 |
 | 4 | T-007, T-052 |
-| 5 | T-008, T-009, T-013, T-026, T-029 |
-| 6 | T-011, T-014, T-032, T-044 |
-| 7 | T-012, T-057 |
-| 8 | T-015, T-017, T-019, T-047 |
-| 9 | T-018, T-020, T-021, T-022, T-023, T-024 |
+| 5 | T-009, T-013, T-026, T-029, T-060 |
+| 6 | T-004, T-011, T-014, T-044 |
+| 7 | T-005, T-012, T-057 |
+| 8 | T-008, T-015, T-017, T-019, T-043, T-047 |
+| 9 | T-018, T-020, T-021, T-022, T-023, T-024, T-032 |
 | 10 | T-027, T-038, T-045, T-046, T-053 |
 | 11 | T-025, T-031, T-033, T-034, T-035, T-049, T-054, T-055 |
 | 12 | T-028, T-030, T-039, T-050, T-056 |
@@ -41,11 +41,11 @@ The implementation plan, split into discrete tasks that individual agents can cl
 | T-001 | Repo scaffolding & tooling | E0 | P0 | L | — | 0 | done |
 | T-002 | Backend skeleton | E0 | P0 | M | T-001 | 1 | done |
 | T-003 | Database foundation | E0 | P0 | M | T-002 | 2 | done |
-| T-004 | Frontend skeleton | E0 | P0 | M | T-001 | 1 | todo |
-| T-005 | Design system — core primitives | E0 | P0 | L | T-004 | 2 | todo |
+| T-004 | Frontend skeleton | E0 | P0 | M | T-001, T-060 | 6 | todo |
+| T-005 | Design system — core primitives | E0 | P0 | L | T-004 | 7 | todo |
 | T-006 | Auth data model | E1 | P0 | S | T-003 | 3 | todo |
 | T-007 | Auth & users backend | E1 | P0 | L | T-006 | 4 | todo |
-| T-008 | Frontend auth | E1 | P0 | M | T-005, T-007 | 5 | todo |
+| T-008 | Frontend auth | E1 | P0 | M | T-005, T-007 | 8 | todo |
 | T-009 | Core schema migration & models | E2 | P0 | L | T-003, T-006, T-052 | 5 | todo |
 | T-010 | Normalization library | E2 | P0 | M | T-002 | 2 | todo |
 | T-011 | Ingest API & API keys | E2 | P0 | L | T-007, T-009, T-010 | 6 | todo |
@@ -69,7 +69,7 @@ The implementation plan, split into discrete tasks that individual agents can cl
 | T-029 | Gemini client wrapper | E7 | P0 | L | T-002, T-052 | 5 | todo |
 | T-030 | Explanation service & endpoint | E7 | P0 | M | T-025, T-027, T-029 | 12 | todo |
 | T-031 | Dashboard page | E8 | P0 | L | T-008, T-032, T-043, T-046 | 11 | todo |
-| T-032 | WebSocket client, live feed, toasts | E8 | P0 | L | T-008, T-026, T-043 | 6 | todo |
+| T-032 | WebSocket client, live feed, toasts | E8 | P0 | L | T-008, T-026, T-043 | 9 | todo |
 | T-033 | Findings list & drawer | E8 | P0 | L | T-027, T-032, T-043 | 11 | todo |
 | T-034 | Entities list & detail | E8 | P1 | L | T-008, T-027, T-043 | 11 | todo |
 | T-035 | Alerts page & bell | E8 | P1 | M | T-027, T-032 | 11 | todo |
@@ -80,7 +80,7 @@ The implementation plan, split into discrete tasks that individual agents can cl
 | T-040 | End-to-end tests | E9 | P1 | M | T-031, T-033, T-036 | 14 | todo |
 | T-041 | Demo seed, README, performance check | E9 | P1 | M | T-030, T-036, T-039 | 14 | todo |
 | T-042 | Hardening & security review | E9 | P1 | M | T-011, T-015, T-018, T-027, T-028, T-030, T-039, T-046, T-056 | 13 | todo |
-| T-043 | Design system — data-viz & composite components | E0 | P0 | M | T-005 | 3 | todo |
+| T-043 | Design system — data-viz & composite components | E0 | P0 | M | T-005 | 8 | todo |
 | T-044 | Ingest worker loop | E2 | P0 | M | T-009 | 6 | todo |
 | T-045 | Alert service & policy | E5 | P0 | M | T-024 | 10 | todo |
 | T-046 | Dashboard endpoints | E6 | P0 | M | T-017, T-024, T-026 | 10 | todo |
@@ -90,13 +90,14 @@ The implementation plan, split into discrete tasks that individual agents can cl
 | T-050 | PgNotify EventBus & separate worker mode | E6 | P2 | M | T-025 | 12 | todo |
 | T-051 | Foundation repair (backend, infra, CI) | E0 | P0 | M | T-001, T-002, T-003 | 3 | review |
 | T-052 | Contract update: investigation features | E10 | P0 | L | T-051 | 4 | review |
+| T-060 | Frontend visual direction v2 (contract) | E0 | P0 | S | T-052 | 5 | in_progress |
 | T-053 | As-of snapshot service (Time Machine) | E10 | P0 | L | T-017, T-019, T-024, T-052 | 10 | todo |
 | T-054 | Missing-evidence rules R016–R018 & expectations | E10 | P1 | M | T-012, T-019, T-024, T-027, T-052 | 11 | todo |
 | T-055 | Risk signals module (M12) | E10 | P0 | L | T-024, T-045, T-052, T-053 | 11 | todo |
 | T-056 | "Could We Have Known?" investigation engine & API | E10 | P0 | L | T-053, T-055 | 12 | todo |
 | T-057 | Simulation scenarios: churn histories & missing evidence | E10 | P1 | L | T-014, T-052 | 7 | todo |
 | T-058 | Investigation & missing-evidence evaluation | E10 | P1 | M | T-039, T-056, T-057 | 13 | todo |
-| T-059 | Time Machine & investigation UI | E10 | P0 | L | T-043, T-056 | 13 | blocked |
+| T-059 | Time Machine & investigation UI | E10 | P0 | L | T-043, T-056 | 13 | todo |
 
 ## Milestone mapping (PRD §11)
 | Milestone | Tasks |
@@ -236,8 +237,8 @@ The implementation plan, split into discrete tasks that individual agents can cl
   - **Holds the migration lock until merged.**
 
 ### T-004 — Frontend skeleton
-- Status: blocked | Priority: P0 | Size: M | Depends: T-001 | Wave: 1 | Agent: unassigned | Claimed: —
-- Blocked: **the product owner is revising the frontend (2026-10-09). Do not start any frontend task (T-004, T-005, T-043, T-008, T-031…T-038, T-049, T-059) until the product owner has shared their changes and confirmed in a session.** Record the confirmation in `08` before unblocking.
+- Status: todo | Priority: P0 | Size: M | Depends: T-001, T-060 | Wave: 6 | Agent: unassigned | Claimed: —
+- Note: Unblocked 2026-10-10 — the product owner shared the new frontend reference (`docs/assets/reference-dashboard-v2.png`) and asked to build on it (D-047). Build against `06` v2.
 - Blocks: T-005
 - Touches: `frontend/**` (excluding `components/ui/*` internals beyond what the shell needs), `docker-compose.yml` (remove the `frontend` profile), `.pre-commit-config.yaml` (eslint hook), `.github/workflows/ci.yml` (frontend job only)
 - Requirements: NFR-UX-001/003, NFR-MNT-002
@@ -249,33 +250,44 @@ The implementation plan, split into discrete tasks that individual agents can cl
 - Acceptance:
   - Vite + React 18 + TS strict; Tailwind configured with the tokens from `06 §11`; `styles/tokens.css`; Inter variable font self-hosted.
   - React Router with **every route in `02 §3.1`** as a lazy-loaded placeholder; `/styleguide` only when `APP_ENV=development`.
-  - App shell: logo pill, PillNav (items per `06 §5`, incl. Review), settings pill, bell, avatar button — matches the reference at ≥ 1280 px and collapses at < 768 px.
+  - App shell per `06 §5`: `Scene`, glass `Sidebar` (logo, nav items with role gating, count pills, Settings, Sign out, primary "New investigation"), glass work `Panel` with top bar (search, connection dot, bell, settings, avatar) — matches the reference at ≥ 1280 px, icon rail at 768–1279 px, bottom bar at < 768 px.
   - TanStack Query provider, Zustand setup, `lib/api` fetch wrapper (base URL from env, error-envelope parsing, `credentials: "include"` on `/auth/*`), `make api-types` script using `openapi-typescript`.
   - ESLint (incl. jsx-a11y), Prettier, Vitest, Testing Library configured; one smoke test.
 
 ### T-005 — Design system — core primitives
-- Status: todo | Priority: P0 | Size: L | Depends: T-004 | Wave: 2 | Agent: unassigned | Claimed: —
+- Status: todo | Priority: P0 | Size: L | Depends: T-004 | Wave: 7 | Agent: unassigned | Claimed: —
 - Blocks: T-008, T-043
 - Touches: `frontend/src/components/ui/**`, `frontend/src/app/styleguide/**`
 - Requirements: NFR-UX-001/002/004
 - Acceptance:
-  - Components from `06 §6`: GlassCard, DarkCard, Button (primary, accent, secondary, ghost, danger), IconButton, PillNav/NavItem, Avatar, SeverityBadge, SystemChip, Input/Select/Search, Switch, Slider, Tabs, Table, Drawer, Dialog, Toast, Tooltip, Skeleton, EmptyState, ErrorState.
+  - Components from `06 §6` (v2): Scene, Sidebar/NavItem, Panel, Card, Button (primary, secondary, ghost, danger, destructive), IconButton, Pill, SeverityBadge, StatusPill, SystemChip, Avatar, Search/Input/Select, Switch, Slider, Tabs, DataTable, Drawer, Dialog, Toast, Tooltip, Skeleton, EmptyState, ErrorState.
+  - Motion tokens and the `06 §8` catalogue for these components (press feedback, shared nav/tab indicator, popover/tooltip/drawer/dialog/toast enter-exit); reduced motion and reduced transparency respected (tests).
   - Radix primitives for Drawer/Dialog, Tabs, Tooltip, Select, Toast, Switch, Slider; keyboard + ARIA verified.
   - `/styleguide` dev-only route showing every component and state.
   - Only tokens used (lint rule or grep test forbids raw hex in `components/`).
   - Unit tests: SeverityBadge shape + label per severity; Button variants; Dialog Esc/focus trap.
 
 ### T-043 — Design system — data-viz & composite components
-- Status: todo | Priority: P0 | Size: M | Depends: T-005 | Wave: 3 | Agent: unassigned | Claimed: —
+- Status: todo | Priority: P0 | Size: M | Depends: T-005 | Wave: 8 | Agent: unassigned | Claimed: —
 - Blocks: T-031, T-032, T-033, T-034, T-036, T-038, T-059
 - Touches: `frontend/src/components/ui/**` (new files + exports only), `frontend/src/app/styleguide/**`
 - Requirements: NFR-UX-001/002
 - Note: Split from the original T-005 (too large for one day).
 - Acceptance:
-  - Components from `06 §6`: StatNumber, PillMeter (incl. hatched unknown state), ColumnBars, RingGauge, AccordionRow (Radix Accordion), TimelineGrid, LiveFeedItem, ConfidenceMeter, DiffRow.
-  - All shown on `/styleguide`; respect `prefers-reduced-motion`.
-  - Unit tests: ConfidenceMeter colour ramp (< 0.6 / 0.6–0.85 / ≥ 0.85) and breakdown tooltip; DiffRow highlights only differing cells; ColumnBars highlighted bar + tooltip chip.
-  - Visual comparison against `reference-dashboard.png` in the PR (screenshots).
+  - Components from `06 §6` (v2): KpiCard (count-up), ProgressBar, ConfidenceMeter, RiskBadge, ActionList, LiveFeed, DiffRow, TrailView, Chart wrappers.
+  - All shown on `/styleguide`; first-load orchestration and live-row enter per `06 §8`; respect `prefers-reduced-motion`.
+  - Unit tests: ConfidenceMeter percentage + breakdown tooltip; RiskBadge always renders the confidence; DiffRow highlights only differing cells; TrailView fact hover highlights the inferences that use it; KpiCard shows the final value immediately under reduced motion.
+  - Visual comparison against `reference-dashboard-v2.png` in the PR (screenshots).
+
+### T-060 — Frontend visual direction v2 (contract)
+- Status: in_progress | Priority: P0 | Size: S | Depends: T-052 | Wave: 5 | Agent: claude-code-1 | Claimed: 2026-10-10
+- Note: Product owner shared a new reference (`docs/assets/reference-dashboard-v2.png`, "Capsule" dashboard) and asked to use it and to improve UI/UX and motion. Stacked on the unmerged T-052 branch.
+- Blocks: T-004
+- Touches: `docs/06_UI_STYLE_GUIDE.md`, `docs/02_ARCHITECTURE.md` (§2.1 one dependency), `docs/assets/reference-dashboard-v2.png`, `docs/08_PROGRESS_HANDOFF.md`, `docs/09_TASKS.md`
+- Requirements: NFR-UX-001…005
+- Acceptance:
+  - `06` rewritten to v2: principles, tokens (ink, tints, moss accent, scene/glass with fallbacks), typography, radii/elevation, shell (sidebar + panel), component list, page layouts incl. `§7.8` layouts for the Time Machine and investigations, and a motion catalogue (`§8`) with easing/duration tokens and reduced-motion rules.
+  - `motion` added to the approved list (D-047); decisions D-047/D-048 in `08`; frontend tasks unblocked and their acceptance updated to v2.
 
 ### T-051 — Foundation repair (backend, infra, CI)
 - Status: review | Priority: P0 | Size: M | Depends: T-001, T-002, T-003 | Wave: 3 | Agent: claude-code-1 | Claimed: 2026-10-09
@@ -322,7 +334,7 @@ The implementation plan, split into discrete tasks that individual agents can cl
   - Audit entries: login, user create/update, password change.
 
 ### T-008 — Frontend auth
-- Status: todo | Priority: P0 | Size: M | Depends: T-005, T-007 | Wave: 5 | Agent: unassigned | Claimed: —
+- Status: todo | Priority: P0 | Size: M | Depends: T-005, T-007 | Wave: 8 | Agent: unassigned | Claimed: —
 - Blocks: T-031, T-032, T-034, T-037, T-038, T-049
 - Touches: `frontend/src/features/auth/**`, `frontend/src/lib/api/**`, `frontend/src/store/auth.ts`, `frontend/src/app/router.tsx` (guards), app shell nav (role filtering)
 - Requirements: FR-AUT-003, NFR-SEC-001
@@ -684,12 +696,12 @@ The implementation plan, split into discrete tasks that individual agents can cl
 - Touches: `frontend/src/features/dashboard/**`
 - Requirements: FR-DSH-001…003, NFR-UX-*
 - Acceptance:
-  - Layout and component mapping per `06 §7.1` (greeting, PillMeters, big numbers, Spotlight, Findings this week, Ingest ring, Resolution progress, System health accordion, Recent activity, Live feed).
+  - Layout and component mapping per `06 §7.1` v2 (page header with Export report / New investigation, four KPI cards, Live findings table, Quick actions, Findings this week chart, System health, Live feed).
   - Live counters from `dashboard.counters` / `ingest.stats`; 60 s safety refetch.
   - Skeleton/empty/error states; one orchestrated load animation; responsive; screenshots vs reference in the PR; data via generated types.
 
 ### T-032 — WebSocket client, live feed, toasts
-- Status: todo | Priority: P0 | Size: L | Depends: T-008, T-026, T-043 | Wave: 6 | Agent: unassigned | Claimed: —
+- Status: todo | Priority: P0 | Size: L | Depends: T-008, T-026, T-043 | Wave: 9 | Agent: unassigned | Claimed: —
 - Blocks: T-031, T-033, T-035
 - Touches: `frontend/src/lib/ws/**`, `frontend/src/store/live.ts`, `frontend/src/features/alerts/LiveFeed*`, app providers
 - Requirements: FR-RTM-004/005, NFR-UX-005
@@ -734,8 +746,8 @@ The implementation plan, split into discrete tasks that individual agents can cl
 - Touches: `frontend/src/features/simulation/**`
 - Requirements: FR-SIM-001/006/007
 - Acceptance:
-  - Run form with validation matching `04 §11` (incl. anomaly types and `external_ref_rate`); run status ring with live progress; "Simulate drift" accent button; stop; reset via `Dialog` with typed confirmation.
-  - Evaluation view: precision/recall/F1 (`display-xl`), matching metrics, per-type bars, misses/false positives; admin only.
+  - Run form with validation matching `04 §11` (incl. anomaly types and `external_ref_rate`); run progress card with live progress; "Simulate drift" secondary button; stop; reset via `Dialog` with typed confirmation.
+  - Evaluation view per `06 §7.6`: KPI cards for precision/recall/F1, matching metrics, per-type bars, misses/false positives; admin only.
   - Run form also covers `history_days`, `scenario_rate`, `feed_outage`; evaluation view shows the `investigation` metrics (layout decided with the product owner's frontend changes).
 
 ### T-037 — Rules & systems pages
@@ -836,7 +848,7 @@ Added 2026-10-09 by `claude-code-1` from the product owner's new feature directi
 ### T-052 — Contract update: investigation features
 - Status: review | Priority: P0 | Size: L | Depends: T-051 | Wave: 4 | Agent: claude-code-1 | Claimed: 2026-10-10
 - Note: Q-006…Q-011 answered 2026-10-10 (product owner accepted every recommendation). Stacked on the unmerged T-051 branch; merge T-051 first.
-- Blocks: T-009, T-013, T-014, T-019, T-024, T-026, T-029, T-047, T-053, T-054, T-055, T-057
+- Blocks: T-009, T-013, T-014, T-019, T-024, T-026, T-029, T-047, T-053, T-054, T-055, T-057, T-060
 - Touches: `docs/00_PRD.md` … `docs/06_UI_STYLE_GUIDE.md` (06: data contracts only; visual design waits for the product owner's frontend changes), `docs/08_PROGRESS_HANDOFF.md`, `docs/09_TASKS.md`
 - Requirements: PRD positioning; new FR groups
 - Acceptance:
@@ -914,9 +926,9 @@ Added 2026-10-09 by `claude-code-1` from the product owner's new feature directi
   - The lookahead check runs on every evaluation; regression test (seed 42, 300 customers, `scenario_rate` 0.1, `feed_outage` = `support`) meets the `03 §M9` targets (rates ≥ 0.9, outage findings 0, lookahead violations 0).
 
 ### T-059 — Time Machine & investigation UI
-- Status: blocked | Priority: P0 | Size: L | Depends: T-043, T-056 | Wave: 13 | Agent: unassigned | Claimed: —
-- Blocked: frontend work is held until the product owner shares their frontend changes (see T-004).
+- Status: todo | Priority: P0 | Size: L | Depends: T-043, T-056 | Wave: 13 | Agent: unassigned | Claimed: —
+- Note: Unblocked 2026-10-10 (frontend direction v2, D-047). Layouts in `06 §7.8`.
 - Blocks: —
 - Touches: `frontend/src/features/investigations/**`, `frontend/src/features/entities/**` (Time Machine view only)
 - Requirements: FR-TMX-001…004, FR-INV-005, FR-TRL-001, FR-MEV-004/006, FR-RSK-002
-- Acceptance: defined once the frontend direction is agreed. Minimum content contract: `06 §7.8` ("Investigate this incident", as-of banner, replay curve from `GET /investigations/{id}/checkpoints`, crossing point with trail, facts vs inferences, risk always with confidence, caveat always visible, missing-evidence wording); entity list/detail risk and expectations (the parts of T-034 added by T-052).
+- Acceptance: layouts and content rules in `06 §7.8` (Time Machine as-of mode with banner + scrubber, investigations list, investigation result with caveat card and replay chart); minimum content contract: ("Investigate this incident", as-of banner, replay curve from `GET /investigations/{id}/checkpoints`, crossing point with trail, facts vs inferences, risk always with confidence, caveat always visible, missing-evidence wording); entity list/detail risk and expectations (the parts of T-034 added by T-052).

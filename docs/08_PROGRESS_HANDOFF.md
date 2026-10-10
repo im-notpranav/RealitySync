@@ -17,7 +17,7 @@
 | CI status | Workflow fixed but never run (no remote) |
 | Next milestone | M0 Foundation (T-006, T-007 backend; frontend held — see below) |
 | Demo-able today? | No |
-| **Frontend** | **Held by the product owner (2026-10-09).** Do not start any frontend task until they share their frontend changes and confirm in a session (T-004 is `blocked`). |
+| **Frontend** | **Unblocked 2026-10-10.** The product owner shared the v2 reference (`docs/assets/reference-dashboard-v2.png`); `06` was rewritten to it (T-060, D-047/D-048). Build every screen against `06` v2. |
 | **New direction** | Product owner added four signature features (Time Machine, Evidence Trail, Missing Evidence, "Could We Have Known?"). Plan: `docs/notes/2026-10-09-investigation-features-plan.md`; tasks T-052…T-059 (epic E10). **The contract (docs 00–06) now specifies them** (T-052, branch above): modules M12 Risk, M13 Time Machine, M14 Investigation in `03`; API `04 §17`; tables `05 §2.20–2.23`. |
 
 ### What exists
@@ -115,6 +115,8 @@
 | D-044 | 2026-10-10 | Investigations: incident `churn` (earliest churned/cancelled version) or `finding`; checkpoints = version times + daily UTC boundaries, lookback ≤ 365 d, ≤ 1,000 checkpoints; `inputs_hash` idempotency; background tasks (≤ 2), restart → `failed`; mandatory caveat | Bounded, reproducible, honest retrospective | 03 §M14, 04 §17, 05 §2.22–2.23 |
 | D-045 | 2026-10-10 | Simulator: month-scale histories (`history_days` 365) emitted in recorded-time order, 3 new anomaly types, 3 scenarios (`is_scenario`, excluded from precision/recall) with `expected_crossing_at`, decoy `late_within_grace`, run option `feed_outage`; investigation metrics in `evaluation_runs.investigation` | Lead time and no-lookahead must be measurable | 03 §M9, 04 §11 |
 | D-046 | 2026-10-10 | Record versions are never pruned; retention prunes only processed ingest events (Q-008) | The Time Machine needs the full history | 01 NFR-DAT-002, T-047 |
+| D-047 | 2026-10-10 | **Frontend visual direction v2** replaces D-008: the product owner's "Capsule" reference (dark frosted sidebar + light frosted work panel over a blurred scene, white cards, one dark primary button, soft tinted pills, moss accent). Frontend unblocked (lifts D-037). `motion` added to the approved npm list for shared-layout indicators, exit animations, count-up and gestures only | Product owner instruction ("use this as a reference for the frontend … improve the ui/ux") | 06 v2, 02 §2.1, T-060 |
+| D-048 | 2026-10-10 | Motion rules: purpose-driven, `ease-out`-first custom curves, ≤ 320 ms UI motion, press `scale(0.97)`, no animation on keyboard/high-frequency actions, transform/opacity only, CSS transitions preferred, full reduced-motion/transparency fallbacks; every animation must be listed in the 06 §8 catalogue | Design-engineering review (Emil Kowalski principles) applied to the reference | 06 §8 |
 
 ## 7. Open questions (answer or confirm; defaults apply meanwhile)
 
@@ -153,7 +155,7 @@ Add a row when you start a task that creates a migration; remove it when the PR 
 
 | Epic | Todo | Blocked | In progress | In review | Done |
 |------|------|---------|-------------|-----------|------|
-| E0 Foundation (T-001…T-005, T-043, T-051) | 2 | 1 | 0 | 1 | 3 |
+| E0 Foundation (T-001…T-005, T-043, T-051, T-060) | 3 | 0 | 1 | 1 | 3 |
 | E1 Auth (T-006…T-008) | 3 | 0 | 0 | 0 | 0 |
 | E2 Data & ingest (T-009…T-012, T-044, T-047) | 6 | 0 | 0 | 0 | 0 |
 | E3 Simulation (T-013…T-015) | 3 | 0 | 0 | 0 | 0 |
@@ -163,10 +165,10 @@ Add a row when you start a task that creates a migration; remove it when the PR 
 | E7 AI (T-029…T-030) | 2 | 0 | 0 | 0 | 0 |
 | E8 Frontend features (T-031…T-038, T-049) | 9 | 0 | 0 | 0 | 0 |
 | E9 Quality & polish (T-039…T-042, T-048) | 5 | 0 | 0 | 0 | 0 |
-| E10 Investigation (T-052…T-059) | 6 | 1 | 0 | 1 | 0 |
-| **Total (59)** | **52** | **2** | **0** | **2** | **3** |
+| E10 Investigation (T-052…T-059) | 7 | 0 | 0 | 1 | 0 |
+| **Total (60)** | **54** | **0** | **1** | **2** | **3** |
 
-E8 tasks are `todo` but cannot start while T-004 is blocked (frontend held, D-037).
+Frontend tasks follow `06` v2 (D-047); T-004 needs T-060 merged first.
 
 ---
 

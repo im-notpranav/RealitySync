@@ -76,7 +76,7 @@ flowchart LR
 
 | Area | Backend (Python) | Frontend (npm) |
 |------|------------------|----------------|
-| Runtime | `fastapi`, `uvicorn[standard]`, `pydantic`, `pydantic-settings`, `sqlalchemy[asyncio]`, `asyncpg`, `alembic`, `structlog`, `python-ulid` | `react`, `react-dom`, `react-router-dom`, `@tanstack/react-query`, `zustand`, `recharts`, `lucide-react`, `@radix-ui/react-*` (only primitives listed in 06 §6), `clsx`, `tailwind-merge`, `@fontsource-variable/inter` |
+| Runtime | `fastapi`, `uvicorn[standard]`, `pydantic`, `pydantic-settings`, `sqlalchemy[asyncio]`, `asyncpg`, `alembic`, `structlog`, `python-ulid` | `react`, `react-dom`, `react-router-dom`, `@tanstack/react-query`, `zustand`, `recharts`, `lucide-react`, `@radix-ui/react-*` (only primitives listed in 06 §6), `clsx`, `tailwind-merge`, `@fontsource-variable/inter`, `motion` (animation only, per 06 §8; D-047) |
 | Auth | `argon2-cffi`, `PyJWT` | — |
 | Matching / data | `rapidfuzz`, `phonenumbers`, `email-validator`, `jellyfish`, `Faker` | — |
 | LLM | `google-genai` | — |
