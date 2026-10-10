@@ -68,7 +68,11 @@ export function NewInvestigationDialog({
         <Field
           label="Incident"
           htmlFor={ids.kind}
-          hint={kind === "churn" ? "Uses the first recorded churn or cancellation." : "Uses the moment the finding was noticed."}
+          hint={
+            kind === "churn"
+              ? "Uses the first recorded churn or cancellation."
+              : "Uses the moment the finding was noticed."
+          }
         >
           <Select
             id={ids.kind}
@@ -83,11 +87,26 @@ export function NewInvestigationDialog({
         </Field>
         <div className="flex flex-col gap-1.5">
           <span className="text-small font-medium text-ink-700">Look back</span>
-          <Slider label="Look back in days" value={lookback} min={30} max={365} step={15} onValueChange={setLookback} format={(v) => `${v} d`} />
+          <Slider
+            label="Look back in days"
+            value={lookback}
+            min={30}
+            max={365}
+            step={15}
+            onValueChange={setLookback}
+            format={(v) => `${v} d`}
+          />
         </div>
         <div className="flex flex-col gap-1.5">
           <span className="text-small font-medium text-ink-700">Warning threshold</span>
-          <Slider label="Warning threshold" value={threshold} min={0.4} max={0.9} step={0.05} onValueChange={setThreshold} />
+          <Slider
+            label="Warning threshold"
+            value={threshold}
+            min={0.4}
+            max={0.9}
+            step={0.05}
+            onValueChange={setThreshold}
+          />
         </div>
       </div>
     </Dialog>

@@ -1,6 +1,13 @@
 import { Clock } from "lucide-react";
 
-import { ConfidenceMeter, Pill, SeverityBadge, StatusPill, SystemChip, type Column } from "../../components/ui";
+import {
+  ConfidenceMeter,
+  Pill,
+  SeverityBadge,
+  StatusPill,
+  SystemChip,
+  type Column,
+} from "../../components/ui";
 import type { FindingListItem } from "../../lib/api/types";
 import { relativeTime } from "../../lib/format";
 

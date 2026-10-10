@@ -2,7 +2,16 @@ import { BellOff } from "lucide-react";
 import { useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 
-import { Button, Card, EmptyState, ErrorState, PageHeader, Select, SeverityBadge, Skeleton } from "../../components/ui";
+import {
+  Button,
+  Card,
+  EmptyState,
+  ErrorState,
+  PageHeader,
+  Select,
+  SeverityBadge,
+  Skeleton,
+} from "../../components/ui";
 import { useAlerts } from "../../lib/api/queries";
 import type { Alert } from "../../lib/api/types";
 import { cn } from "../../lib/cn";
@@ -43,7 +52,9 @@ export function Component() {
       <PageHeader
         title="Alerts"
         subtitle="Everything RealitySync flagged, newest first"
-        actions={<Button onClick={() => setRead(new Set((data ?? []).map((a) => a.id)))}>Mark all as read</Button>}
+        actions={
+          <Button onClick={() => setRead(new Set((data ?? []).map((a) => a.id)))}>Mark all as read</Button>
+        }
       />
       <div className="mb-4">
         <Select
@@ -84,16 +95,25 @@ export function Component() {
                       >
                         <span
                           aria-label={unread ? "Unread" : undefined}
-                          className={cn("size-2 shrink-0 rounded-pill", unread ? "bg-moss-500" : "bg-transparent")}
+                          className={cn(
+                            "size-2 shrink-0 rounded-pill",
+                            unread ? "bg-moss-500" : "bg-transparent",
+                          )}
                         />
                         <SeverityBadge severity={alert.severity} />
                         <span className="min-w-0 flex-1">
-                          <span className={cn("block truncate text-body text-ink-950", unread && "font-semibold")}>{alert.title}</span>
+                          <span
+                            className={cn("block truncate text-body text-ink-950", unread && "font-semibold")}
+                          >
+                            {alert.title}
+                          </span>
                           <span className="block truncate text-small text-ink-500">
                             {humanize(alert.type)} · {alert.body}
                           </span>
                         </span>
-                        <span className="shrink-0 text-small tabular text-ink-500">{relativeTime(alert.created_at)}</span>
+                        <span className="shrink-0 text-small tabular text-ink-500">
+                          {relativeTime(alert.created_at)}
+                        </span>
                       </Link>
                     </li>
                   );

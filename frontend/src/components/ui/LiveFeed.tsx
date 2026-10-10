@@ -79,7 +79,11 @@ export function LiveFeed({
                 key={alert.id}
                 layout="position"
                 initial={{ opacity: 0, transform: "translateY(-6px)" }}
-                animate={{ opacity: 1, transform: "translateY(0px)", transition: { duration: 0.24, ease: EASE_OUT } }}
+                animate={{
+                  opacity: 1,
+                  transform: "translateY(0px)",
+                  transition: { duration: 0.24, ease: EASE_OUT },
+                }}
                 exit={{ opacity: 0, transition: { duration: 0.15 } }}
               >
                 <Link
@@ -89,11 +93,18 @@ export function LiveFeed({
                     newIds.has(alert.id) && "row-flash",
                   )}
                 >
-                  <span className={cn("grid size-8 shrink-0 place-items-center rounded-pill", toneCircle[tone])}>
+                  <span
+                    className={cn("grid size-8 shrink-0 place-items-center rounded-pill", toneCircle[tone])}
+                  >
                     <Icon size={15} strokeWidth={1.9} aria-hidden="true" />
                   </span>
                   <span className="min-w-0 flex-1">
-                    <span className={cn("block truncate text-small text-ink-950", !alert.is_read && "font-semibold")}>
+                    <span
+                      className={cn(
+                        "block truncate text-small text-ink-950",
+                        !alert.is_read && "font-semibold",
+                      )}
+                    >
                       {alert.title}
                     </span>
                     <span className="block truncate text-caption font-normal text-ink-500">{alert.body}</span>

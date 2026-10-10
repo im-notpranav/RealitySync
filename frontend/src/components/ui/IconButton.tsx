@@ -28,8 +28,7 @@ function iconClasses({ surface = "glass", size = "md", className }: IconStyle) {
 }
 
 export interface IconButtonProps
-  extends Omit<ButtonHTMLAttributes<HTMLButtonElement>, "children">,
-    Omit<IconStyle, "className"> {
+  extends Omit<ButtonHTMLAttributes<HTMLButtonElement>, "children">, Omit<IconStyle, "className"> {
   /** Required: icon buttons have no visible text (06 §10). Also used as the tooltip. */
   label: string;
   children: ReactNode;

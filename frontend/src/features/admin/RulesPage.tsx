@@ -1,7 +1,17 @@
 import { useEffect, useState } from "react";
 
 import { RoleGate } from "../../components/RoleGate";
-import { Card, DataTable, ErrorState, PageHeader, Pill, Select, Switch, toast, type Tone } from "../../components/ui";
+import {
+  Card,
+  DataTable,
+  ErrorState,
+  PageHeader,
+  Pill,
+  Select,
+  Switch,
+  toast,
+  type Tone,
+} from "../../components/ui";
 import { useRules } from "../../lib/api/queries";
 import type { Rule, RuleCategory, Severity } from "../../lib/api/types";
 import { humanize } from "../../lib/format";
@@ -14,7 +24,10 @@ const categoryTone: Record<RuleCategory, Tone> = {
   missing_evidence: "amber",
 };
 
-const severityOptions = (["low", "medium", "high", "critical"] as Severity[]).map((s) => ({ value: s, label: humanize(s) }));
+const severityOptions = (["low", "medium", "high", "critical"] as Severity[]).map((s) => ({
+  value: s,
+  label: humanize(s),
+}));
 
 export function Component() {
   const { data, isLoading, isError, refetch } = useRules();
@@ -28,7 +41,10 @@ export function Component() {
 
   return (
     <RoleGate min="admin" title="Rules">
-      <PageHeader title="Rules" subtitle="18 deterministic checks. The AI explains findings; it never decides them." />
+      <PageHeader
+        title="Rules"
+        subtitle="18 deterministic checks. The AI explains findings; it never decides them."
+      />
       <Card className="overflow-hidden p-0">
         {isError ? (
           <ErrorState onRetry={() => void refetch()} />
@@ -48,7 +64,9 @@ export function Component() {
                     <p className="truncate font-medium text-ink-950">
                       <span className="tabular text-ink-500">{r.key}</span> {r.name}
                     </p>
-                    <p className="truncate text-small text-ink-500">Certainty {r.certainty.toFixed(2)} · version {r.version}</p>
+                    <p className="truncate text-small text-ink-500">
+                      Certainty {r.certainty.toFixed(2)} · version {r.version}
+                    </p>
                   </div>
                 ),
               },
@@ -65,7 +83,9 @@ export function Component() {
                   <Select
                     label={`Severity for ${r.key}`}
                     value={r.severity}
-                    onValueChange={(v) => update(r.key, { severity: v as Severity }, `${r.key} severity set to ${v}`)}
+                    onValueChange={(v) =>
+                      update(r.key, { severity: v as Severity }, `${r.key} severity set to ${v}`)
+                    }
                     options={severityOptions}
                     className="h-9 w-32"
                   />
@@ -86,7 +106,9 @@ export function Component() {
                     label={`${r.key} enabled`}
                     hideLabel
                     checked={r.is_enabled}
-                    onCheckedChange={(checked) => update(r.key, { is_enabled: checked }, `${r.key} ${checked ? "enabled" : "disabled"}`)}
+                    onCheckedChange={(checked) =>
+                      update(r.key, { is_enabled: checked }, `${r.key} ${checked ? "enabled" : "disabled"}`)
+                    }
                   />
                 ),
               },

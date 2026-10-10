@@ -21,7 +21,13 @@ import {
   TrendChart,
   type ActionItem,
 } from "../../components/ui";
-import { useAlerts, useDashboardSummary, useFindings, useSystemHealth, useTrends } from "../../lib/api/queries";
+import {
+  useAlerts,
+  useDashboardSummary,
+  useFindings,
+  useSystemHealth,
+  useTrends,
+} from "../../lib/api/queries";
 import { env } from "../../lib/env";
 import { formatNumber, relativeTime, todayLabel } from "../../lib/format";
 import { rise, stagger, useFirstVisit } from "../../lib/motion";
@@ -33,7 +39,12 @@ import { useDemoLiveAlerts } from "./useDemoLiveAlerts";
 function freshness(lastEventAt: string | null) {
   if (!lastEventAt) return <Pill tone="neutral">No data yet</Pill>;
   const age = Date.now() - new Date(lastEventAt).getTime();
-  if (age < 60 * 60_000) return <Pill tone="moss" dot>Fresh</Pill>;
+  if (age < 60 * 60_000)
+    return (
+      <Pill tone="moss" dot>
+        Fresh
+      </Pill>
+    );
   if (age < 24 * 60 * 60_000) return <Pill tone="amber">Quiet</Pill>;
   return <Pill tone="amber">No data for {relativeTime(lastEventAt).replace(" ago", "")}</Pill>;
 }
@@ -81,7 +92,14 @@ export function Component() {
         ]
       : []),
     ...(hasRole(user, "admin")
-      ? [{ title: "Run a simulation", description: "Generate synthetic data with labelled issues", to: "/simulation", icon: FlaskConical }]
+      ? [
+          {
+            title: "Run a simulation",
+            description: "Generate synthetic data with labelled issues",
+            to: "/simulation",
+            icon: FlaskConical,
+          },
+        ]
       : []),
   ];
 
@@ -93,7 +111,9 @@ export function Component() {
           subtitle={
             <>
               Live consistency — {todayLabel()}
-              {s && s.new_today > 0 ? <span className="text-ink-700"> · {s.new_today} new findings today</span> : null}
+              {s && s.new_today > 0 ? (
+                <span className="text-ink-700"> · {s.new_today} new findings today</span>
+              ) : null}
             </>
           }
           actions={
@@ -101,7 +121,10 @@ export function Component() {
               <>
                 <Button
                   onClick={() =>
-                    toast({ title: "Export started", description: "The findings CSV downloads when the API is connected." })
+                    toast({
+                      title: "Export started",
+                      description: "The findings CSV downloads when the API is connected.",
+                    })
                   }
                 >
                   <Download size={16} aria-hidden="true" />
@@ -119,7 +142,10 @@ export function Component() {
 
       {summary.isError ? (
         <Card>
-          <ErrorState title="Couldn't load the overview. Check your connection and retry." onRetry={() => void summary.refetch()} />
+          <ErrorState
+            title="Couldn't load the overview. Check your connection and retry."
+            onRetry={() => void summary.refetch()}
+          />
         </Card>
       ) : (
         <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
@@ -141,7 +167,11 @@ export function Component() {
               loading={summary.isLoading}
               animate={animate}
               chip={s ? <Pill tone="moss">▲ {s.consistency_delta.toFixed(1)} pts</Pill> : null}
-              progress={s?.consistency_score ? { value: s.consistency_score / 100, label: "Consistency score" } : undefined}
+              progress={
+                s?.consistency_score
+                  ? { value: s.consistency_score / 100, label: "Consistency score" }
+                  : undefined
+              }
             />
           </motion.div>
           <motion.div variants={rise}>
@@ -151,7 +181,11 @@ export function Component() {
               loading={summary.isLoading}
               animate={animate}
               chip={s ? <Pill tone="rose">{s.at_risk.critical} critical</Pill> : null}
-              sub={s ? `Warning or critical · avg. confidence ${Math.round(s.at_risk.avg_confidence * 100)}%` : null}
+              sub={
+                s
+                  ? `Warning or critical · avg. confidence ${Math.round(s.at_risk.avg_confidence * 100)}%`
+                  : null
+              }
             />
           </motion.div>
           <motion.div variants={rise}>
@@ -198,12 +232,22 @@ export function Component() {
           </Card>
         </motion.section>
 
-        <motion.aside variants={rise} className="flex min-w-0 flex-col gap-4 lg:col-span-4" aria-labelledby="quick-actions">
+        <motion.aside
+          variants={rise}
+          className="flex min-w-0 flex-col gap-4 lg:col-span-4"
+          aria-labelledby="quick-actions"
+        >
           <div>
             <SectionHeader id="quick-actions" title="Quick actions" />
             <ActionList items={actions} label="Quick actions" />
           </div>
-          <LiveFeed alerts={alerts.data} loading={alerts.isLoading} newIds={newAlertIds} connected={env.demoData} limit={5} />
+          <LiveFeed
+            alerts={alerts.data}
+            loading={alerts.isLoading}
+            newIds={newAlertIds}
+            connected={env.demoData}
+            limit={5}
+          />
         </motion.aside>
       </div>
 
@@ -223,7 +267,11 @@ export function Component() {
                 </span>
               </div>
             </div>
-            {trends.data ? <TrendChart points={trends.data} animate={animate} /> : <Skeleton className="h-[220px] w-full" />}
+            {trends.data ? (
+              <TrendChart points={trends.data} animate={animate} />
+            ) : (
+              <Skeleton className="h-[220px] w-full" />
+            )}
           </Card>
         </motion.section>
 
@@ -257,7 +305,8 @@ export function Component() {
                 : null}
             </ul>
             <p className="mt-3 text-caption font-normal text-ink-500">
-              When a system goes quiet, missing-evidence checks report “cannot assess” instead of raising findings.
+              When a system goes quiet, missing-evidence checks report “cannot assess” instead of raising
+              findings.
             </p>
           </Card>
         </motion.section>

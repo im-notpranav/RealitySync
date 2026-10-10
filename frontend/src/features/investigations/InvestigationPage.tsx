@@ -49,13 +49,23 @@ export function Component() {
   if (!inv)
     return (
       <Card className="mt-6">
-        <EmptyState title="Investigation not found" action={<ButtonLink to="/investigations" surface="paper">All investigations</ButtonLink>} />
+        <EmptyState
+          title="Investigation not found"
+          action={
+            <ButtonLink to="/investigations" surface="paper">
+              All investigations
+            </ButtonLink>
+          }
+        />
       </Card>
     );
 
   const kind = inv.incident.kind === "churn" ? "churn" : "finding";
   const back = (
-    <Link to="/investigations" className="mt-1 inline-flex items-center gap-1 text-small text-ink-500 transition-colors duration-fast pointer:hover:text-ink-950">
+    <Link
+      to="/investigations"
+      className="mt-1 inline-flex items-center gap-1 text-small text-ink-500 transition-colors duration-fast pointer:hover:text-ink-950"
+    >
       <ArrowLeft size={14} aria-hidden="true" /> Investigations
     </Link>
   );
@@ -65,7 +75,10 @@ export function Component() {
     return (
       <>
         {back}
-        <PageHeader title={`${inv.entity_name} — ${kind}`} subtitle="Replaying what RealitySync could have known…" />
+        <PageHeader
+          title={`${inv.entity_name} — ${kind}`}
+          subtitle="Replaying what RealitySync could have known…"
+        />
         <Card className="flex flex-col gap-4">
           <p className="flex items-center gap-2 text-body text-ink-950">
             <span aria-hidden="true" className="live-dot size-2 rounded-pill bg-moss-500" />
@@ -73,8 +86,8 @@ export function Component() {
           </p>
           <ProgressBar value={done / total} label="Replay progress" animate />
           <p className="text-small text-ink-500">
-            Each checkpoint rebuilds the customer from data recorded by then and runs today's rules. This page updates
-            when the replay finishes.
+            Each checkpoint rebuilds the customer from data recorded by then and runs today's rules. This page
+            updates when the replay finishes.
           </p>
         </Card>
       </>
@@ -94,12 +107,19 @@ export function Component() {
         subtitle={outcome}
         actions={
           <>
-            <Button onClick={() => toast({ title: "Export started", description: "The export always includes the caveat." })}>
+            <Button
+              onClick={() =>
+                toast({ title: "Export started", description: "The export always includes the caveat." })
+              }
+            >
               <Download size={16} aria-hidden="true" />
               Export
             </Button>
             {crossed && inv.first_detectable_at ? (
-              <ButtonLink to={`/entities/${inv.entity_id}?at=${encodeURIComponent(inv.first_detectable_at)}`} variant="primary">
+              <ButtonLink
+                to={`/entities/${inv.entity_id}?at=${encodeURIComponent(inv.first_detectable_at)}`}
+                variant="primary"
+              >
                 <Rewind size={16} aria-hidden="true" />
                 Open at the crossing
               </ButtonLink>
@@ -115,24 +135,38 @@ export function Component() {
       </Card>
 
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-        <Stat label="Lead time" value={inv.lead_time_hours !== null ? formatDuration(inv.lead_time_hours) : "—"} sub={crossed ? "before the incident" : "threshold not reached"} />
+        <Stat
+          label="Lead time"
+          value={inv.lead_time_hours !== null ? formatDuration(inv.lead_time_hours) : "—"}
+          sub={crossed ? "before the incident" : "threshold not reached"}
+        />
         <Stat
           label="First detectable"
           value={inv.first_detectable_at ? formatShortDate(inv.first_detectable_at) : "—"}
-          sub={inv.first_detectable_at ? `${new Date(inv.first_detectable_at).getFullYear()} · risk ≥ ${inv.warning_threshold.toFixed(2)}` : "threshold not reached"}
+          sub={
+            inv.first_detectable_at
+              ? `${new Date(inv.first_detectable_at).getFullYear()} · risk ≥ ${inv.warning_threshold.toFixed(2)}`
+              : "threshold not reached"
+          }
         />
         <Stat
           label="Incident"
           value={formatShortDate(inv.incident.at)}
           sub={`${new Date(inv.incident.at).getFullYear()} · ${kind === "churn" ? "first recorded churn" : "finding noticed"}`}
         />
-        <Stat label="Checkpoints replayed" value={formatNumber(inv.progress.checkpoints_total)} sub={`Look back ${inv.lookback_days} days · rule set ${inv.rule_set_hash}`} />
+        <Stat
+          label="Checkpoints replayed"
+          value={formatNumber(inv.progress.checkpoints_total)}
+          sub={`Look back ${inv.lookback_days} days · rule set ${inv.rule_set_hash}`}
+        />
       </div>
 
       <Card className="mt-4">
         <div className="mb-2 flex flex-wrap items-center justify-between gap-3">
           <h2 className="text-h3 text-ink-950">Risk over time</h2>
-          <p className="text-caption font-normal text-ink-500">Each point is the customer as recorded on that day, scored with today's rules</p>
+          <p className="text-caption font-normal text-ink-500">
+            Each point is the customer as recorded on that day, scored with today's rules
+          </p>
         </div>
         {checkpoints.data ? (
           <ReplayChart
@@ -154,7 +188,9 @@ export function Component() {
               <RiskBadge level={inv.at_crossing.risk.level} confidence={inv.at_crossing.risk.confidence} />
             </div>
             <p className="mt-3 text-kpi tabular text-ink-950">{inv.at_crossing.risk.score.toFixed(3)}</p>
-            <p className="mb-5 text-small text-ink-500">Risk score on {inv.first_detectable_at ? formatDate(inv.first_detectable_at) : "—"}</p>
+            <p className="mb-5 text-small text-ink-500">
+              Risk score on {inv.first_detectable_at ? formatDate(inv.first_detectable_at) : "—"}
+            </p>
             <SignalBars risk={inv.at_crossing.risk} />
           </Card>
           <Card className="lg:col-span-7">

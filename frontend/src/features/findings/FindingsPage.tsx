@@ -1,7 +1,17 @@
 import { Download, Search } from "lucide-react";
 import { useSearchParams } from "react-router-dom";
 
-import { Button, Card, DataTable, EmptyState, ErrorState, Input, PageHeader, Select, toast } from "../../components/ui";
+import {
+  Button,
+  Card,
+  DataTable,
+  EmptyState,
+  ErrorState,
+  Input,
+  PageHeader,
+  Select,
+  toast,
+} from "../../components/ui";
 import { useFindings, type FindingFilters } from "../../lib/api/queries";
 import { hasRole, useSession } from "../../store/session";
 import { FindingDrawer } from "./FindingDrawer";
@@ -43,7 +53,8 @@ export function Component() {
 
   function setParam(key: string, value: string | null) {
     const next = new URLSearchParams(params);
-    if (value === null || value === "" || value === "all" || (key === "status" && value === "active")) next.delete(key);
+    if (value === null || value === "" || value === "all" || (key === "status" && value === "active"))
+      next.delete(key);
     else next.set(key, value);
     setParams(next, { replace: true });
   }
@@ -55,7 +66,11 @@ export function Component() {
         subtitle="Contradictions between your systems, ranked by priority"
         actions={
           hasRole(user, "analyst") ? (
-            <Button onClick={() => toast({ title: "Export started", description: "The CSV uses the current filters." })}>
+            <Button
+              onClick={() =>
+                toast({ title: "Export started", description: "The CSV uses the current filters." })
+              }
+            >
               <Download size={16} aria-hidden="true" />
               Export CSV
             </Button>
@@ -111,7 +126,10 @@ export function Component() {
 
       <Card className="overflow-hidden p-0">
         {isError ? (
-          <ErrorState title="Couldn't load findings. Check your connection and retry." onRetry={() => void refetch()} />
+          <ErrorState
+            title="Couldn't load findings. Check your connection and retry."
+            onRetry={() => void refetch()}
+          />
         ) : (
           <DataTable
             caption="Findings"
@@ -133,7 +151,12 @@ export function Component() {
             onRowClick={(f) => setParam("finding", f.id)}
             selectedKey={params.get("finding")}
             defaultSort={{ key: "severity", dir: "desc" }}
-            empty={<EmptyState title="No findings match these filters" description="Try another status or clear the search." />}
+            empty={
+              <EmptyState
+                title="No findings match these filters"
+                description="Try another status or clear the search."
+              />
+            }
           />
         )}
       </Card>

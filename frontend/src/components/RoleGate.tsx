@@ -12,7 +12,11 @@ export function RoleGate({ min, title, children }: { min: Role; title: string; c
     <>
       <PageHeader title={title} />
       <Card>
-        <EmptyState icon={Lock} title="You don't have access to this page" description="Ask an admin for a role that includes it." />
+        <EmptyState
+          icon={Lock}
+          title="You don't have access to this page"
+          description="Ask an admin for a role that includes it."
+        />
       </Card>
     </>
   );

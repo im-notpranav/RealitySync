@@ -95,7 +95,16 @@ export interface KpiCardProps {
 }
 
 /** One big number, a label, one context line, at most one chip (06 §1.3). */
-export function KpiCard({ label, value, format, chip, sub, progress, animate: shouldAnimate, loading }: KpiCardProps) {
+export function KpiCard({
+  label,
+  value,
+  format,
+  chip,
+  sub,
+  progress,
+  animate: shouldAnimate,
+  loading,
+}: KpiCardProps) {
   return (
     <Card className="flex min-h-[148px] flex-col">
       <div className="flex items-start justify-between gap-3">
@@ -114,7 +123,12 @@ export function KpiCard({ label, value, format, chip, sub, progress, animate: sh
           </p>
           {sub ? <p className="mt-1 text-small text-ink-500">{sub}</p> : null}
           {progress ? (
-            <ProgressBar value={progress.value} label={progress.label} animate={shouldAnimate} className="mt-auto" />
+            <ProgressBar
+              value={progress.value}
+              label={progress.label}
+              animate={shouldAnimate}
+              className="mt-auto"
+            />
           ) : null}
         </>
       )}

@@ -40,7 +40,11 @@ function Profile() {
           className="flex flex-col gap-4"
           onSubmit={(event) => {
             event.preventDefault();
-            toast({ title: "Password changed", description: "Other sessions were signed out.", tone: "success" });
+            toast({
+              title: "Password changed",
+              description: "Other sessions were signed out.",
+              tone: "success",
+            });
             setNext("");
           }}
         >
@@ -48,7 +52,15 @@ function Profile() {
             <Input id={ids.current} type="password" autoComplete="current-password" required />
           </Field>
           <Field label="New password" htmlFor={ids.next} hint="At least 12 characters.">
-            <Input id={ids.next} type="password" autoComplete="new-password" value={next} onChange={(e) => setNext(e.target.value)} minLength={12} required />
+            <Input
+              id={ids.next}
+              type="password"
+              autoComplete="new-password"
+              value={next}
+              onChange={(e) => setNext(e.target.value)}
+              minLength={12}
+              required
+            />
           </Field>
           <Button type="submit" variant="primary" disabled={next.length < 12} className="self-end">
             Change password
@@ -82,13 +94,31 @@ function Users() {
               </div>
             ),
           },
-          { key: "role", header: "Role", cell: (u) => <Pill tone={u.role === "admin" ? "indigo" : u.role === "analyst" ? "sky" : "neutral"}>{humanize(u.role)}</Pill> },
-          { key: "status", header: "Status", cell: (u) => <Pill tone={u.is_active ? "moss" : "neutral"}>{u.is_active ? "Active" : "Deactivated"}</Pill> },
+          {
+            key: "role",
+            header: "Role",
+            cell: (u) => (
+              <Pill tone={u.role === "admin" ? "indigo" : u.role === "analyst" ? "sky" : "neutral"}>
+                {humanize(u.role)}
+              </Pill>
+            ),
+          },
+          {
+            key: "status",
+            header: "Status",
+            cell: (u) => (
+              <Pill tone={u.is_active ? "moss" : "neutral"}>{u.is_active ? "Active" : "Deactivated"}</Pill>
+            ),
+          },
           {
             key: "login",
             header: "Last sign-in",
             hideBelow: "md",
-            cell: (u) => <span className="text-small text-ink-500">{u.last_login_at ? relativeTime(u.last_login_at) : "Never"}</span>,
+            cell: (u) => (
+              <span className="text-small text-ink-500">
+                {u.last_login_at ? relativeTime(u.last_login_at) : "Never"}
+              </span>
+            ),
           },
         ]}
       />
@@ -153,8 +183,16 @@ function Audit() {
         loading={isLoading}
         rowKey={(a) => a.id}
         columns={[
-          { key: "action", header: "Action", cell: (a) => <span className="font-medium text-ink-950">{a.action}</span> },
-          { key: "actor", header: "By", cell: (a) => <span className="text-small text-ink-700">{a.actor}</span> },
+          {
+            key: "action",
+            header: "Action",
+            cell: (a) => <span className="font-medium text-ink-950">{a.action}</span>,
+          },
+          {
+            key: "actor",
+            header: "By",
+            cell: (a) => <span className="text-small text-ink-700">{a.actor}</span>,
+          },
           {
             key: "target",
             header: "Target",
@@ -165,7 +203,11 @@ function Audit() {
               </span>
             ),
           },
-          { key: "when", header: "When", cell: (a) => <span className="text-small text-ink-500">{relativeTime(a.created_at)}</span> },
+          {
+            key: "when",
+            header: "When",
+            cell: (a) => <span className="text-small text-ink-500">{relativeTime(a.created_at)}</span>,
+          },
         ]}
       />
     </Card>
@@ -187,7 +229,10 @@ export function Component() {
   ];
   return (
     <>
-      <PageHeader title="Settings" subtitle="Your profile, and for admins: users, API keys and the audit log" />
+      <PageHeader
+        title="Settings"
+        subtitle="Your profile, and for admins: users, API keys and the audit log"
+      />
       <Tabs value={tab} onValueChange={setTab}>
         <TabsList items={items} value={tab} label="Settings sections" layoutId="settings-tabs" />
         <TabsContent value="profile" className="mt-5 outline-none">

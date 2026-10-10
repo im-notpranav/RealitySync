@@ -5,5 +5,6 @@ export const env = {
   isDevelopment: import.meta.env.DEV || import.meta.env.VITE_APP_ENV === "development",
   /** Serve synthetic demo data until the backend endpoints exist (D-049). `VITE_DEMO_DATA=off` disables it. */
   demoData:
-    (import.meta.env.DEV || import.meta.env.VITE_APP_ENV === "development") && import.meta.env.VITE_DEMO_DATA !== "off",
+    (import.meta.env.DEV || import.meta.env.VITE_APP_ENV === "development") &&
+    import.meta.env.VITE_DEMO_DATA !== "off",
 };

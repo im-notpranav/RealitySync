@@ -23,7 +23,9 @@ function SidebarItem({ entry }: { entry: NavEntry }) {
       className={({ isActive }) =>
         cn(
           itemBase,
-          isActive ? "text-on-dark" : "text-on-dark-muted pointer:hover:bg-white/5 pointer:hover:text-on-dark",
+          isActive
+            ? "text-on-dark"
+            : "text-on-dark-muted pointer:hover:bg-white/5 pointer:hover:text-on-dark",
         )
       }
     >

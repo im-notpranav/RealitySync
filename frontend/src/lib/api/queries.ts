@@ -53,7 +53,10 @@ function loadItems<T>(path: string, demoValue: () => T[]): Promise<T[]> {
 // -------------------------------------------------------------------- overview
 
 export const useDashboardSummary = () =>
-  useQuery({ queryKey: ["dashboard", "summary"], queryFn: () => load<DashboardSummary>("/dashboard/summary", () => demo.dashboardSummary) });
+  useQuery({
+    queryKey: ["dashboard", "summary"],
+    queryFn: () => load<DashboardSummary>("/dashboard/summary", () => demo.dashboardSummary),
+  });
 
 export const useTrends = () =>
   useQuery({
@@ -65,7 +68,10 @@ export const useTrends = () =>
   });
 
 export const useSystemHealth = () =>
-  useQuery({ queryKey: ["systems", "health"], queryFn: () => load<SystemHealth[]>("/source-systems", () => demo.systemHealth) });
+  useQuery({
+    queryKey: ["systems", "health"],
+    queryFn: () => load<SystemHealth[]>("/source-systems", () => demo.systemHealth),
+  });
 
 // -------------------------------------------------------------------- findings
 
@@ -81,10 +87,12 @@ function matchesFilters(finding: FindingListItem, filters: FindingFilters): bool
   if (status === "active" && !["open", "acknowledged"].includes(finding.status)) return false;
   if (status !== "active" && status !== "all" && finding.status !== status) return false;
   if (filters.severity && filters.severity !== "all" && finding.severity !== filters.severity) return false;
-  if (filters.system && filters.system !== "all" && !finding.systems.includes(filters.system as never)) return false;
+  if (filters.system && filters.system !== "all" && !finding.systems.includes(filters.system as never))
+    return false;
   if (filters.q) {
     const q = filters.q.toLowerCase();
-    if (!`${finding.title} ${finding.entity_name} ${finding.rule_key}`.toLowerCase().includes(q)) return false;
+    if (!`${finding.title} ${finding.entity_name} ${finding.rule_key}`.toLowerCase().includes(q))
+      return false;
   }
   return true;
 }
@@ -94,7 +102,9 @@ export const useFindings = (filters: FindingFilters = {}) =>
     queryKey: ["findings", filters],
     queryFn: () =>
       loadItems<FindingListItem>(`/findings?${new URLSearchParams(filters as Record<string, string>)}`, () =>
-        demo.findings.filter((f) => matchesFilters(f, filters)).sort((a, b) => b.priority_score - a.priority_score),
+        demo.findings
+          .filter((f) => matchesFilters(f, filters))
+          .sort((a, b) => b.priority_score - a.priority_score),
       ),
   });
 
@@ -109,7 +119,8 @@ export function useUpdateFindingStatus() {
   const client = useQueryClient();
   return useMutation({
     mutationFn: async ({ id, status, note }: { id: string; status: FindingStatus; note?: string }) => {
-      if (!env.demoData) return apiFetch<FindingDetail>(`/findings/${id}`, { method: "PATCH", json: { status, note } });
+      if (!env.demoData)
+        return apiFetch<FindingDetail>(`/findings/${id}`, { method: "PATCH", json: { status, note } });
       const detail = demo.findingDetails[id]!;
       const listItem = demo.findings.find((f) => f.id === id)!;
       detail.status = status;
@@ -131,12 +142,17 @@ export const useEntities = (q = "") =>
     queryKey: ["entities", q],
     queryFn: () =>
       loadItems<EntityListItem>(`/entities?q=${encodeURIComponent(q)}`, () =>
-        demo.entities.filter((e) => `${e.canonical_name} ${e.canonical_email}`.toLowerCase().includes(q.toLowerCase())),
+        demo.entities.filter((e) =>
+          `${e.canonical_name} ${e.canonical_email}`.toLowerCase().includes(q.toLowerCase()),
+        ),
       ),
   });
 
 export const useEntity = (id: string) =>
-  useQuery({ queryKey: ["entity", id], queryFn: () => load<EntityDetail | null>(`/entities/${id}`, () => demo.entityDetail(id)) });
+  useQuery({
+    queryKey: ["entity", id],
+    queryFn: () => load<EntityDetail | null>(`/entities/${id}`, () => demo.entityDetail(id)),
+  });
 
 export const useEntityTimeline = (id: string) =>
   useQuery({
@@ -150,15 +166,21 @@ export const useAsOf = (id: string, at: string | null) =>
     enabled: Boolean(at),
     placeholderData: (previous) => previous,
     queryFn: () =>
-      load<AsOfView | null>(`/entities/${id}/as-of?at=${encodeURIComponent(at!)}`, () => demo.asOfView(id, at!)),
+      load<AsOfView | null>(`/entities/${id}/as-of?at=${encodeURIComponent(at!)}`, () =>
+        demo.asOfView(id, at!),
+      ),
   });
 
 // -------------------------------------------------------------------- alerts, links
 
-export const useAlerts = () => useQuery({ queryKey: ["alerts"], queryFn: () => loadItems<Alert>("/alerts", () => demo.alerts) });
+export const useAlerts = () =>
+  useQuery({ queryKey: ["alerts"], queryFn: () => loadItems<Alert>("/alerts", () => demo.alerts) });
 
 export const useLinkQueue = () =>
-  useQuery({ queryKey: ["links", "needs_review"], queryFn: () => loadItems<LinkReviewItem>("/links?status=needs_review", () => demo.linkQueue) });
+  useQuery({
+    queryKey: ["links", "needs_review"],
+    queryFn: () => loadItems<LinkReviewItem>("/links?status=needs_review", () => demo.linkQueue),
+  });
 
 export function useDecideLink() {
   const client = useQueryClient();
@@ -176,12 +198,19 @@ export function useDecideLink() {
 // -------------------------------------------------------------------- investigations
 
 export const useInvestigations = () =>
-  useQuery({ queryKey: ["investigations"], queryFn: () => loadItems<Investigation>("/investigations", () => demo.investigations) });
+  useQuery({
+    queryKey: ["investigations"],
+    queryFn: () => loadItems<Investigation>("/investigations", () => demo.investigations),
+  });
 
 export const useInvestigation = (id: string) =>
   useQuery({
     queryKey: ["investigation", id],
-    queryFn: () => load<Investigation | null>(`/investigations/${id}`, () => demo.investigations.find((i) => i.id === id) ?? null),
+    queryFn: () =>
+      load<Investigation | null>(
+        `/investigations/${id}`,
+        () => demo.investigations.find((i) => i.id === id) ?? null,
+      ),
   });
 
 export const useCheckpoints = (id: string) =>
@@ -192,20 +221,35 @@ export const useCheckpoints = (id: string) =>
 
 // -------------------------------------------------------------------- admin
 
-export const useRules = () => useQuery({ queryKey: ["rules"], queryFn: () => loadItems<Rule>("/rules", () => demo.rules) });
+export const useRules = () =>
+  useQuery({ queryKey: ["rules"], queryFn: () => loadItems<Rule>("/rules", () => demo.rules) });
 
 export const useSourceSystems = () =>
-  useQuery({ queryKey: ["source-systems"], queryFn: () => loadItems<SourceSystem>("/source-systems", () => demo.sourceSystems) });
+  useQuery({
+    queryKey: ["source-systems"],
+    queryFn: () => loadItems<SourceSystem>("/source-systems", () => demo.sourceSystems),
+  });
 
 export const useFailedEvents = () =>
-  useQuery({ queryKey: ["ingest", "failed"], queryFn: () => loadItems<FailedEvent>("/ingest/events?status=failed", () => demo.failedEvents) });
+  useQuery({
+    queryKey: ["ingest", "failed"],
+    queryFn: () => loadItems<FailedEvent>("/ingest/events?status=failed", () => demo.failedEvents),
+  });
 
 export const useSimulationRuns = () =>
-  useQuery({ queryKey: ["simulation", "runs"], queryFn: () => loadItems<SimulationRun>("/simulation/runs", () => demo.simulationRuns) });
+  useQuery({
+    queryKey: ["simulation", "runs"],
+    queryFn: () => loadItems<SimulationRun>("/simulation/runs", () => demo.simulationRuns),
+  });
 
 export const useEvaluation = (runId: string) =>
-  useQuery({ queryKey: ["simulation", runId, "evaluation"], queryFn: () => load<Evaluation>(`/simulation/runs/${runId}/evaluation`, () => demo.evaluation) });
+  useQuery({
+    queryKey: ["simulation", runId, "evaluation"],
+    queryFn: () => load<Evaluation>(`/simulation/runs/${runId}/evaluation`, () => demo.evaluation),
+  });
 
-export const useUsers = () => useQuery({ queryKey: ["users"], queryFn: () => loadItems<UserItem>("/users", () => demo.users) });
+export const useUsers = () =>
+  useQuery({ queryKey: ["users"], queryFn: () => loadItems<UserItem>("/users", () => demo.users) });
 
-export const useAuditLog = () => useQuery({ queryKey: ["audit"], queryFn: () => loadItems<AuditItem>("/audit-logs", () => demo.auditLog) });
+export const useAuditLog = () =>
+  useQuery({ queryKey: ["audit"], queryFn: () => loadItems<AuditItem>("/audit-logs", () => demo.auditLog) });

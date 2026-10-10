@@ -2,7 +2,19 @@ import { RotateCcw } from "lucide-react";
 import { useState } from "react";
 
 import { RoleGate } from "../../components/RoleGate";
-import { Button, Card, DataTable, EmptyState, PageHeader, Pill, SectionHeader, Skeleton, Slider, SystemChip, toast } from "../../components/ui";
+import {
+  Button,
+  Card,
+  DataTable,
+  EmptyState,
+  PageHeader,
+  Pill,
+  SectionHeader,
+  Skeleton,
+  Slider,
+  SystemChip,
+  toast,
+} from "../../components/ui";
 import { useFailedEvents, useSourceSystems } from "../../lib/api/queries";
 import type { SourceSystem } from "../../lib/api/types";
 import { formatNumber, humanize, relativeTime } from "../../lib/format";
@@ -14,7 +26,13 @@ function SystemCard({ system }: { system: SourceSystem }) {
     <Card className="flex flex-col gap-4">
       <div className="flex items-center justify-between gap-2">
         <SystemChip system={system.key} />
-        {quiet ? <Pill tone="amber">No data for {relativeTime(system.last_event_at!).replace(" ago", "")}</Pill> : <Pill tone="moss" dot>Receiving data</Pill>}
+        {quiet ? (
+          <Pill tone="amber">No data for {relativeTime(system.last_event_at!).replace(" ago", "")}</Pill>
+        ) : (
+          <Pill tone="moss" dot>
+            Receiving data
+          </Pill>
+        )}
       </div>
       <p className="text-small text-ink-500">
         {Object.entries(system.record_counts)
@@ -48,10 +66,17 @@ export function Component() {
   const failed = useFailedEvents();
   return (
     <RoleGate min="admin" title="Systems">
-      <PageHeader title="Systems" subtitle="Source systems, how much each is trusted per field, and events that failed to process" />
+      <PageHeader
+        title="Systems"
+        subtitle="Source systems, how much each is trusted per field, and events that failed to process"
+      />
       <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-        {systems.isLoading ? Array.from({ length: 3 }, (_, i) => <Skeleton key={i} className="h-80" />) : null}
-        {systems.data?.map((system) => <SystemCard key={system.key} system={system} />)}
+        {systems.isLoading
+          ? Array.from({ length: 3 }, (_, i) => <Skeleton key={i} className="h-80" />)
+          : null}
+        {systems.data?.map((system) => (
+          <SystemCard key={system.key} system={system} />
+        ))}
       </div>
       <div className="mt-8">
         <SectionHeader title="Failed events" />
@@ -73,13 +98,26 @@ export function Component() {
                   </span>
                 ),
               },
-              { key: "error", header: "Error", cell: (e) => <span className="text-small text-rose-fg">{e.error}</span> },
-              { key: "attempts", header: "Attempts", hideBelow: "md", cell: (e) => <span className="tabular">{e.attempts}</span> },
+              {
+                key: "error",
+                header: "Error",
+                cell: (e) => <span className="text-small text-rose-fg">{e.error}</span>,
+              },
+              {
+                key: "attempts",
+                header: "Attempts",
+                hideBelow: "md",
+                cell: (e) => <span className="tabular">{e.attempts}</span>,
+              },
               {
                 key: "retry",
                 header: "",
                 cell: (e) => (
-                  <Button size="sm" surface="paper" onClick={() => toast({ title: "Event queued again", description: e.external_id })}>
+                  <Button
+                    size="sm"
+                    surface="paper"
+                    onClick={() => toast({ title: "Event queued again", description: e.external_id })}
+                  >
                     <RotateCcw size={14} aria-hidden="true" /> Retry
                   </Button>
                 ),

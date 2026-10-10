@@ -37,7 +37,11 @@ export function Component() {
       <PageHeader title="Customers" subtitle="Every customer as CRM, Billing and Support describe them" />
       <div className="mb-4 flex items-center gap-2">
         <div className="relative w-full sm:w-80">
-          <Search size={16} aria-hidden="true" className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-ink-500" />
+          <Search
+            size={16}
+            aria-hidden="true"
+            className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-ink-500"
+          />
           <Input
             surface="glass"
             type="search"
@@ -54,7 +58,10 @@ export function Component() {
       </div>
       <Card className="overflow-hidden p-0">
         {isError ? (
-          <ErrorState title="Couldn't load customers. Check your connection and retry." onRetry={() => void refetch()} />
+          <ErrorState
+            title="Couldn't load customers. Check your connection and retry."
+            onRetry={() => void refetch()}
+          />
         ) : (
           <DataTable
             caption="Customers"
@@ -90,7 +97,12 @@ export function Component() {
                 key: "risk",
                 header: "Risk",
                 sortValue: (e) => (e.risk ? riskRank[e.risk.level] * 10 + e.risk.score : -1),
-                cell: (e) => (e.risk ? <RiskBadge level={e.risk.level} confidence={e.risk.confidence} /> : <Pill>Not assessed</Pill>),
+                cell: (e) =>
+                  e.risk ? (
+                    <RiskBadge level={e.risk.level} confidence={e.risk.confidence} />
+                  ) : (
+                    <Pill>Not assessed</Pill>
+                  ),
               },
               {
                 key: "findings",
@@ -120,7 +132,9 @@ export function Component() {
                 header: "Updated",
                 hideBelow: "lg",
                 sortValue: (e) => new Date(e.updated_at).getTime(),
-                cell: (e) => <span className="text-small tabular text-ink-500">{relativeTime(e.updated_at)}</span>,
+                cell: (e) => (
+                  <span className="text-small tabular text-ink-500">{relativeTime(e.updated_at)}</span>
+                ),
               },
             ]}
           />

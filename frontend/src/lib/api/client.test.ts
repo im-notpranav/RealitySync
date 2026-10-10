@@ -50,7 +50,10 @@ describe("apiFetch", () => {
   });
 
   it("returns undefined for 204", async () => {
-    vi.stubGlobal("fetch", vi.fn(async () => new Response(null, { status: 204 })));
+    vi.stubGlobal(
+      "fetch",
+      vi.fn(async () => new Response(null, { status: 204 })),
+    );
     await expect(apiFetch("/auth/logout", { method: "POST" })).resolves.toBeUndefined();
   });
 });

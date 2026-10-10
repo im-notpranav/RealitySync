@@ -48,8 +48,18 @@ export function Pill({ tone = "neutral", dot, icon, children, className, title }
 
 // ------------------------------------------------------------------ severity
 
-export const severityTone: Record<Severity, Tone> = { critical: "rose", high: "peach", medium: "amber", low: "neutral" };
-export const severityLabel: Record<Severity, string> = { critical: "Critical", high: "High", medium: "Medium", low: "Low" };
+export const severityTone: Record<Severity, Tone> = {
+  critical: "rose",
+  high: "peach",
+  medium: "amber",
+  low: "neutral",
+};
+export const severityLabel: Record<Severity, string> = {
+  critical: "Critical",
+  high: "High",
+  medium: "Medium",
+  low: "Low",
+};
 
 /** Shape carries meaning without colour (06 §6): ▲ critical, ◆ high, ● medium, ○ low. */
 export function SeverityShape({ severity }: { severity: Severity }) {
@@ -58,7 +68,9 @@ export function SeverityShape({ severity }: { severity: Severity }) {
       {severity === "critical" ? <path d="M5 1 9.2 8.6H.8Z" className="fill-current" /> : null}
       {severity === "high" ? <path d="M5 .8 9.2 5 5 9.2.8 5Z" className="fill-current" /> : null}
       {severity === "medium" ? <circle cx="5" cy="5" r="4" className="fill-current" /> : null}
-      {severity === "low" ? <circle cx="5" cy="5" r="3.3" className="fill-none stroke-current" strokeWidth="1.4" /> : null}
+      {severity === "low" ? (
+        <circle cx="5" cy="5" r="3.3" className="fill-none stroke-current" strokeWidth="1.4" />
+      ) : null}
     </svg>
   );
 }
@@ -118,14 +130,39 @@ export function SystemChip({ system }: { system: SystemKey }) {
 
 // ------------------------------------------------------------------ risk
 
-export const riskTone: Record<RiskLevel, Tone> = { low: "moss", watch: "indigo", warning: "peach", critical: "rose" };
-export const riskLabel: Record<RiskLevel, string> = { low: "Low", watch: "Watch", warning: "Warning", critical: "Critical" };
+export const riskTone: Record<RiskLevel, Tone> = {
+  low: "moss",
+  watch: "indigo",
+  warning: "peach",
+  critical: "rose",
+};
+export const riskLabel: Record<RiskLevel, string> = {
+  low: "Low",
+  watch: "Watch",
+  warning: "Warning",
+  critical: "Critical",
+};
 
 /** Risk is never shown without its confidence (06 §7.8, FR-RSK-002). */
-export function RiskBadge({ level, confidence, className }: { level: RiskLevel; confidence: number; className?: string }) {
+export function RiskBadge({
+  level,
+  confidence,
+  className,
+}: {
+  level: RiskLevel;
+  confidence: number;
+  className?: string;
+}) {
   return (
-    <span aria-label={`Risk ${riskLabel[level]}, confidence ${formatPercent(confidence)}`} className="inline-flex">
-      <Pill tone={riskTone[level]} icon={<Gauge size={12} strokeWidth={2} aria-hidden="true" />} className={className}>
+    <span
+      aria-label={`Risk ${riskLabel[level]}, confidence ${formatPercent(confidence)}`}
+      className="inline-flex"
+    >
+      <Pill
+        tone={riskTone[level]}
+        icon={<Gauge size={12} strokeWidth={2} aria-hidden="true" />}
+        className={className}
+      >
         <span aria-hidden="true">
           {riskLabel[level]} <span className="opacity-70">· {formatPercent(confidence)}</span>
         </span>
@@ -177,7 +214,11 @@ export function ConfidenceMeter({ value, breakdown }: { value: number; breakdown
         </dl>
       }
     >
-      <button type="button" className="rounded-[6px]" aria-label={`Confidence ${formatPercent(value)}, show breakdown`}>
+      <button
+        type="button"
+        className="rounded-[6px]"
+        aria-label={`Confidence ${formatPercent(value)}, show breakdown`}
+      >
         {meter}
       </button>
     </Tooltip>

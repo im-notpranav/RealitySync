@@ -20,10 +20,20 @@ import { formatShortDate } from "../../lib/format";
 interface TooltipPayload {
   active?: boolean;
   label?: string | number;
-  payload?: ReadonlyArray<{ name?: string; value?: number | string; color?: string; dataKey?: string | number }>;
+  payload?: ReadonlyArray<{
+    name?: string;
+    value?: number | string;
+    color?: string;
+    dataKey?: string | number;
+  }>;
 }
 
-function ChartTooltip({ active, label, payload, labelFormat }: TooltipPayload & { labelFormat: (label: string) => string }) {
+function ChartTooltip({
+  active,
+  label,
+  payload,
+  labelFormat,
+}: TooltipPayload & { labelFormat: (label: string) => string }) {
   if (!active || !payload?.length) return null;
   return (
     <div className="rounded-[8px] bg-ink-950 px-2.5 py-2 text-caption text-on-dark shadow-raised">
@@ -52,7 +62,9 @@ export function TrendChart({ points, animate }: { points: TrendPoint[]; animate:
           <YAxis allowDecimals={false} tickLine={false} axisLine={false} tick={axis} width={28} />
           <Tooltip
             cursor={{ fill: "var(--ink-100)" }}
-            content={(props) => <ChartTooltip {...(props as unknown as TooltipPayload)} labelFormat={formatShortDate} />}
+            content={(props) => (
+              <ChartTooltip {...(props as unknown as TooltipPayload)} labelFormat={formatShortDate} />
+            )}
           />
           <Bar
             dataKey="created"
@@ -114,17 +126,39 @@ export function ReplayChart({
             </linearGradient>
           </defs>
           <CartesianGrid vertical={false} stroke="var(--ink-100)" />
-          <XAxis dataKey="at" tickFormatter={formatShortDate} tickLine={false} axisLine={false} tick={axis} minTickGap={48} />
-          <YAxis domain={[0, 1]} ticks={[0, 0.4, 0.6, 0.8, 1]} tickLine={false} axisLine={false} tick={axis} width={32} tickFormatter={(v: number) => v.toFixed(1)} />
+          <XAxis
+            dataKey="at"
+            tickFormatter={formatShortDate}
+            tickLine={false}
+            axisLine={false}
+            tick={axis}
+            minTickGap={48}
+          />
+          <YAxis
+            domain={[0, 1]}
+            ticks={[0, 0.4, 0.6, 0.8, 1]}
+            tickLine={false}
+            axisLine={false}
+            tick={axis}
+            width={32}
+            tickFormatter={(v: number) => v.toFixed(1)}
+          />
           <Tooltip
             cursor={{ stroke: "var(--ink-400)", strokeDasharray: "3 3" }}
-            content={(props) => <ChartTooltip {...(props as unknown as TooltipPayload)} labelFormat={formatShortDate} />}
+            content={(props) => (
+              <ChartTooltip {...(props as unknown as TooltipPayload)} labelFormat={formatShortDate} />
+            )}
           />
           <ReferenceLine
             y={threshold}
             stroke="var(--peach-fg)"
             strokeDasharray="4 4"
-            label={{ value: `Warning ${threshold.toFixed(2)}`, position: "insideTopLeft", fill: "var(--peach-fg)", fontSize: 12 }}
+            label={{
+              value: `Warning ${threshold.toFixed(2)}`,
+              position: "insideTopLeft",
+              fill: "var(--peach-fg)",
+              fontSize: 12,
+            }}
           />
           <Area
             type="monotone"
@@ -140,7 +174,14 @@ export function ReplayChart({
             animationEasing="ease-in-out"
           />
           {crossing && showDot ? (
-            <ReferenceDot x={crossing.at} y={crossing.risk_score} r={6} fill="var(--peach-fg)" stroke="var(--paper)" strokeWidth={2} />
+            <ReferenceDot
+              x={crossing.at}
+              y={crossing.risk_score}
+              r={6}
+              fill="var(--peach-fg)"
+              stroke="var(--paper)"
+              strokeWidth={2}
+            />
           ) : null}
         </AreaChart>
       </ResponsiveContainer>
@@ -171,7 +212,10 @@ export function SignalBars({ risk }: { risk: RiskAssessment }) {
             </span>
             <span className="col-span-2 h-1.5 overflow-hidden rounded-pill bg-ink-200">
               <span
-                className={cn("block h-full rounded-pill", signal.available ? "bg-ink-950" : "bg-transparent")}
+                className={cn(
+                  "block h-full rounded-pill",
+                  signal.available ? "bg-ink-950" : "bg-transparent",
+                )}
                 style={{ width: `${signal.available ? signal.value * 100 : 0}%` }}
               />
             </span>

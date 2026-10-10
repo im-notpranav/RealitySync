@@ -71,7 +71,12 @@ export function Component() {
             rowKey={(i) => i.id}
             rowLabel={(i) => `Open investigation for ${i.entity_name}`}
             onRowClick={(i) => navigate(`/investigations/${i.id}`)}
-            empty={<EmptyState title="No investigations yet" description="Start one from a customer or with the button above." />}
+            empty={
+              <EmptyState
+                title="No investigations yet"
+                description="Start one from a customer or with the button above."
+              />
+            }
             columns={[
               {
                 key: "customer",

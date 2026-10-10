@@ -11,7 +11,11 @@ const SYSTEMS: SystemKey[] = ["crm", "billing", "support"];
 // ------------------------------------------------------------------ diff table
 
 /** field · CRM · Billing · Support; differing cells are tinted (06 §6 DiffRow). */
-export function DiffTable({ fields }: { fields: { field: string; values: Partial<Record<SystemKey, string>> }[] }) {
+export function DiffTable({
+  fields,
+}: {
+  fields: { field: string; values: Partial<Record<SystemKey, string>> }[];
+}) {
   const systems = SYSTEMS.filter((s) => fields.some((f) => f.values[s] !== undefined));
   return (
     <div className="overflow-hidden rounded-control border border-ink-200">
@@ -43,7 +47,9 @@ export function DiffTable({ fields }: { fields: { field: string; values: Partial
                     key={system}
                     className={cn(
                       "px-3 py-2.5 text-small text-ink-900",
-                      differs && row.values[system] !== undefined && "bg-peach-bg shadow-[inset_2px_0_0_var(--peach-fg)]",
+                      differs &&
+                        row.values[system] !== undefined &&
+                        "bg-peach-bg shadow-[inset_2px_0_0_var(--peach-fg)]",
                     )}
                   >
                     {row.values[system] ?? <span className="text-ink-400">—</span>}
@@ -73,8 +79,8 @@ function FactBody({ fact }: { fact: TrailFact }) {
       <>
         <span className="block text-small font-medium text-ink-950">Not recorded: {fact.expected}</span>
         <span className="block mt-0.5 text-caption font-normal text-ink-500">
-          Expected by {fact.deadline ? formatDateTime(fact.deadline) : "—"} · {systemNames[fact.system]} data recorded
-          until {fact.feed_watermark ? formatDateTime(fact.feed_watermark) : "never"}
+          Expected by {fact.deadline ? formatDateTime(fact.deadline) : "—"} · {systemNames[fact.system]} data
+          recorded until {fact.feed_watermark ? formatDateTime(fact.feed_watermark) : "never"}
         </span>
       </>
     );
@@ -85,7 +91,8 @@ function FactBody({ fact }: { fact: TrailFact }) {
         <span className="font-medium">{humanize(fact.field ?? "value")}</span> = {fact.value}
       </span>
       <span className="block mt-0.5 text-caption font-normal tabular text-ink-500">
-        {fact.external_id} · {fact.record_type} v{fact.version} · recorded {fact.recorded_at ? formatDateTime(fact.recorded_at) : "—"}
+        {fact.external_id} · {fact.record_type} v{fact.version} · recorded{" "}
+        {fact.recorded_at ? formatDateTime(fact.recorded_at) : "—"}
       </span>
     </>
   );
@@ -132,7 +139,9 @@ export function TrailView({ trail, citedFactIds = [] }: { trail: Trail; citedFac
             <li key={fact.id}>
               <button {...tileProps(fact.id)} className={tile(fact.id)}>
                 <span className="mb-1.5 flex flex-wrap items-center gap-1.5">
-                  <span className="rounded-[6px] bg-ink-100 px-1.5 text-caption tabular text-ink-700">{fact.id}</span>
+                  <span className="rounded-[6px] bg-ink-100 px-1.5 text-caption tabular text-ink-700">
+                    {fact.id}
+                  </span>
                   <SystemChip system={fact.system} />
                   {fact.kind === "absence" ? <Pill tone="amber">Absence</Pill> : null}
                   {citedFactIds.includes(fact.id) ? (
@@ -157,9 +166,13 @@ export function TrailView({ trail, citedFactIds = [] }: { trail: Trail; citedFac
             <li key={inference.id}>
               <button {...tileProps(inference.id)} className={tile(inference.id)}>
                 <span className="mb-1 flex items-center gap-1.5">
-                  <span className="rounded-[6px] bg-ink-100 px-1.5 text-caption tabular text-ink-700">{inference.id}</span>
+                  <span className="rounded-[6px] bg-ink-100 px-1.5 text-caption tabular text-ink-700">
+                    {inference.id}
+                  </span>
                   <span className="text-caption text-ink-500">{inferenceLabel[inference.kind]}</span>
-                  <span className="ml-auto text-caption font-normal text-ink-500">uses {inference.uses.join(", ")}</span>
+                  <span className="ml-auto text-caption font-normal text-ink-500">
+                    uses {inference.uses.join(", ")}
+                  </span>
                 </span>
                 <span className="block text-small text-ink-900">{inference.statement}</span>
               </button>
@@ -182,7 +195,9 @@ export function TrailView({ trail, citedFactIds = [] }: { trail: Trail; citedFac
             Confidence {formatPercent(trail.conclusion.confidence)}
             {trail.conclusion.score !== undefined ? ` · score ${trail.conclusion.score.toFixed(3)}` : ""}
           </span>
-          <span className="ml-auto text-caption font-normal text-on-dark-muted">from {trail.conclusion.uses.join(", ")}</span>
+          <span className="ml-auto text-caption font-normal text-on-dark-muted">
+            from {trail.conclusion.uses.join(", ")}
+          </span>
         </div>
       </section>
     </div>

@@ -46,7 +46,8 @@ export function FindingDrawer({ id, onClose }: { id: string | null; onClose: () 
   const [noteOpen, setNoteOpen] = useState(false);
   const [note, setNote] = useState("");
 
-  const canAct = hasRole(user, "analyst") && data && (data.status === "open" || data.status === "acknowledged");
+  const canAct =
+    hasRole(user, "analyst") && data && (data.status === "open" || data.status === "acknowledged");
 
   function transition(status: FindingStatus, withNote?: string) {
     if (!data) return;
@@ -85,7 +86,11 @@ export function FindingDrawer({ id, onClose }: { id: string | null; onClose: () 
                 Mark as false positive
               </Button>
               {data.status === "open" ? (
-                <Button surface="paper" onClick={() => transition("acknowledged")} disabled={update.isPending}>
+                <Button
+                  surface="paper"
+                  onClick={() => transition("acknowledged")}
+                  disabled={update.isPending}
+                >
                   Acknowledge
                 </Button>
               ) : null}
@@ -114,7 +119,8 @@ export function FindingDrawer({ id, onClose }: { id: string | null; onClose: () 
                 <ArrowUpRight size={14} aria-hidden="true" />
               </Link>
               <span>
-                Detected {relativeTime(data.first_detected_at)} · {data.systems.map((s) => systemNames[s]).join(", ")}
+                Detected {relativeTime(data.first_detected_at)} ·{" "}
+                {data.systems.map((s) => systemNames[s]).join(", ")}
               </span>
             </div>
 
@@ -159,7 +165,10 @@ export function FindingDrawer({ id, onClose }: { id: string | null; onClose: () 
                         variant="ghost"
                         size="sm"
                         onClick={() =>
-                          toast({ title: "Regeneration queued", description: "The new explanation arrives in a few seconds." })
+                          toast({
+                            title: "Regeneration queued",
+                            description: "The new explanation arrives in a few seconds.",
+                          })
                         }
                       >
                         <RefreshCw size={14} aria-hidden="true" />
@@ -183,7 +192,9 @@ export function FindingDrawer({ id, onClose }: { id: string | null; onClose: () 
                 </div>
               ) : (
                 <div className="flex flex-col gap-2 rounded-control bg-ink-100 p-4" aria-busy="true">
-                  <p className="text-small text-ink-500">The explanation is being written. The evidence below is complete.</p>
+                  <p className="text-small text-ink-500">
+                    The explanation is being written. The evidence below is complete.
+                  </p>
                   <Skeleton className="h-4 w-11/12" />
                   <Skeleton className="h-4 w-3/4" />
                 </div>

@@ -15,7 +15,17 @@ const controlSurface = {
   glass: "glass-control pointer:hover:bg-white/70",
 } as const;
 
-export function Field({ label, hint, htmlFor, children }: { label: string; hint?: string; htmlFor: string; children: ReactNode }) {
+export function Field({
+  label,
+  hint,
+  htmlFor,
+  children,
+}: {
+  label: string;
+  hint?: string;
+  htmlFor: string;
+  children: ReactNode;
+}) {
   return (
     <div className="flex flex-col gap-1.5">
       <label htmlFor={htmlFor} className="text-small font-medium text-ink-700">
@@ -31,7 +41,10 @@ export interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
   surface?: keyof typeof controlSurface;
 }
 
-export const Input = forwardRef<HTMLInputElement, InputProps>(function Input({ surface = "paper", className, ...props }, ref) {
+export const Input = forwardRef<HTMLInputElement, InputProps>(function Input(
+  { surface = "paper", className, ...props },
+  ref,
+) {
   return <input ref={ref} className={cn(controlBase, controlSurface[surface], className)} {...props} />;
 });
 
@@ -53,13 +66,26 @@ export interface SelectProps {
 }
 
 /** Popover scales from the trigger, exits faster (06 §8). */
-export function Select({ value, onValueChange, options, label, surface = "paper", className, id }: SelectProps) {
+export function Select({
+  value,
+  onValueChange,
+  options,
+  label,
+  surface = "paper",
+  className,
+  id,
+}: SelectProps) {
   return (
     <SelectPrimitive.Root value={value} onValueChange={onValueChange}>
       <SelectPrimitive.Trigger
         id={id}
         aria-label={label}
-        className={cn(controlBase, controlSurface[surface], "inline-flex items-center justify-between gap-2 text-left", className)}
+        className={cn(
+          controlBase,
+          controlSurface[surface],
+          "inline-flex items-center justify-between gap-2 text-left",
+          className,
+        )}
       >
         <SelectPrimitive.Value />
         <SelectPrimitive.Icon>
@@ -156,7 +182,9 @@ export function Slider({
         </SliderPrimitive.Track>
         <SliderPrimitive.Thumb className="block size-5 rounded-pill bg-paper shadow-card ring-1 ring-ink-200 transition-transform duration-press ease-out motion-safe:active:scale-110" />
       </SliderPrimitive.Root>
-      <span className="min-w-12 whitespace-nowrap text-right text-small font-medium tabular text-ink-900">{format(value)}</span>
+      <span className="min-w-12 whitespace-nowrap text-right text-small font-medium tabular text-ink-900">
+        {format(value)}
+      </span>
     </div>
   );
 }

@@ -9,7 +9,9 @@ import { cn } from "../../lib/cn";
 import { formatPercent, humanize, relativeTime } from "../../lib/format";
 
 function Compare({ item }: { item: LinkReviewItem }) {
-  const keys = Array.from(new Set([...Object.keys(item.left.normalized), ...Object.keys(item.right.normalized)]));
+  const keys = Array.from(
+    new Set([...Object.keys(item.left.normalized), ...Object.keys(item.right.normalized)]),
+  );
   return (
     <div className="grid gap-4 md:grid-cols-2">
       {[item.left, item.right].map((record) => (
@@ -22,11 +24,17 @@ function Compare({ item }: { item: LinkReviewItem }) {
           </div>
           <dl className="divide-y divide-ink-100">
             {keys.map((key) => {
-              const same = item.left.normalized[key] && item.left.normalized[key] === item.right.normalized[key];
+              const same =
+                item.left.normalized[key] && item.left.normalized[key] === item.right.normalized[key];
               return (
                 <div key={key} className="flex items-baseline justify-between gap-3 py-2">
                   <dt className="text-small text-ink-500">{humanize(key)}</dt>
-                  <dd className={cn("flex items-center gap-1.5 text-small font-medium", same ? "text-ink-950" : "text-peach-fg")}>
+                  <dd
+                    className={cn(
+                      "flex items-center gap-1.5 text-small font-medium",
+                      same ? "text-ink-950" : "text-peach-fg",
+                    )}
+                  >
                     {record.normalized[key] ?? <span className="font-normal text-ink-400">—</span>}
                     {same ? <Check size={14} className="text-moss-fg" aria-label="matches" /> : null}
                   </dd>
@@ -51,7 +59,10 @@ export function Component() {
     if (!item) return;
     decide.mutate(
       { id: item.id, decision },
-      { onSuccess: () => toast({ title: decision === "confirm" ? "Match confirmed" : "Match rejected", tone: "success" }) },
+      {
+        onSuccess: () =>
+          toast({ title: decision === "confirm" ? "Match confirmed" : "Match rejected", tone: "success" }),
+      },
     );
   }
 
@@ -75,14 +86,19 @@ export function Component() {
         subtitle={
           <>
             Confirm or reject uncertain customer matches · <kbd className="font-sans">Y</kbd> same,{" "}
-            <kbd className="font-sans">N</kbd> different, <kbd className="font-sans">J</kbd>/<kbd className="font-sans">K</kbd> move
+            <kbd className="font-sans">N</kbd> different, <kbd className="font-sans">J</kbd>/
+            <kbd className="font-sans">K</kbd> move
           </>
         }
       />
       {isLoading ? <Skeleton className="h-80 w-full" /> : null}
       {data && data.length === 0 ? (
         <Card>
-          <EmptyState icon={GitCompareArrows} title="The review queue is clear" description="New uncertain matches appear here as data arrives." />
+          <EmptyState
+            icon={GitCompareArrows}
+            title="The review queue is clear"
+            description="New uncertain matches appear here as data arrives."
+          />
         </Card>
       ) : null}
       {data && item ? (
@@ -101,7 +117,9 @@ export function Component() {
                     )}
                   >
                     <span className="min-w-0 flex-1">
-                      <span className="block truncate text-small font-medium capitalize text-ink-950">{link.left.normalized.name}</span>
+                      <span className="block truncate text-small font-medium capitalize text-ink-950">
+                        {link.left.normalized.name}
+                      </span>
                       <span className="block truncate text-caption font-normal text-ink-500">
                         {link.left.external_id} ↔ {link.right.external_id}
                       </span>

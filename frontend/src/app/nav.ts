@@ -40,7 +40,12 @@ export const adminNav: NavEntry[] = [
   { to: "/simulation", label: "Simulation", icon: FlaskConical, minRole: "admin" },
 ];
 
-export const settingsNav: NavEntry = { to: "/settings", label: "Settings", icon: Settings, minRole: "viewer" };
+export const settingsNav: NavEntry = {
+  to: "/settings",
+  label: "Settings",
+  icon: Settings,
+  minRole: "viewer",
+};
 
 export function visibleEntries(entries: NavEntry[], user: SessionUser | null): NavEntry[] {
   return entries.filter((entry) => hasRole(user, entry.minRole));

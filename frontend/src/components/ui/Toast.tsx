@@ -21,14 +21,22 @@ let nextId = 1;
 
 const useToasts = create<ToastState>((set) => ({
   toasts: [],
-  push: (toast) => set((state) => ({ toasts: [...state.toasts, { tone: "default" as const, ...toast, id: nextId++ }].slice(-4) })),
+  push: (toast) =>
+    set((state) => ({
+      toasts: [...state.toasts, { tone: "default" as const, ...toast, id: nextId++ }].slice(-4),
+    })),
   dismiss: (id) => set((state) => ({ toasts: state.toasts.filter((t) => t.id !== id) })),
 }));
 
 /** `toast({ title: "Finding resolved" })` from anywhere. */
 export const toast = (input: Parameters<ToastState["push"]>[0]) => useToasts.getState().push(input);
 
-const icons = { default: Info, success: CheckCircle2, error: AlertTriangle, critical: AlertTriangle } as const;
+const icons = {
+  default: Info,
+  success: CheckCircle2,
+  error: AlertTriangle,
+  critical: AlertTriangle,
+} as const;
 
 /** Dark glass toasts, bottom-right; critical ones persist; swipe right to dismiss (06 §6, §8). */
 export function Toaster() {
@@ -51,7 +59,11 @@ export function Toaster() {
             <Icon
               size={18}
               aria-hidden="true"
-              className={item.tone === "success" ? "mt-0.5 shrink-0 text-moss-500" : "mt-0.5 shrink-0 text-on-dark-muted"}
+              className={
+                item.tone === "success"
+                  ? "mt-0.5 shrink-0 text-moss-500"
+                  : "mt-0.5 shrink-0 text-on-dark-muted"
+              }
             />
             <div className="min-w-0">
               <ToastPrimitive.Title className="text-body font-medium">{item.title}</ToastPrimitive.Title>

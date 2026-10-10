@@ -106,7 +106,8 @@ export interface FindingDetail extends FindingListItem {
   resolved_at: string | null;
 }
 
-export type RiskSignalName = "payment_delay" | "complaint_trend" | "commercial_decline" | "open_inconsistencies";
+export type RiskSignalName =
+  "payment_delay" | "complaint_trend" | "commercial_decline" | "open_inconsistencies";
 
 export interface RiskAssessment {
   score: number;
@@ -189,7 +190,10 @@ export interface TimelineItem {
 export interface AsOfView {
   entity_id: string;
   at: string;
-  records: { link: { status: LinkStatus; match_confidence: number }; record: SourceRecord & { recorded_at: string } }[];
+  records: {
+    link: { status: LinkStatus; match_confidence: number };
+    record: SourceRecord & { recorded_at: string };
+  }[];
   not_yet_linkable: { record_id: string; system: SystemKey; external_id: string }[];
   findings: (Pick<FindingListItem, "rule_key" | "title" | "severity" | "confidence"> & {
     fingerprint: string;

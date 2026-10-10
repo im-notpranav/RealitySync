@@ -37,18 +37,29 @@ const secondary: Record<ButtonSurface, string> = {
   paper: "border border-ink-200 bg-paper text-ink-900 pointer:hover:bg-ink-100",
 };
 
-export function buttonClasses({ variant = "secondary", surface = "glass", size = "md", className }: ButtonStyle) {
+export function buttonClasses({
+  variant = "secondary",
+  surface = "glass",
+  size = "md",
+  className,
+}: ButtonStyle) {
   return cn(base, sizes[size], variant === "secondary" ? secondary[surface] : variants[variant], className);
 }
 
-export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement>, Omit<ButtonStyle, "className"> {}
+export interface ButtonProps
+  extends ButtonHTMLAttributes<HTMLButtonElement>, Omit<ButtonStyle, "className"> {}
 
 export const Button = forwardRef<HTMLButtonElement, ButtonProps>(function Button(
   { variant, surface, size, className, type = "button", ...props },
   ref,
 ) {
   return (
-    <button ref={ref} type={type} className={buttonClasses({ variant, surface, size, className })} {...props} />
+    <button
+      ref={ref}
+      type={type}
+      className={buttonClasses({ variant, surface, size, className })}
+      {...props}
+    />
   );
 });
 

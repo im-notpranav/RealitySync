@@ -34,7 +34,9 @@ export function Component() {
             <span className="text-[19px] font-semibold tracking-[-0.02em] text-ink-950">RealitySync</span>
           </div>
           <h1 className="mt-8 text-h2 text-ink-950">Sign in</h1>
-          <p className="mt-1 text-small text-ink-500">Organizational Reality Intelligence for your CRM, Billing and Support data.</p>
+          <p className="mt-1 text-small text-ink-500">
+            Organizational Reality Intelligence for your CRM, Billing and Support data.
+          </p>
           <form
             className="mt-6 flex flex-col gap-4"
             onSubmit={(event) => {
@@ -48,10 +50,21 @@ export function Component() {
             }}
           >
             <Field label="Email" htmlFor={ids.email}>
-              <Input id={ids.email} type="email" autoComplete="email" placeholder="you@company.com" required={!env.isDevelopment} />
+              <Input
+                id={ids.email}
+                type="email"
+                autoComplete="email"
+                placeholder="you@company.com"
+                required={!env.isDevelopment}
+              />
             </Field>
             <Field label="Password" htmlFor={ids.password}>
-              <Input id={ids.password} type="password" autoComplete="current-password" required={!env.isDevelopment} />
+              <Input
+                id={ids.password}
+                type="password"
+                autoComplete="current-password"
+                required={!env.isDevelopment}
+              />
             </Field>
             {error ? (
               <p role="alert" className="text-small text-rose-fg">

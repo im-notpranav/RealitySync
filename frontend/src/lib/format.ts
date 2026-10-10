@@ -39,9 +39,10 @@ export function formatPercent(fraction: number, digits = 0): string {
 }
 
 export function formatNumber(value: number, digits = 0): string {
-  return new Intl.NumberFormat("en-IN", { maximumFractionDigits: digits, minimumFractionDigits: digits }).format(
-    value,
-  );
+  return new Intl.NumberFormat("en-IN", {
+    maximumFractionDigits: digits,
+    minimumFractionDigits: digits,
+  }).format(value);
 }
 
 /** "43 days" / "9 h" — lead times in investigation results. */

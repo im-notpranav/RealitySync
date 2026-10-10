@@ -79,15 +79,27 @@ export function Dialog({ open, onOpenChange, title, description, children, foote
               <Scrim />
             </DialogPrimitive.Overlay>
             <div className="pointer-events-none fixed inset-0 z-50 grid place-items-center p-4">
-              <DialogPrimitive.Content asChild forceMount {...(description ? {} : { "aria-describedby": undefined })}>
+              <DialogPrimitive.Content
+                asChild
+                forceMount
+                {...(description ? {} : { "aria-describedby": undefined })}
+              >
                 <motion.div
                   className={cn(
                     "pointer-events-auto w-full max-w-[480px] rounded-card bg-paper p-6 shadow-raised outline-none",
                     className,
                   )}
                   initial={{ opacity: 0, transform: "scale(0.96)" }}
-                  animate={{ opacity: 1, transform: "scale(1)", transition: { duration: 0.2, ease: EASE_OUT } }}
-                  exit={{ opacity: 0, transform: "scale(0.96)", transition: { duration: 0.15, ease: EASE_OUT } }}
+                  animate={{
+                    opacity: 1,
+                    transform: "scale(1)",
+                    transition: { duration: 0.2, ease: EASE_OUT },
+                  }}
+                  exit={{
+                    opacity: 0,
+                    transform: "scale(0.96)",
+                    transition: { duration: 0.15, ease: EASE_OUT },
+                  }}
                 >
                   <DialogPrimitive.Title className="text-h2 text-ink-950">{title}</DialogPrimitive.Title>
                   {description ? (
@@ -152,7 +164,9 @@ export function Drawer({ open, onOpenChange, title, label, header, children, foo
                 </div>
                 <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-6 py-5">{children}</div>
                 {footer ? (
-                  <div className="flex flex-wrap justify-end gap-2 border-t border-ink-100 px-6 py-4">{footer}</div>
+                  <div className="flex flex-wrap justify-end gap-2 border-t border-ink-100 px-6 py-4">
+                    {footer}
+                  </div>
                 ) : null}
               </motion.div>
             </DialogPrimitive.Content>

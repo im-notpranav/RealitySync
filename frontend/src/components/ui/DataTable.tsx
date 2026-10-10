@@ -118,7 +118,10 @@ export function DataTable<T>({
             ? Array.from({ length: 5 }, (_, index) => (
                 <tr key={index} className="border-t border-ink-100">
                   {columns.map((column) => (
-                    <td key={column.key} className={cn("h-14 px-5", column.hideBelow && hideClass[column.hideBelow])}>
+                    <td
+                      key={column.key}
+                      className={cn("h-14 px-5", column.hideBelow && hideClass[column.hideBelow])}
+                    >
                       <Skeleton className="h-4 w-3/4" />
                     </td>
                   ))}

@@ -45,11 +45,49 @@ describe("DiffTable", () => {
 describe("TrailView", () => {
   const trail: Trail = {
     facts: [
-      { id: "f1", kind: "record_field", system: "crm", external_id: "C-1", record_type: "account", version: 1, field: "status", value: "active", recorded_at: "2026-10-01T00:00:00Z" },
-      { id: "f2", kind: "record_field", system: "billing", external_id: "S-1", record_type: "subscription", version: 2, field: "status", value: "cancelled", recorded_at: "2026-10-02T00:00:00Z" },
-      { id: "f3", kind: "record_field", system: "support", external_id: "Z-1", record_type: "ticket", version: 1, field: "priority", value: "high", recorded_at: "2026-10-03T00:00:00Z" },
+      {
+        id: "f1",
+        kind: "record_field",
+        system: "crm",
+        external_id: "C-1",
+        record_type: "account",
+        version: 1,
+        field: "status",
+        value: "active",
+        recorded_at: "2026-10-01T00:00:00Z",
+      },
+      {
+        id: "f2",
+        kind: "record_field",
+        system: "billing",
+        external_id: "S-1",
+        record_type: "subscription",
+        version: 2,
+        field: "status",
+        value: "cancelled",
+        recorded_at: "2026-10-02T00:00:00Z",
+      },
+      {
+        id: "f3",
+        kind: "record_field",
+        system: "support",
+        external_id: "Z-1",
+        record_type: "ticket",
+        version: 1,
+        field: "priority",
+        value: "high",
+        recorded_at: "2026-10-03T00:00:00Z",
+      },
     ],
-    inferences: [{ id: "i1", kind: "rule", rule_key: "R004", uses: ["f1", "f2"], statement: "CRM active although Billing cancelled" }],
+    inferences: [
+      {
+        id: "i1",
+        kind: "rule",
+        rule_key: "R004",
+        uses: ["f1", "f2"],
+        statement: "CRM active although Billing cancelled",
+      },
+    ],
     conclusion: { kind: "finding", rule_key: "R004", risk: "high", confidence: 0.829, uses: ["i1"] },
   };
 

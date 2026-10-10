@@ -14,7 +14,10 @@ function ConnectionStatus() {
   const label = connected ? "Live updates connected" : "Live updates not connected";
   return (
     <span className="grid size-10 place-items-center" title={label}>
-      <span aria-hidden="true" className={connected ? "live-dot size-2 rounded-pill bg-moss-500" : "size-2 rounded-pill bg-ink-400"} />
+      <span
+        aria-hidden="true"
+        className={connected ? "live-dot size-2 rounded-pill bg-moss-500" : "size-2 rounded-pill bg-ink-400"}
+      />
       <span className="sr-only">{label}</span>
     </span>
   );

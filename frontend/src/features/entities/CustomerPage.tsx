@@ -21,7 +21,14 @@ import {
 import { useAsOf, useEntity, useEntityTimeline } from "../../lib/api/queries";
 import type { Expectation, LinkStatus, RiskAssessment, SourceRecord, SystemKey } from "../../lib/api/types";
 import { cn } from "../../lib/cn";
-import { formatDate, formatDateTime, formatPercent, humanize, relativeTime, systemNames } from "../../lib/format";
+import {
+  formatDate,
+  formatDateTime,
+  formatPercent,
+  humanize,
+  relativeTime,
+  systemNames,
+} from "../../lib/format";
 import { hasRole, useSession } from "../../store/session";
 import { healthPill } from "./CustomersPage";
 
@@ -65,12 +72,21 @@ function SystemRecordCard({
       </p>
       <dl className="flex flex-col divide-y divide-ink-100">
         {Object.entries(record.normalized).map(([key, value]) => {
-          const differs = others.some((o) => key in o.record.normalized && o.record.normalized[key] && value && o.record.normalized[key] !== value);
+          const differs = others.some(
+            (o) =>
+              key in o.record.normalized &&
+              o.record.normalized[key] &&
+              value &&
+              o.record.normalized[key] !== value,
+          );
           const changed = live && live[key] !== undefined && live[key] !== value;
           return (
             <div
               key={key}
-              className={cn("flex items-baseline justify-between gap-3 py-2", differs && "-mx-2 rounded-[8px] bg-peach-bg px-2")}
+              className={cn(
+                "flex items-baseline justify-between gap-3 py-2",
+                differs && "-mx-2 rounded-[8px] bg-peach-bg px-2",
+              )}
             >
               <dt className="text-small text-ink-500">{humanize(key)}</dt>
               <dd className="flex items-center gap-1.5 truncate text-right text-small font-medium text-ink-950">
@@ -97,13 +113,19 @@ function RiskCard({ risk }: { risk: RiskAssessment | null }) {
         <>
           <p className="mt-3 text-kpi tabular text-ink-950">{risk.score.toFixed(3)}</p>
           <p className="text-small text-ink-500">
-            Score and confidence are separate: confidence {formatPercent(risk.confidence)} reflects how much of the
-            evidence was available and fresh.
+            Score and confidence are separate: confidence {formatPercent(risk.confidence)} reflects how much
+            of the evidence was available and fresh.
           </p>
           <div className="mt-5">
             <SignalBars risk={risk} />
           </div>
-          <Button variant="ghost" size="sm" className="-ml-3 mt-4" onClick={() => setShowTrail((v) => !v)} aria-expanded={showTrail}>
+          <Button
+            variant="ghost"
+            size="sm"
+            className="-ml-3 mt-4"
+            onClick={() => setShowTrail((v) => !v)}
+            aria-expanded={showTrail}
+          >
             {showTrail ? "Hide evidence trail" : "Show evidence trail"}
           </Button>
           {showTrail ? (
@@ -124,7 +146,9 @@ function ExpectationsCard({ expectations }: { expectations: Expectation[] }) {
     <Card>
       <h2 className="text-h3 text-ink-950">Waiting for evidence</h2>
       {expectations.length === 0 ? (
-        <p className="mt-2 text-small text-ink-500">Nothing outstanding — every expected record has arrived.</p>
+        <p className="mt-2 text-small text-ink-500">
+          Nothing outstanding — every expected record has arrived.
+        </p>
       ) : (
         <ul className="mt-3 flex flex-col gap-3">
           {expectations.map((e) => (
@@ -184,19 +208,32 @@ export function Component() {
   if (!d)
     return (
       <Card className="mt-6">
-        <EmptyState title="Customer not found" action={<ButtonLink to="/entities" surface="paper">Back to customers</ButtonLink>} />
+        <EmptyState
+          title="Customer not found"
+          action={
+            <ButtonLink to="/entities" surface="paper">
+              Back to customers
+            </ButtonLink>
+          }
+        />
       </Card>
     );
 
   const view = at ? asOf.data : null;
   const cards: RecordCard[] = view
-    ? view.records.map((r) => ({ record: r.record, status: r.link.status, confidence: r.link.match_confidence }))
+    ? view.records.map((r) => ({
+        record: r.record,
+        status: r.link.status,
+        confidence: r.link.match_confidence,
+      }))
     : d.records.map((r) => ({ record: r.record, status: r.link_status, confidence: r.match_confidence }));
-  const liveBySystem = Object.fromEntries(d.records.map((r) => [r.record.system, r.record.normalized])) as Partial<
-    Record<SystemKey, Record<string, string | null>>
-  >;
+  const liveBySystem = Object.fromEntries(
+    d.records.map((r) => [r.record.system, r.record.normalized]),
+  ) as Partial<Record<SystemKey, Record<string, string | null>>>;
   const risk = view ? view.risk : d.risk;
-  const findings = view ? view.findings.map((f) => ({ id: f.live_finding_id ?? f.fingerprint, ...f })) : d.open_findings;
+  const findings = view
+    ? view.findings.map((f) => ({ id: f.live_finding_id ?? f.fingerprint, ...f }))
+    : d.open_findings;
 
   return (
     <>
@@ -236,12 +273,15 @@ export function Component() {
       />
 
       {at ? (
-        <section aria-label="Time Machine" className="on-dark glass-dark mb-6 rounded-card p-5 text-on-dark shadow-raised">
+        <section
+          aria-label="Time Machine"
+          className="on-dark glass-dark mb-6 rounded-card p-5 text-on-dark shadow-raised"
+        >
           <div className="flex flex-wrap items-center justify-between gap-3">
             <p className="flex items-center gap-2 text-body font-medium">
               <Rewind size={16} aria-hidden="true" />
-              Viewing as of {formatDateTime(new Date(Date.now() - daysBack * DAY).toISOString())} — data recorded by then,
-              today's rules
+              Viewing as of {formatDateTime(new Date(Date.now() - daysBack * DAY).toISOString())} — data
+              recorded by then, today's rules
             </p>
             <Pill tone="neutral" className="bg-white/10 text-on-dark">
               Rule set {view?.rule_set.hash ?? "…"}
@@ -264,7 +304,12 @@ export function Component() {
 
       <div className="grid gap-4 lg:grid-cols-12">
         <div className="flex min-w-0 flex-col gap-4 lg:col-span-8">
-          <div className={cn("grid gap-4 md:grid-cols-2 2xl:grid-cols-3", asOf.isFetching && "opacity-70 transition-opacity duration-fast")}>
+          <div
+            className={cn(
+              "grid gap-4 md:grid-cols-2 2xl:grid-cols-3",
+              asOf.isFetching && "opacity-70 transition-opacity duration-fast",
+            )}
+          >
             {cards.map((card) => (
               <SystemRecordCard
                 key={card.record.id}
@@ -299,7 +344,10 @@ export function Component() {
               <ol className="relative flex flex-col gap-4 border-l border-ink-200 pl-5">
                 {(timeline.data ?? []).map((item) => (
                   <li key={`${item.at}-${item.external_id}`} className="relative">
-                    <span aria-hidden="true" className="absolute -left-[25px] top-1.5 size-2.5 rounded-pill border-2 border-paper bg-ink-950" />
+                    <span
+                      aria-hidden="true"
+                      className="absolute -left-[25px] top-1.5 size-2.5 rounded-pill border-2 border-paper bg-ink-950"
+                    />
                     <div className="flex flex-wrap items-center gap-2">
                       <SystemChip system={item.system} />
                       <span className="text-small text-ink-950">{item.summary}</span>

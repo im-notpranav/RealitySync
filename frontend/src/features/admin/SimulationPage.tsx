@@ -38,7 +38,9 @@ export function Component() {
         title="Simulation"
         subtitle="Generate synthetic CRM, Billing and Support data with labelled issues and investigation scenarios"
         actions={
-          <Button onClick={() => toast({ title: "Drift injected", description: "5 new issues are on their way." })}>
+          <Button
+            onClick={() => toast({ title: "Drift injected", description: "5 new issues are on their way." })}
+          >
             <Zap size={16} aria-hidden="true" />
             Simulate drift
           </Button>
@@ -49,30 +51,76 @@ export function Component() {
           <h2 className="mb-4 text-h3 text-ink-950">New run</h2>
           <div className="grid gap-4 sm:grid-cols-2">
             <Field label="Seed" htmlFor={ids.seed}>
-              <Input id={ids.seed} inputMode="numeric" value={seed} onChange={(e) => setSeed(e.target.value)} />
+              <Input
+                id={ids.seed}
+                inputMode="numeric"
+                value={seed}
+                onChange={(e) => setSeed(e.target.value)}
+              />
             </Field>
             <Field label="Customers" htmlFor={ids.customers} hint="10–5,000">
-              <Input id={ids.customers} inputMode="numeric" value={customers} onChange={(e) => setCustomers(e.target.value)} />
+              <Input
+                id={ids.customers}
+                inputMode="numeric"
+                value={customers}
+                onChange={(e) => setCustomers(e.target.value)}
+              />
             </Field>
           </div>
           <div className="mt-4 flex flex-col gap-4">
             <div>
               <p className="mb-1.5 text-small font-medium text-ink-700">Anomaly rate</p>
-              <Slider label="Anomaly rate" value={anomalyRate} min={0} max={0.5} step={0.01} onValueChange={setAnomalyRate} format={(v) => formatPercent(v)} />
+              <Slider
+                label="Anomaly rate"
+                value={anomalyRate}
+                min={0}
+                max={0.5}
+                step={0.01}
+                onValueChange={setAnomalyRate}
+                format={(v) => formatPercent(v)}
+              />
             </div>
             <div>
               <p className="mb-1.5 text-small font-medium text-ink-700">Events per second</p>
-              <Slider label="Events per second" value={speed} min={1} max={200} step={1} onValueChange={setSpeed} format={(v) => `${v}/s`} />
+              <Slider
+                label="Events per second"
+                value={speed}
+                min={1}
+                max={200}
+                step={1}
+                onValueChange={setSpeed}
+                format={(v) => `${v}/s`}
+              />
             </div>
             <div>
               <p className="mb-1.5 text-small font-medium text-ink-700">History</p>
-              <Slider label="History in days" value={historyDays} min={30} max={730} step={5} onValueChange={setHistoryDays} format={(v) => `${v} d`} />
+              <Slider
+                label="History in days"
+                value={historyDays}
+                min={30}
+                max={730}
+                step={5}
+                onValueChange={setHistoryDays}
+                format={(v) => `${v} d`}
+              />
             </div>
             <div>
               <p className="mb-1.5 text-small font-medium text-ink-700">Investigation scenarios</p>
-              <Slider label="Scenario rate" value={scenarioRate} min={0} max={0.2} step={0.01} onValueChange={setScenarioRate} format={(v) => formatPercent(v)} />
+              <Slider
+                label="Scenario rate"
+                value={scenarioRate}
+                min={0}
+                max={0.2}
+                step={0.01}
+                onValueChange={setScenarioRate}
+                format={(v) => formatPercent(v)}
+              />
             </div>
-            <Field label="Feed outage" htmlFor={ids.outage} hint="One system goes silent for the last 40 days, to test “cannot assess”.">
+            <Field
+              label="Feed outage"
+              htmlFor={ids.outage}
+              hint="One system goes silent for the last 40 days, to test “cannot assess”."
+            >
               <Select
                 id={ids.outage}
                 label="Feed outage"
@@ -90,7 +138,12 @@ export function Component() {
           <Button
             variant="primary"
             className="mt-6 w-full"
-            onClick={() => toast({ title: "Simulation started", description: `${formatNumber(Number(customers) || 0)} customers, seed ${seed}.` })}
+            onClick={() =>
+              toast({
+                title: "Simulation started",
+                description: `${formatNumber(Number(customers) || 0)} customers, seed ${seed}.`,
+              })
+            }
           >
             <Play size={16} aria-hidden="true" />
             Start simulation
@@ -126,16 +179,26 @@ export function Component() {
                   cell: (r) => (
                     <div className="flex w-40 flex-col gap-1">
                       <span className="text-caption font-normal tabular text-ink-500">
-                        {formatNumber(r.progress.events_sent)} / {formatNumber(r.progress.events_total)} events
+                        {formatNumber(r.progress.events_sent)} / {formatNumber(r.progress.events_total)}{" "}
+                        events
                       </span>
-                      <ProgressBar value={r.progress.events_sent / r.progress.events_total} label="Run progress" />
+                      <ProgressBar
+                        value={r.progress.events_sent / r.progress.events_total}
+                        label="Run progress"
+                      />
                     </div>
                   ),
                 },
                 {
                   key: "status",
                   header: "Status",
-                  cell: (r) => <Pill tone={r.status === "completed" ? "moss" : r.status === "running" ? "sky" : "neutral"}>{r.status}</Pill>,
+                  cell: (r) => (
+                    <Pill
+                      tone={r.status === "completed" ? "moss" : r.status === "running" ? "sky" : "neutral"}
+                    >
+                      {r.status}
+                    </Pill>
+                  ),
                 },
                 {
                   key: "started",
