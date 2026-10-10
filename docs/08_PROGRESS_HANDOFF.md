@@ -17,7 +17,7 @@
 | CI status | Workflow fixed but never run (no remote) |
 | Next milestone | M0 Foundation (T-006, T-007 backend; frontend held — see below) |
 | Demo-able today? | No |
-| **Frontend** | **Unblocked 2026-10-10.** The product owner shared the v2 reference (`docs/assets/reference-dashboard-v2.png`); `06` was rewritten to it (T-060, D-047/D-048). Build every screen against `06` v2. |
+| **Frontend** | **Designed 2026-10-10.** Shell, design system and every screen run against demo data (T-004, T-005, T-043, T-061 in review; D-049). Previously: unblocked 2026-10-10. The product owner shared the v2 reference (`docs/assets/reference-dashboard-v2.png`); `06` was rewritten to it (T-060, D-047/D-048). Build every screen against `06` v2. |
 | **New direction** | Product owner added four signature features (Time Machine, Evidence Trail, Missing Evidence, "Could We Have Known?"). Plan: `docs/notes/2026-10-09-investigation-features-plan.md`; tasks T-052…T-059 (epic E10). **The contract (docs 00–06) now specifies them** (T-052, branch above): modules M12 Risk, M13 Time Machine, M14 Investigation in `03`; API `04 §17`; tables `05 §2.20–2.23`. |
 
 ### What exists
@@ -116,6 +116,7 @@
 | D-045 | 2026-10-10 | Simulator: month-scale histories (`history_days` 365) emitted in recorded-time order, 3 new anomaly types, 3 scenarios (`is_scenario`, excluded from precision/recall) with `expected_crossing_at`, decoy `late_within_grace`, run option `feed_outage`; investigation metrics in `evaluation_runs.investigation` | Lead time and no-lookahead must be measurable | 03 §M9, 04 §11 |
 | D-046 | 2026-10-10 | Record versions are never pruned; retention prunes only processed ingest events (Q-008) | The Time Machine needs the full history | 01 NFR-DAT-002, T-047 |
 | D-047 | 2026-10-10 | **Frontend visual direction v2** replaces D-008: the product owner's "Capsule" reference (dark frosted sidebar + light frosted work panel over a blurred scene, white cards, one dark primary button, soft tinted pills, moss accent). Frontend unblocked (lifts D-037). `motion` added to the approved npm list for shared-layout indicators, exit animations, count-up and gestures only | Product owner instruction ("use this as a reference for the frontend … improve the ui/ux") | 06 v2, 02 §2.1, T-060 |
+| D-049 | 2026-10-10 | Screens are built before their APIs exist: query hooks in `lib/api/queries.ts` serve synthetic data from `lib/demo` (shaped like `04`) when `env.demoData` (development and `VITE_DEMO_DATA` ≠ `off`); feature tasks replace each demo branch with the real call | Product owner asked to complete the frontend design now; the backend endpoints come later | T-061, `frontend/src/lib/api/queries.ts` |
 | D-048 | 2026-10-10 | Motion rules: purpose-driven, `ease-out`-first custom curves, ≤ 320 ms UI motion, press `scale(0.97)`, no animation on keyboard/high-frequency actions, transform/opacity only, CSS transitions preferred, full reduced-motion/transparency fallbacks; every animation must be listed in the 06 §8 catalogue | Design-engineering review (Emil Kowalski principles) applied to the reference | 06 §8 |
 
 ## 7. Open questions (answer or confirm; defaults apply meanwhile)
@@ -155,7 +156,7 @@ Add a row when you start a task that creates a migration; remove it when the PR 
 
 | Epic | Todo | Blocked | In progress | In review | Done |
 |------|------|---------|-------------|-----------|------|
-| E0 Foundation (T-001…T-005, T-043, T-051, T-060) | 3 | 0 | 1 | 1 | 3 |
+| E0 Foundation (T-001…T-005, T-043, T-051, T-060) | 0 | 0 | 0 | 5 | 3 |
 | E1 Auth (T-006…T-008) | 3 | 0 | 0 | 0 | 0 |
 | E2 Data & ingest (T-009…T-012, T-044, T-047) | 6 | 0 | 0 | 0 | 0 |
 | E3 Simulation (T-013…T-015) | 3 | 0 | 0 | 0 | 0 |
@@ -163,10 +164,10 @@ Add a row when you start a task that creates a migration; remove it when the PR 
 | E5 Detection (T-019…T-025, T-045) | 8 | 0 | 0 | 0 | 0 |
 | E6 Real-time & API (T-026…T-028, T-046, T-050) | 5 | 0 | 0 | 0 | 0 |
 | E7 AI (T-029…T-030) | 2 | 0 | 0 | 0 | 0 |
-| E8 Frontend features (T-031…T-038, T-049) | 9 | 0 | 0 | 0 | 0 |
+| E8 Frontend features (T-031…T-038, T-049, T-061) | 9 | 0 | 0 | 1 | 0 |
 | E9 Quality & polish (T-039…T-042, T-048) | 5 | 0 | 0 | 0 | 0 |
 | E10 Investigation (T-052…T-059) | 7 | 0 | 0 | 1 | 0 |
-| **Total (60)** | **54** | **0** | **1** | **2** | **3** |
+| **Total (61)** | **51** | **0** | **0** | **7** | **3** |
 
 Frontend tasks follow `06` v2 (D-047); T-004 needs T-060 merged first.
 
@@ -190,6 +191,19 @@ Frontend tasks follow `06` v2 (D-047); T-004 needs T-060 merged first.
 - **Exact next step for the next agent:** (one imperative sentence + command if useful)
 - **Docs updated:** (contract changes? Y/N and which)
 ```
+
+### 2026-10-10 — claude-code-1 — T-060, T-004, T-005, T-043, T-061 Frontend v2 design
+- **Outcome:** done (all in `review`); pushed to GitHub on `agent/T-004-frontend-skeleton` (stacked on T-060 → T-052 → T-051).
+- **What I did:**
+  - Rewrote `06` around the product owner's new reference ("Capsule" style: dark glass sidebar, light glass work panel, paper cards, tinted pills, moss accent) with a motion catalogue (D-047, D-048).
+  - Frontend skeleton with exact pins (React 18, Vite 7, Tailwind 3, ESLint 9 flat config with the TypeScript parser, `motion`), Dockerfile, compose service (polling watcher for Docker Desktop), CI on Node 22.
+  - Design system: badges (severity shapes, status crossfade, risk always with confidence), data table, drawer, dialog, toasts, tooltips, tabs with a sliding indicator, KPI cards with a one-time count-up, charts, evidence trail, live feed.
+  - Every screen designed and interactive on demo data (D-049, T-061).
+  - Pushed the existing history to `github.com/im-notpranav/RealitySync`: rebased all local work on the remote `main` (identical tree), removed agent attribution from commit messages, fast-forwarded `main`.
+- **Problems / surprises:** Tailwind `screens` with a `raw` entry silently disables all `max-*` variants — the hover gate is now a plugin variant. Docker Desktop does not forward file events to the Vite container (`VITE_WATCH_POLLING`). jsdom 30 needs a newer Node than this machine, so jsdom 26.
+- **Tests:** 18 frontend tests (shell, roles, API client, design-system components); typecheck, lint and `vite build` pass.
+- **Exact next step for the next agent:** product owner reviews the screens; then merge the stacked branches in order (T-051 → T-052 → T-060 → T-004) and continue with T-006/T-010 on the backend.
+- **Docs updated:** Y — `02 §2.1`, `06`, `08`, `09`.
 
 ### 2026-10-10 — claude-code-1 — T-052 Contract update: investigation features
 - **Outcome:** done (T-052 in `review`); docs only, no code; nothing merged.
