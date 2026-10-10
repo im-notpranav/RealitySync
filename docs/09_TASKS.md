@@ -24,16 +24,16 @@ The implementation plan, split into discrete tasks that individual agents can cl
 | 4 | T-007, T-052 |
 | 5 | T-008, T-009, T-013, T-026, T-029 |
 | 6 | T-011, T-014, T-032, T-044 |
-| 7 | T-012, T-015, T-057 |
-| 8 | T-017, T-019, T-047 |
-| 9 | T-018, T-020, T-021, T-022, T-023, T-024, T-053 |
-| 10 | T-027, T-038, T-045, T-046, T-054 |
-| 11 | T-025, T-031, T-033, T-034, T-035, T-049, T-055 |
+| 7 | T-012, T-057 |
+| 8 | T-015, T-017, T-019, T-047 |
+| 9 | T-018, T-020, T-021, T-022, T-023, T-024 |
+| 10 | T-027, T-038, T-045, T-046, T-053 |
+| 11 | T-025, T-031, T-033, T-034, T-035, T-049, T-054, T-055 |
 | 12 | T-028, T-030, T-039, T-050, T-056 |
 | 13 | T-036, T-037, T-042, T-048, T-058, T-059 |
 | 14 | T-040, T-041 |
 
-**Critical path** (longest chain by size, ≈ 92 h of sequential work): T-001 → T-002 → T-003 → T-051 → T-052 → T-009 → T-011 → T-012 → T-019 → T-024 → T-045 → T-055 → T-056 → T-059.
+**Critical path** (longest chain by size, ≈ 96 h of sequential work): T-001 → T-002 → T-003 → T-051 → T-052 → T-009 → T-011 → T-012 → T-019 → T-024 → T-053 → T-055 → T-056 → T-059.
 
 ## Summary table
 | ID | Title | Epic | Pri | Size | Depends | Wave | Status |
@@ -52,7 +52,7 @@ The implementation plan, split into discrete tasks that individual agents can cl
 | T-012 | Record upsert & versioning | E2 | P0 | M | T-010, T-011, T-044 | 7 | todo |
 | T-013 | Synthetic data generator | E3 | P0 | L | T-002, T-010, T-052 | 5 | todo |
 | T-014 | Anomaly injector & labels | E3 | P0 | L | T-013, T-052 | 6 | todo |
-| T-015 | Simulation runner & endpoints | E3 | P1 | L | T-011, T-014, T-026 | 7 | todo |
+| T-015 | Simulation runner & endpoints | E3 | P1 | L | T-011, T-014, T-026, T-057 | 8 | todo |
 | T-016 | Matching domain logic | E4 | P0 | L | T-010 | 3 | todo |
 | T-017 | Entity resolution service | E4 | P0 | L | T-009, T-012, T-016 | 8 | todo |
 | T-018 | Link review endpoints | E4 | P1 | M | T-017 | 9 | todo |
@@ -63,7 +63,7 @@ The implementation plan, split into discrete tasks that individual agents can cl
 | T-023 | Rules R011–R013, R015 (structural/logic) | E5 | P1 | M | T-019 | 9 | todo |
 | T-024 | Scoring & finding lifecycle | E5 | P0 | L | T-019, T-052 | 9 | todo |
 | T-025 | Detection loop & pipeline wiring | E5 | P0 | L | T-017, T-020, T-024, T-026, T-045 | 11 | todo |
-| T-026 | EventBus & WebSocket server | E6 | P0 | L | T-007 | 5 | todo |
+| T-026 | EventBus & WebSocket server | E6 | P0 | L | T-007, T-052 | 5 | todo |
 | T-027 | Read/write REST APIs | E6 | P0 | L | T-017, T-024 | 10 | todo |
 | T-028 | Rules & systems endpoints | E6 | P1 | M | T-019, T-025 | 12 | todo |
 | T-029 | Gemini client wrapper | E7 | P0 | L | T-002, T-052 | 5 | todo |
@@ -79,20 +79,20 @@ The implementation plan, split into discrete tasks that individual agents can cl
 | T-039 | Evaluation service & endpoints | E9 | P1 | M | T-015, T-021, T-022, T-023, T-025 | 12 | todo |
 | T-040 | End-to-end tests | E9 | P1 | M | T-031, T-033, T-036 | 14 | todo |
 | T-041 | Demo seed, README, performance check | E9 | P1 | M | T-030, T-036, T-039 | 14 | todo |
-| T-042 | Hardening & security review | E9 | P1 | M | T-011, T-015, T-018, T-027, T-028, T-030, T-039, T-046 | 13 | todo |
+| T-042 | Hardening & security review | E9 | P1 | M | T-011, T-015, T-018, T-027, T-028, T-030, T-039, T-046, T-056 | 13 | todo |
 | T-043 | Design system — data-viz & composite components | E0 | P0 | M | T-005 | 3 | todo |
 | T-044 | Ingest worker loop | E2 | P0 | M | T-009 | 6 | todo |
 | T-045 | Alert service & policy | E5 | P0 | M | T-024 | 10 | todo |
 | T-046 | Dashboard endpoints | E6 | P0 | M | T-017, T-024, T-026 | 10 | todo |
 | T-047 | Retention prune job | E2 | P2 | S | T-012, T-052 | 8 | todo |
-| T-048 | API contract tests | E9 | P1 | M | T-011, T-015, T-018, T-027, T-028, T-030, T-039, T-046 | 13 | todo |
+| T-048 | API contract tests | E9 | P1 | M | T-011, T-015, T-018, T-027, T-028, T-030, T-039, T-046, T-053, T-054, T-055, T-056 | 13 | todo |
 | T-049 | Settings page (profile, users, API keys, audit) | E8 | P1 | M | T-008, T-011, T-027 | 11 | todo |
 | T-050 | PgNotify EventBus & separate worker mode | E6 | P2 | M | T-025 | 12 | todo |
 | T-051 | Foundation repair (backend, infra, CI) | E0 | P0 | M | T-001, T-002, T-003 | 3 | review |
-| T-052 | Contract update: investigation features | E10 | P0 | L | T-051 | 4 | in_progress |
-| T-053 | As-of snapshot service (Time Machine) | E10 | P0 | L | T-017, T-019, T-052 | 9 | todo |
-| T-054 | Missing-evidence rules R016–R018 & feed watermarks | E10 | P1 | M | T-012, T-019, T-024, T-052 | 10 | todo |
-| T-055 | Risk signals module (M12) | E10 | P0 | L | T-024, T-045, T-052 | 11 | todo |
+| T-052 | Contract update: investigation features | E10 | P0 | L | T-051 | 4 | review |
+| T-053 | As-of snapshot service (Time Machine) | E10 | P0 | L | T-017, T-019, T-024, T-052 | 10 | todo |
+| T-054 | Missing-evidence rules R016–R018 & expectations | E10 | P1 | M | T-012, T-019, T-024, T-027, T-052 | 11 | todo |
+| T-055 | Risk signals module (M12) | E10 | P0 | L | T-024, T-045, T-052, T-053 | 11 | todo |
 | T-056 | "Could We Have Known?" investigation engine & API | E10 | P0 | L | T-053, T-055 | 12 | todo |
 | T-057 | Simulation scenarios: churn histories & missing evidence | E10 | P1 | L | T-014, T-052 | 7 | todo |
 | T-058 | Investigation & missing-evidence evaluation | E10 | P1 | M | T-039, T-056, T-057 | 13 | todo |
@@ -106,6 +106,7 @@ The implementation plan, split into discrete tasks that individual agents can cl
 | M2 Detection | T-019, T-020, T-021, T-022, T-023, T-024, T-045, T-025, T-027, T-046, T-028 |
 | M3 Real-time + AI | T-026, T-015, T-029, T-030, T-031, T-032, T-033, T-034, T-035, T-037, T-038, T-049 |
 | M4 Polish | T-039, T-036, T-040, T-041, T-042, T-048, T-047, T-050 |
+| M5 Investigation | T-052, T-053, T-054, T-055, T-056, T-057, T-058, T-059 |
 
 ## Requirement traceability (every requirement ID → owning task(s))
 | Requirement(s) | Task(s) |
@@ -132,25 +133,38 @@ The implementation plan, split into discrete tasks that individual agents can cl
 | FR-ENT-009 | T-016, T-034 |
 | FR-DET-001…003 | T-019 |
 | FR-DET-002 (R001–R015) | T-020, T-021, T-022, T-023 |
+| FR-DET-002 (R016–R018) | T-054 |
 | FR-DET-004 | T-017, T-025 |
 | FR-DET-005/006/008 | T-024 |
 | FR-DET-007 | T-019, T-028, T-037 |
-| FR-EVD-001…004 | T-024 |
+| FR-EVD-001…005 | T-024 |
 | FR-FND-001…004 | T-024 |
 | FR-FND-005/006 | T-027, T-033 |
-| FR-ALR-001/002 | T-045 |
+| FR-ALR-001/002 | T-045, T-055 (risk alert) |
 | FR-ALR-003 | T-027, T-035 |
-| FR-RTM-001…003, 005 | T-026 |
+| FR-RTM-001…003, 005 | T-026 (+ T-055, T-056 publish their events) |
 | FR-RTM-004 | T-032 |
 | FR-AIX-001/003/004/007 | T-030 |
 | FR-AIX-002/005/006 | T-029 |
+| FR-AIX-009 | T-029, T-030 |
 | FR-AIX-008 | T-033 |
 | FR-SIM-001/006 | T-015, T-036 |
 | FR-SIM-002/003 | T-013 |
-| FR-SIM-004 | T-014 |
+| FR-SIM-004 | T-014, T-057 |
 | FR-SIM-005 | T-014, T-015 |
 | FR-SIM-007 | T-039, T-036 |
 | FR-SIM-008 | T-013, T-039 |
+| FR-SIM-009 | T-013, T-057 |
+| FR-SIM-010 | T-013, T-057 |
+| FR-SIM-011 | T-058 |
+| FR-ING-011 | T-010, T-011 |
+| FR-TMX-001…004, 006 | T-053 |
+| FR-TMX-005 | T-053, T-056 |
+| FR-TMX-007 | T-012, T-047 |
+| FR-TRL-001…004 | T-024, T-055 |
+| FR-MEV-001…006 | T-054 |
+| FR-RSK-001…004 | T-055 |
+| FR-INV-001…007 | T-056, T-059 |
 | FR-DSH-001/002 | T-046, T-031 |
 | FR-DSH-003 | T-031, T-032 |
 | FR-AUT-001…004 | T-006, T-007, T-008 |
@@ -158,6 +172,8 @@ The implementation plan, split into discrete tasks that individual agents can cl
 | FR-AUT-006 | T-007, T-027, T-049 |
 | FR-AUT-007 | T-007, T-049 |
 | NFR-PERF-001…005 | T-025, T-046, T-041 |
+| NFR-PERF-006 | T-053 |
+| NFR-PERF-007 | T-056 |
 | NFR-REL-001/002 | T-011, T-044 |
 | NFR-REL-003 | T-003 |
 | NFR-REL-004 | T-025, T-030 |
@@ -327,9 +343,10 @@ The implementation plan, split into discrete tasks that individual agents can cl
 - Touches: `backend/app/models/**` (remaining tables), new migration(s), `backend/app/db/seed.py`, `backend/app/main.py` (one bootstrap line)
 - Requirements: All of `05`; FR-ING-001
 - Acceptance:
-  - All tables in `05 §2.3–2.18` incl. **§2.17.1 `simulation_ground_truth`** and the new columns (`entities.detection_requested_at`, `findings.resolved_evidence_hash` / `explained_evidence_hash`, `injected_issues.acceptable_rule_keys`, `evaluation_runs.ignored` / `matching`) with CHECK, partial/unique constraints and indexes as specified.
+  - All tables in `05 §2.3–2.23` incl. **§2.17.1 `simulation_ground_truth`** and the new columns (`entities.detection_requested_at`, `findings.resolved_evidence_hash` / `explained_evidence_hash`, `injected_issues.acceptable_rule_keys`, `evaluation_runs.ignored` / `matching`) with CHECK, partial/unique constraints and indexes as specified.
+  - Investigation-feature schema (T-052): `record_versions.source_system_id` + `is_deleted` + `idx_versions_system_recorded`; `rules.category` incl. `missing_evidence`; `alerts.type` incl. `risk_threshold_crossed`; `finding_explanations.cited_fact_ids`; `injected_issues.is_scenario` (nullable `system_key` + CHECKs); `evaluation_runs.investigation`; tables `entity_risk`, `risk_events`, `investigations` (partial unique `uq_investigations_inputs`), `investigation_checkpoints`.
   - Bootstrap (startup, idempotent): three `source_systems` with default field authority (keys exactly as `03 §M1`) and status mappings (`03 §M2`); admin edits are never overwritten. (Rules are synced in T-019.)
-  - Migration upgrade/downgrade tested; constraint tests (e.g. a record cannot have two non-rejected links; `rejected_pairs` ordering CHECK).
+  - Migration upgrade/downgrade tested; constraint tests (e.g. a record cannot have two non-rejected links; `rejected_pairs` ordering CHECK; two non-failed investigations with the same `inputs_hash` rejected; scenario/decoy CHECKs).
   - **Migration lock.**
 
 ### T-010 — Normalization library
@@ -365,6 +382,7 @@ The implementation plan, split into discrete tasks that individual agents can cl
 - Acceptance:
   - New/update/delete/out-of-order semantics per `03 §M1`; `record_hash` equality skips the version bump; `changed_fields` computed on normalized fields; soft delete.
   - Per-record advisory lock; equal-timestamp tie-break by `received_at`, then `id` (`02 §3.3`).
+  - Every version stores `source_system_id` and its recorded time; a `delete` writes a version with `is_deleted = true` (`03 §M1`, `05 §2.6.1`).
   - Returns a `RecordChanged` result to the pipeline (consumed by T-017).
   - Invariant 1: replay-twice yields identical DB state; concurrent same-record events end in a deterministic state (test).
 
@@ -387,8 +405,8 @@ The implementation plan, split into discrete tasks that individual agents can cl
 - Touches: `backend/app/services/retention_service.py`, `Makefile` (one `prune` target), `docs/07_AGENT_RULES.md` §15 (one line), tests
 - Requirements: NFR-DAT-002
 - Acceptance:
-  - `make prune days=90` deletes `processed` ingest events and non-current `record_versions` older than N days, in batches of 1,000.
-  - Never deletes the current version of a record or anything referenced by an active finding's evidence.
+  - `make prune days=90` deletes only `processed` ingest events older than N days, in batches of 1,000 (NFR-DAT-002).
+  - Never deletes or updates `record_versions` (Time Machine history, FR-TMX-007) — a test asserts the version count is unchanged.
   - Admin-only audit entry with counts; dry-run flag; test.
 
 ---
@@ -399,10 +417,12 @@ The implementation plan, split into discrete tasks that individual agents can cl
 - Status: todo | Priority: P0 | Size: L | Depends: T-002, T-010, T-052 | Wave: 5 | Agent: unassigned | Claimed: —
 - Blocks: T-014
 - Touches: `backend/app/simulation/{generator,noise,catalog}.py`, tests
-- Requirements: FR-SIM-002, FR-SIM-003, NFR-DAT-001
+- Requirements: FR-SIM-002, FR-SIM-003, FR-SIM-009 (timeline), FR-SIM-010 (`feed_outage`), NFR-DAT-001
 - Acceptance:
   - Deterministic for `(seed, config)`; ground-truth customers with lifecycle, subscriptions (plan catalog prices), invoices, tickets.
   - CRM/Billing/Support event streams with noise **within the limits in `03 §M9`** (noise never triggers a rule).
+  - Month-scale timeline per `03 §M9` (`history_days`, default 365): every lifecycle change is a new version with its own recorded time; events ordered by recorded time; invoices carry `due_at`, tickets `priority` and `first_response_at`; clean-history limits so clean customers never fire R016–R018 or reach risk `warning`.
+  - `feed_outage` option: the chosen system emits nothing recorded in the last 40 days.
   - Distinct but linkable identifiers per system (e.g. `C-1042`, `B-5521`, `Z-9013`); `external_refs` on only `external_ref_rate` of Billing accounts.
   - Emits ground-truth mapping rows (`system_key, record_type, external_id → ground_truth_key`); ground-truth keys never appear in payloads.
   - Only `example.com`-style data and reserved phone ranges; with noise disabled output equals ground truth (test); no DB access.
@@ -413,20 +433,21 @@ The implementation plan, split into discrete tasks that individual agents can cl
 - Touches: `backend/app/simulation/{injector,catalog}.py`, tests
 - Requirements: FR-SIM-004, FR-SIM-005
 - Acceptance:
-  - All 15 anomaly types from the mapping table in `03 §M9`, each with `expected_rule_key` and `acceptable_rule_keys`.
-  - Label objects (`issue_type`, `ground_truth_key`, `expected_rule_key`, `acceptable_rule_keys`, `system_key`, `details`, `is_decoy`); decoys included.
+  - The 15 anomaly types for R001–R015 from the mapping table in `03 §M9`, each with `expected_rule_key` and `acceptable_rule_keys` (the R016–R018 types and scenarios are T-057).
+  - Label objects (`issue_type`, `ground_truth_key`, `expected_rule_key`, `acceptable_rule_keys`, `system_key`, `details`, `is_decoy`, `is_scenario = false`); decoys included.
   - Reproducible by seed; each mutation changes exactly one system view and only the intended fields (property test).
 
 ### T-015 — Simulation runner & endpoints
-- Status: todo | Priority: P1 | Size: L | Depends: T-011, T-014, T-026 | Wave: 7 | Agent: unassigned | Claimed: —
+- Status: todo | Priority: P1 | Size: L | Depends: T-011, T-014, T-026, T-057 | Wave: 8 | Agent: unassigned | Claimed: —
 - Blocks: T-036, T-039, T-042, T-048
 - Touches: `backend/app/simulation/runner.py`, `backend/app/api/v1/simulation.py`, `backend/app/services/simulation_service.py`, `backend/app/schemas/simulation.py`, `backend/app/api/v1/router.py` (include line)
 - Requirements: FR-SIM-001, FR-SIM-005, FR-SIM-006
 - Acceptance:
-  - Endpoints `POST/GET /simulation/runs`, `GET /{id}`, `POST /{id}/drift`, `POST /{id}/stop`, `POST /simulation/reset` per `04 §11` (incl. `external_ref_rate`).
+  - Endpoints `POST/GET /simulation/runs`, `GET /{id}`, `POST /{id}/drift`, `POST /{id}/stop`, `POST /simulation/reset` per `04 §11` (incl. `external_ref_rate`, `history_days`, `scenario_rate`, `feed_outage`; default anomaly types = all 18).
   - Writes `simulation_ground_truth` rows **before** emitting a record's first event; persists `simulation_runs` and `injected_issues`.
   - Emits events through the ingest service (no direct record writes) at the configured rate; publishes `simulation.progress` every second.
-  - Only one active run (409); reset stops the run and deletes exactly the tables listed in `04 §11`; requires `"confirm":"RESET"`; admin only; audit entries.
+  - Emits in recorded-time order (`03 §M9` timeline); scenario labels persisted with `is_scenario = true`.
+  - Only one active run (409); reset stops the run and deletes exactly the tables listed in `04 §11` (incl. risk and investigation tables; 409 while an investigation is queued/running); requires `"confirm":"RESET"`; admin only; audit entries.
 
 ---
 
@@ -476,7 +497,9 @@ The implementation plan, split into discrete tasks that individual agents can cl
 - Touches: `backend/app/domain/rules/{base,registry}.py`, `backend/app/services/{context_builder,rule_runner}.py`, `backend/app/main.py` (one bootstrap line), tests
 - Requirements: FR-DET-001…003, 007
 - Acceptance:
-  - `Rule` protocol (incl. `version`, `config_model`), `FindingCandidate`, `EntityContext` per `03 §M4`; `@register_rule` with auto-discovery of `domain/rules/` modules.
+  - `Rule` protocol (incl. `version`, `config_model`, category `missing_evidence`), `FindingCandidate` (incl. `facts`, `inference`, `expectation`), `EntityContext` (incl. `feed_watermarks`, `as_of`; records carry `record_id`, `external_id`, `version`, `recorded_at`) per `03 §M4`; `@register_rule` with auto-discovery of `domain/rules/` modules.
+  - Live feed watermarks per system = max `record_versions.source_updated_at` ≤ `now` via `idx_versions_system_recorded` (one query, `03 §M13` step 3).
+  - Runner turns only `expectation in (None, "unconfirmed")` candidates into findings and returns `pending`/`cannot_assess` as `Expectation` outputs (never stored).
   - Context builder: primary accounts (order from `03 §M3`), `extra_accounts`, children, and links with status `auto_matched`, `confirmed`, `needs_review`; no N+1 (query count asserted).
   - Runner: enabled rules only, per-rule try/except, config + severity overrides from `rules`.
   - Registry → table sync on startup per `03 §M4` (keeps admin overrides, adds new config keys, version change requests re-detection).
@@ -489,7 +512,7 @@ The implementation plan, split into discrete tasks that individual agents can cl
 - Requirements: FR-DET-002
 - Acceptance:
   - R001 email, R002 name (threshold from config; nickname/formatting variants must **not** fire), R003 phone.
-  - Candidates carry fields, values, involved records and only compared timestamps.
+  - Candidates carry fields, values, involved records, only compared timestamps, `record_field` facts and an inference (`03 §M5` trail).
   - Table-driven tests incl. decoys and missing-data cases.
 
 ### T-021 — Rules R004–R006, R014 (status, plan, amount)
@@ -500,6 +523,8 @@ The implementation plan, split into discrete tasks that individual agents can cl
 - Acceptance:
   - R004, R005, R006 (via `normalize_plan`), R014 (default price table = plan catalog, `tolerance`).
   - Status equivalence per `03 §M2`; another active subscription suppresses R004; tests per rule incl. multi-subscription edge cases.
+  - R004/R005 config `propagation_grace_days` (default 0 = unchanged behaviour) per `03 §M4`; boundary tests.
+  - Every candidate carries `record_field` facts and an inference (`03 §M5` trail).
 
 ### T-022 — Rules R007–R010 (temporal)
 - Status: todo | Priority: P0 | Size: M | Depends: T-019 | Wave: 9 | Agent: unassigned | Claimed: —
@@ -509,6 +534,7 @@ The implementation plan, split into discrete tasks that individual agents can cl
 - Acceptance:
   - R007 (tolerance config), R008 (grace days), R009, R010; timezone-aware comparisons.
   - Boundary tests (exactly at tolerance); uses `ctx.now`, never the system clock.
+  - Every candidate carries `record_field` facts and an inference (`03 §M5` trail).
 
 ### T-023 — Rules R011–R013, R015 (structural/logic)
 - Status: todo | Priority: P1 | Size: M | Depends: T-019 | Wave: 9 | Agent: unassigned | Claimed: —
@@ -518,15 +544,18 @@ The implementation plan, split into discrete tasks that individual agents can cl
 - Acceptance:
   - R011, R012 (fires on `extra_accounts`), R013 (orphan billing account), R015 (concrete definition in `03 §M4`).
   - Config thresholds; tests incl. false-positive guards.
+  - Every candidate carries `record_field` facts and an inference (`03 §M5` trail).
 
 ### T-024 — Scoring & finding lifecycle
 - Status: todo | Priority: P0 | Size: L | Depends: T-019, T-052 | Wave: 9 | Agent: unassigned | Claimed: —
-- Blocks: T-025, T-027, T-045, T-046, T-054, T-055
+- Blocks: T-025, T-027, T-045, T-046, T-053, T-054, T-055
 - Touches: `backend/app/domain/scoring/**`, `backend/app/services/finding_service.py`, `backend/app/models/finding*.py` (behaviour only), tests
-- Requirements: FR-DET-005/006/008, FR-EVD-001…004, FR-FND-001…004
+- Requirements: FR-DET-005/006/008, FR-EVD-001…005, FR-FND-001…004, FR-TRL-001…004
 - Acceptance:
   - Pure functions per `03 §M5`: `confidence`, `priority`, `escalate_severity`, `fingerprint`, `evidence_hash` (`{rule_key, fields, timestamps}` only), `suggested_authority` (3-step rule).
   - The worked example in `03 §M5` (0.829 / 2.487) is a unit test.
+  - `scoring/trail.py`: builds `evidence.trail` per `03 §M5` (fact kinds `record_field`/`absence`, inference kinds, deterministic ids, conclusion with `risk` = severity and `confidence`); provenance check; trail excluded from `evidence_hash` (test: changing trail wording never reopens a finding); rule certainty 0.85 for `missing_evidence`.
+  - Invariant 11 (trail provenance) tested for findings.
   - Upsert algorithm per `03 §M6` in one transaction: create/update/auto-resolve and the system reopen rules (incl. `resolved_evidence_hash`); writes `finding_events`; updates entity counters and health per `05 §5.3`.
   - State machine = the transition table in `03 §M6`; illegal → `ConflictError` with the allowed list.
   - Invariants 2, 3, 5 from `03 §Cross-module invariants` tested.
@@ -552,6 +581,7 @@ The implementation plan, split into discrete tasks that individual agents can cl
 - Acceptance:
   - Alert creation policy table in `03 §M7` as a pure function of the finding change.
   - `dedup_key` formats and the 10-minute window (bypassed when severity increases); link alerts once per link.
+  - `risk_threshold_crossed` policy row (rise to `warning` → alert severity `high`, to `critical` → `critical`; dedup `risk:<entity_id>:<level>`, 24 h) as a pure function of a risk level change (called by T-055).
   - Writes `alerts`; returns created alerts for publishing; tests for every policy row and dedup edge.
 
 ---
@@ -559,19 +589,20 @@ The implementation plan, split into discrete tasks that individual agents can cl
 # E6 — Real-time & API
 
 ### T-026 — EventBus & WebSocket server
-- Status: todo | Priority: P0 | Size: L | Depends: T-007 | Wave: 5 | Agent: unassigned | Claimed: —
+- Status: todo | Priority: P0 | Size: L | Depends: T-007, T-052 | Wave: 5 | Agent: unassigned | Claimed: —
 - Blocks: T-015, T-025, T-032, T-046
 - Touches: `backend/app/realtime/{bus,ws_manager,events}.py`, `backend/app/api/ws.py`, tests
 - Requirements: FR-RTM-001…003, 005
 - Acceptance:
   - `EventBus` interface + `InMemoryEventBus`; ULID event ids; envelope per `04 §14.1` for every server message (incl. `system.ping` / `system.pong`).
-  - `WSManager`: topics, topic permissions per `04 §14`, bounded per-connection queue (100; slow client dropped), heartbeat 25 s.
+  - `WSManager`: topics (incl. `investigations`), topic permissions per `04 §14`, bounded per-connection queue (100; slow client dropped), heartbeat 25 s.
+  - Event type constants for every row of `04 §14.3`, incl. `risk.changed` and `investigation.progress` / `investigation.completed`.
   - `/ws?ticket=` at the server root; close `4401` on bad/used/expired ticket; subscribe/unsubscribe/ping.
   - Tests with the Starlette test client: multi-client broadcast, auth failure, topic filtering, admin-only `simulation` topic.
 
 ### T-027 — Read/write REST APIs
 - Status: todo | Priority: P0 | Size: L | Depends: T-017, T-024 | Wave: 10 | Agent: unassigned | Claimed: —
-- Blocks: T-030, T-033, T-034, T-035, T-042, T-048, T-049
+- Blocks: T-030, T-033, T-034, T-035, T-042, T-048, T-049, T-054
 - Touches: `backend/app/api/v1/{entities,records,findings,alerts,audit}.py`, query services, schemas, router include lines, tests
 - Requirements: FR-FND-002/005/006, FR-ALR-003, FR-AUT-006
 - Acceptance:
@@ -622,12 +653,13 @@ The implementation plan, split into discrete tasks that individual agents can cl
 - Status: todo | Priority: P0 | Size: L | Depends: T-002, T-052 | Wave: 5 | Agent: unassigned | Claimed: —
 - Blocks: T-030
 - Touches: `backend/app/ai/**`, tests
-- Requirements: FR-AIX-002…006
+- Requirements: FR-AIX-002…006, FR-AIX-009
 - Acceptance:
   - **First:** re-verify the model name (default `gemini-3.5-flash-lite`), free-tier limits, structured-output support and `google-genai` usage in the official docs; record the result under Q-001 in `08`.
   - `GeminiClient.explain(evidence) → ExplanationResult` with JSON-schema structured output, temperature ≤ 0.3, 15 s timeout.
   - Prompt `prompts/explain_v1.md` treats evidence as untrusted data; redaction (emails → `j***@domain`, phones → last 2 digits) on by default.
-  - Pydantic validation; one retry on invalid output; deterministic fallback renderer for all 15 rule keys.
+  - Response schema incl. `cited_fact_ids`; evidence includes the redacted trail; output invalid unless `cited_fact_ids` is a non-empty subset of the trail's fact ids (`03 §M8`, FR-AIX-009).
+  - Pydantic validation; one retry on invalid output; deterministic fallback renderer for all 18 rule keys, citing every fact; missing-evidence templates say "unconfirmed" (FR-MEV-004; test scans every template).
   - Semaphore (`GEMINI_MAX_CONCURRENCY`), exponential backoff with jitter on 429/5xx, daily budget, circuit breaker (5 failures → 60 s).
   - `input_hash` helper per `03 §M8`; `FakeGeminiClient` for tests; no network in tests; missing key → fallback with one log line.
 
@@ -638,7 +670,7 @@ The implementation plan, split into discrete tasks that individual agents can cl
 - Requirements: FR-AIX-001, 003, 004, 007, NFR-REL-004
 - Acceptance:
   - Priority queue (highest `priority_score` first) + 30 s sweeper based on `explained_evidence_hash` (`03 §M8`); failure fallbacks retried at most every 10 min within budget.
-  - Cache hits only on non-fallback rows; regenerate always inserts a new row; saves `finding_explanations`; sets `explained_evidence_hash`; publishes `finding.explanation_ready`.
+  - Cache hits only on non-fallback rows; regenerate always inserts a new row; saves `finding_explanations` (incl. `cited_fact_ids`); sets `explained_evidence_hash`; publishes `finding.explanation_ready`.
   - `POST /findings/{id}/explain` (analyst, 10/min/user, 429 on exhausted budget).
   - Invariant 6: LLM failures never change finding state; tests with the fake client.
 
@@ -704,6 +736,7 @@ The implementation plan, split into discrete tasks that individual agents can cl
 - Acceptance:
   - Run form with validation matching `04 §11` (incl. anomaly types and `external_ref_rate`); run status ring with live progress; "Simulate drift" accent button; stop; reset via `Dialog` with typed confirmation.
   - Evaluation view: precision/recall/F1 (`display-xl`), matching metrics, per-type bars, misses/false positives; admin only.
+  - Run form also covers `history_days`, `scenario_rate`, `feed_outage`; evaluation view shows the `investigation` metrics (layout decided with the product owner's frontend changes).
 
 ### T-037 — Rules & systems pages
 - Status: todo | Priority: P1 | Size: M | Depends: T-008, T-011, T-028 | Wave: 13 | Agent: unassigned | Claimed: —
@@ -745,6 +778,7 @@ The implementation plan, split into discrete tasks that individual agents can cl
 - Requirements: FR-SIM-007, FR-SIM-008, G1, G2
 - Acceptance:
   - Scoring per `03 §M9`: TP / ignored / FP via `simulation_ground_truth` and `acceptable_rule_keys`; precision/recall/F1 overall and per type; misses and FP lists; matching metrics.
+  - Scenario rows (`is_scenario`) excluded from precision/recall; R016 findings on scenario customers ignored (test).
   - Persisted `evaluation_runs`; `GET/POST …/evaluation`.
   - Regression tests: seed 42, 300 customers, all anomaly types → precision ≥ 0.90, recall ≥ 0.85, matching recall ≥ 0.95; F1 drop > 3 points vs `backend/tests/evaluation/baseline.json` fails CI.
   - Invariant 7: `anomaly_rate = 0` with decoys → zero findings.
@@ -764,24 +798,24 @@ The implementation plan, split into discrete tasks that individual agents can cl
 - Touches: `README.md`, `Makefile` (seed target), `scripts/**`, `docs/assets/**`
 - Requirements: G6, NFR-PERF-001…005, NFR-OPS-001
 - Acceptance:
-  - `make seed` creates a ready demo (completed run with evaluation and explanations).
+  - `make seed` creates a ready demo (completed run with evaluation and explanations, plus one completed `churn` investigation on a `churn_with_early_signals` customer — PRD demo scenario).
   - README: problem, architecture diagram, setup in ≤ 5 commands, screenshots/GIF, measured metrics table (precision/recall/latency), tech stack, how agents were used.
   - Load script verifies NFR-PERF-001/002/003 and records results in the README.
 
 ### T-042 — Hardening & security review
-- Status: todo | Priority: P1 | Size: M | Depends: T-011, T-015, T-018, T-027, T-028, T-030, T-039, T-046 | Wave: 13 | Agent: unassigned | Claimed: —
+- Status: todo | Priority: P1 | Size: M | Depends: T-011, T-015, T-018, T-027, T-028, T-030, T-039, T-046, T-056 | Wave: 13 | Agent: unassigned | Claimed: —
 - Blocks: —
 - Touches: any file, **only to fix findings from the review**; `docs/notes/security-review.md`
 - Requirements: NFR-SEC-001…008
 - Acceptance:
-  - Authorization matrix test (every endpoint × role) matches `03 §M11`.
+  - Authorization matrix test (every endpoint × role) matches `03 §M11` (incl. as-of, risk and investigation endpoints).
   - PII-in-logs test; security headers; cookie flags with `APP_ENV=production`; CORS tests.
   - `pip-audit` and `npm audit` clean or documented; detect-secrets baseline clean.
   - LLM prompt-injection test (payload containing instructions does not alter output schema or behaviour).
   - Written review with residual risks.
 
 ### T-048 — API contract tests
-- Status: todo | Priority: P1 | Size: M | Depends: T-011, T-015, T-018, T-027, T-028, T-030, T-039, T-046 | Wave: 13 | Agent: unassigned | Claimed: —
+- Status: todo | Priority: P1 | Size: M | Depends: T-011, T-015, T-018, T-027, T-028, T-030, T-039, T-046, T-053, T-054, T-055, T-056 | Wave: 13 | Agent: unassigned | Claimed: —
 - Blocks: —
 - Touches: `backend/tests/contract/**`, CI workflow (one job)
 - Requirements: NFR-MNT-005, 04 §16
@@ -800,83 +834,89 @@ The implementation plan, split into discrete tasks that individual agents can cl
 Added 2026-10-09 by `claude-code-1` from the product owner's new feature direction. Design and rationale: `docs/notes/2026-10-09-investigation-features-plan.md`. Requirement IDs (`FR-TMX`, `FR-TRL`, `FR-MEV`, `FR-INV`, `FR-RSK`) are defined by T-052.
 
 ### T-052 — Contract update: investigation features
-- Status: in_progress | Priority: P0 | Size: L | Depends: T-051 | Wave: 4 | Agent: claude-code-1 | Claimed: 2026-10-10
+- Status: review | Priority: P0 | Size: L | Depends: T-051 | Wave: 4 | Agent: claude-code-1 | Claimed: 2026-10-10
 - Note: Q-006…Q-011 answered 2026-10-10 (product owner accepted every recommendation). Stacked on the unmerged T-051 branch; merge T-051 first.
-- Blocks: T-009, T-013, T-014, T-019, T-024, T-029, T-047, T-053, T-054, T-055, T-057
+- Blocks: T-009, T-013, T-014, T-019, T-024, T-026, T-029, T-047, T-053, T-054, T-055, T-057
 - Touches: `docs/00_PRD.md` … `docs/06_UI_STYLE_GUIDE.md` (06: data contracts only; visual design waits for the product owner's frontend changes), `docs/08_PROGRESS_HANDOFF.md`, `docs/09_TASKS.md`
 - Requirements: PRD positioning; new FR groups
 - Acceptance:
   - Every change listed in plan note §4 applied, each doc in its own `docs(contract): …` commit; Decision rows added to `08 §6`.
   - Existing task acceptance criteria updated per plan note §5 (T-009 schema includes the new tables/columns; T-019 as-of seam; T-024 trail; T-029/T-030 `cited_fact_ids`; T-013/T-014 histories and fields; T-047 retention; T-041 demo).
-  - New invariants 9–11 added to `03 §Cross-module invariants`.
+  - New invariants 9–14 added to `03 §Cross-module invariants`.
   - Requirement traceability table and milestone mapping in this file cover every new requirement ID; waves recomputed from `Depends`.
 
 ### T-053 — As-of snapshot service (Time Machine)
-- Status: todo | Priority: P0 | Size: L | Depends: T-017, T-019, T-052 | Wave: 9 | Agent: unassigned | Claimed: —
-- Blocks: T-056
-- Touches: `backend/app/services/snapshot_service.py`, `backend/app/api/v1/entities.py` (as-of endpoint only), `backend/app/schemas/snapshot.py`, tests
-- Requirements: FR-TMX (T-052)
+- Status: todo | Priority: P0 | Size: L | Depends: T-017, T-019, T-024, T-052 | Wave: 10 | Agent: unassigned | Claimed: —
+- Blocks: T-048, T-055, T-056
+- Touches: `backend/app/domain/timemachine/**`, `backend/app/services/snapshot_service.py`, `backend/app/api/v1/entities.py` (as-of endpoint only), `backend/app/schemas/snapshot.py`, tests
+- Requirements: FR-TMX-001…007, NFR-PERF-006
 - Acceptance:
-  - `build_context_as_of(entity_id, T)` returns an `EntityContext` built only from versions with `source_updated_at ≤ T`, `ctx.now = T`; deleted-as-of records excluded.
-  - Account links re-scored as of T with the pure matcher; accounts not linkable at T reported as `not_yet_linkable`.
-  - `GET /entities/{id}/as-of?at=` per the T-052 contract (records with version used, facts, findings-as-of, `rule_set`); nothing written to `findings`.
-  - **Invariant 9 (no lookahead)** property test: ingest history up to T, compute; ingest the rest; recompute as of T → identical. Query count asserted (no N+1).
+  - History load per `03 §M13` (versions recorded ≤ bound, link decisions with decision times, one batch of queries; query count asserted, no N+1).
+  - Pure `domain/timemachine/asof.py` `context_at(history, t, cfg) → AsOfResult`: winning version by `(recorded_at, version)`, deletions/unrecorded absent, membership by anchor component with the pure matcher, decisions honoured only if decided ≤ `t`, `not_yet_linkable`, `now = t`, `as_of = True`; import-linter keeps it pure.
+  - Feed watermarks for many times in one query (`unnest` + `LATERAL`, `03 §M13` step 3); `rule_set` hash per `03 §M13`.
+  - `GET /entities/{id}/as-of?at=` per `04 §17.1` (`risk` is added by T-055); 422 for a future or naive `at`; nothing written (invariant 10).
+  - **Invariant 9 (no lookahead)** property test: ingest history up to T, compute; ingest the rest; recompute as of T → identical.
+  - **Invariant 14 (live/as-of parity)** test on generated data: as-of(now) members, fingerprints and evidence hashes equal live detection.
 
-### T-054 — Missing-evidence rules R016–R018 & feed watermarks
-- Status: todo | Priority: P1 | Size: M | Depends: T-012, T-019, T-024, T-052 | Wave: 10 | Agent: unassigned | Claimed: —
-- Blocks: —
-- Touches: `backend/app/domain/rules/missing_evidence_rules.py`, `backend/app/services/record_service.py` (watermark update only), tests
-- Requirements: FR-MEV (T-052)
+### T-054 — Missing-evidence rules R016–R018 & expectations
+- Status: todo | Priority: P1 | Size: M | Depends: T-012, T-019, T-024, T-027, T-052 | Wave: 11 | Agent: unassigned | Claimed: —
+- Blocks: T-048
+- Touches: `backend/app/domain/rules/missing_evidence_rules.py`, `backend/app/api/v1/entities.py` + `backend/app/schemas/entity.py` (`expectations` field only), tests
+- Requirements: FR-MEV-001…006, FR-DET-002 (R016–R018)
 - Acceptance:
-  - R016 payment, R017 support response, R018 invoice gap per the T-052 contract; titles say "unconfirmed", never "did not happen".
-  - `pending` / `unconfirmed` / `cannot_assess` outcomes; `source_systems.last_recorded_at` maintained on ingest.
-  - **Invariant 11:** no finding while the expected system's watermark is before the deadline (test); evidence arriving later auto-resolves the finding.
-  - Boundary tests exactly at each deadline; `absence` facts in the trail.
+  - R016, R017, R018 per `03 §M4` (deadlines, config keys `payment_terms_days`, `grace_days`, `response_sla_hours`, `invoice_gap_days`); stable titles say "unconfirmed", never "did not happen".
+  - Outcomes `pending` / `unconfirmed` / `cannot_assess` against `ctx.feed_watermarks` (computed by T-019 live and T-053 as-of; no counter row).
+  - **Invariant 12:** no finding while the expected system's watermark is at or before the deadline (test); evidence arriving later auto-resolves the finding.
+  - Boundary tests exactly at each deadline; one `absence` fact per expectation in the trail.
+  - Entity detail `expectations` per `04 §6` (computed on request, never stored).
 
 ### T-055 — Risk signals module (M12)
-- Status: todo | Priority: P0 | Size: L | Depends: T-024, T-045, T-052 | Wave: 11 | Agent: unassigned | Claimed: —
-- Blocks: T-056
-- Touches: `backend/app/domain/risk/**`, `backend/app/services/risk_service.py`, `backend/app/workers/detection_loop.py` (one hook line), tests
-- Requirements: FR-RSK (T-052)
+- Status: todo | Priority: P0 | Size: L | Depends: T-024, T-045, T-052, T-053 | Wave: 11 | Agent: unassigned | Claimed: —
+- Blocks: T-048, T-056
+- Touches: `backend/app/domain/risk/**`, `backend/app/services/risk_service.py`, `backend/app/workers/detection_loop.py` (one hook line), `backend/app/api/v1/entities.py` + `backend/app/schemas/{entity,snapshot}.py` (risk fields and `risk-events` endpoint only), tests
+- Requirements: FR-RSK-001…004, FR-TRL-001 (risk), FR-ALR-001 (risk alert)
 - Acceptance:
-  - Pure signal functions (`payment_delay`, `complaint_trend`, `commercial_decline`, `open_inconsistencies`) and weighted score/levels per the T-052 contract; table-driven tests; ≥ 90% coverage.
-  - Risk confidence (data coverage) computed separately from the risk score; both always returned together.
-  - Live per-entity risk stored; `risk_threshold_crossed` alert when the level rises (dedup per `03 §M7` style); `risk.changed` published after commit.
-  - Every signal emits trail facts and an inference.
+  - Pure signals, weights, levels and `risk_confidence` per `03 §M12`; `RISK_MODEL_VERSION`; table-driven tests; ≥ 90% coverage; the worked example (0.696 → `warning`, confidence 1.0) is a unit test.
+  - Score and confidence always returned together, never combined.
+  - Live: `ctx_90` via T-053; upsert `entity_risk`, `risk_events` on level change, alert via the T-045 policy, `risk.changed` after commit — all in the detection transaction.
+  - Trail per `03 §M12` (signal inferences cite their facts; score 0 → empty trail).
+  - API: `risk` in the entity list/detail (+ `risk_level` filter, `-risk_score` sort), `GET /entities/{id}/risk-events`, and `risk` in the as-of response (`04 §6, §17`).
 
 ### T-056 — "Could We Have Known?" investigation engine & API
 - Status: todo | Priority: P0 | Size: L | Depends: T-053, T-055 | Wave: 12 | Agent: unassigned | Claimed: —
-- Blocks: T-058, T-059
-- Touches: `backend/app/services/investigation_service.py`, `backend/app/api/v1/investigations.py`, `backend/app/schemas/investigation.py`, `backend/app/api/v1/router.py` (include line), tests
-- Requirements: FR-INV (T-052)
+- Blocks: T-042, T-048, T-058, T-059
+- Touches: `backend/app/services/investigation_service.py`, `backend/app/api/v1/investigations.py`, `backend/app/schemas/investigation.py`, `backend/app/api/v1/router.py` (include line), `backend/app/main.py` (one lifespan line: restart sweep), tests
+- Requirements: FR-INV-001…007, NFR-PERF-007
 - Acceptance:
-  - Checkpoints = recorded times of the entity's versions in the lookback window **plus** deadline-crossing times; at each, as-of findings + risk.
-  - `first_detectable_at`, `lead_time`, crossing trail, `rule_set`, and the mandatory retrospective caveat; "never crossed" is a valid result.
-  - Incident kinds `churn` and `finding` (per Q-010); `investigations` + `investigation_checkpoints` persisted; identical inputs → identical result (`inputs_hash`, test).
-  - Bounded runtime (checkpoint cap from the contract); progress events; analyst role.
+  - Incident detection (`churn` earliest churned/cancelled version, 422 `NO_INCIDENT`; `finding` with required `at`) and checkpoints (version times + daily 00:00 UTC boundaries; > 1,000 → 422 `TOO_MANY_CHECKPOINTS`) per `03 §M14`.
+  - History loaded once; per checkpoint `context_at(T)` and `context_at(T − 90 d)` → rules → scoring → risk; checkpoint rows; progress every 25.
+  - Result, outcome `crossed`/`never_crossed`, caveat templates per `03 §M14`; `inputs_hash` idempotency (200 with the existing one); **invariant 13** determinism test; invariant 10 (nothing written outside investigation tables).
+  - Endpoints `04 §17.3–17.6` (analyst to start, viewer to read; audit `investigation.start`; 10/min/user).
+  - Background execution: ≤ 2 concurrent, FIFO, restart sweep marks `queued`/`running` → `failed`; `investigation.progress` / `investigation.completed` published.
 
 ### T-057 — Simulation scenarios: churn histories & missing evidence
 - Status: todo | Priority: P1 | Size: L | Depends: T-014, T-052 | Wave: 7 | Agent: unassigned | Claimed: —
-- Blocks: T-058
+- Blocks: T-015, T-058
 - Touches: `backend/app/simulation/{generator,injector,catalog,scenarios}.py`, tests
-- Requirements: FR-SIM additions (T-052)
+- Requirements: FR-SIM-004 (R016–R018 types), FR-SIM-009, FR-SIM-010 (`late_within_grace`)
 - Acceptance:
-  - Scenario types from plan note §3.7 with ground truth (expected crossing date for `churn_with_early_signals`; expected rule for the missing-evidence scenarios) and the two decoys.
-  - Deterministic for `(seed, config)`; month-scale recorded times; noise never triggers the new rules.
+  - Anomaly types `payment_never_recorded` (R016), `support_response_missing` (R017), `invoice_feed_gap` (R018) and decoy `late_within_grace` per `03 §M9`.
+  - Scenarios `churn_with_early_signals`, `churn_without_signals`, `signals_without_churn` per the `03 §M9` table, labelled `is_scenario = true` with `incident_at` and `expected_crossing_at` (computed with the reference risk model on the noise-free history; generator test: peak score ≥ 0.65).
+  - Deterministic for `(seed, config)`; noise never triggers R016–R018.
 
 ### T-058 — Investigation & missing-evidence evaluation
 - Status: todo | Priority: P1 | Size: M | Depends: T-039, T-056, T-057 | Wave: 13 | Agent: unassigned | Claimed: —
 - Blocks: —
 - Touches: `backend/app/services/evaluation_service.py` (new metrics only), `backend/tests/evaluation/**`
-- Requirements: G7, G8 (T-052)
+- Requirements: FR-SIM-011, G7, G8
 - Acceptance:
-  - Lead-time absolute error, detectable-churn detection rate, false early-warning rate, missing-evidence precision/recall; persisted with the evaluation run.
-  - The no-lookahead check runs on every evaluation; CI regression thresholds set in T-052.
+  - Every metric in the `03 §M9` investigation table, persisted in `evaluation_runs.investigation` and returned by `04 §11`.
+  - The lookahead check runs on every evaluation; regression test (seed 42, 300 customers, `scenario_rate` 0.1, `feed_outage` = `support`) meets the `03 §M9` targets (rates ≥ 0.9, outage findings 0, lookahead violations 0).
 
 ### T-059 — Time Machine & investigation UI
 - Status: blocked | Priority: P0 | Size: L | Depends: T-043, T-056 | Wave: 13 | Agent: unassigned | Claimed: —
 - Blocked: frontend work is held until the product owner shares their frontend changes (see T-004).
 - Blocks: —
 - Touches: `frontend/src/features/investigations/**`, `frontend/src/features/entities/**` (Time Machine view only)
-- Requirements: FR-TMX, FR-INV, FR-TRL (T-052)
-- Acceptance: defined once the frontend direction is agreed (minimum: "Investigate this incident", replay timeline, crossing point with trail, fact vs inference styling, risk and confidence shown separately, caveat always visible).
+- Requirements: FR-TMX-001…004, FR-INV-005, FR-TRL-001, FR-MEV-004/006, FR-RSK-002
+- Acceptance: defined once the frontend direction is agreed. Minimum content contract: `06 §7.8` ("Investigate this incident", as-of banner, replay curve from `GET /investigations/{id}/checkpoints`, crossing point with trail, facts vs inferences, risk always with confidence, caveat always visible, missing-evidence wording); entity list/detail risk and expectations (the parts of T-034 added by T-052).
