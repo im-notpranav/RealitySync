@@ -209,7 +209,7 @@ The Time Machine is **replay, not a second engine**: rules and risk signals are 
 
 | Component | Responsibility |
 |-----------|----------------|
-| `services/snapshot_service.py` | `build_context_as_of(session, entity_id, T) → EntityContext` (03 §M13): winning version per record by recorded time, as-of account membership recomputed with the pure matcher (no identity lookahead), feed watermarks as of T, `now = T`. Read-only. The live context builder (T-019) is the special case `T = now` over current state. |
+| `services/snapshot_service.py` + `domain/timemachine/asof.py` | The service loads an entity's history once (versions recorded ≤ a bound, link decisions, feed watermarks; read-only). The pure `context_at(history, T)` (03 §M13) picks the winning version per record by recorded time, recomputes account membership with the pure matcher (no identity lookahead) and sets `now = T`. The live context builder (T-019) produces the same `EntityContext` type from current state; invariant 14 keeps the two in parity. |
 | `services/risk_service.py` | Computes risk (03 §M12) from a context and the context 90 days earlier; writes `entity_risk` / `risk_events` **only** in live mode (detection loop transaction). |
 | `services/investigation_service.py` | Builds checkpoints, replays each one through the snapshot service + rules + risk, persists `investigations` and `investigation_checkpoints`, publishes `investigation.progress` / `investigation.completed`. |
 
@@ -276,7 +276,8 @@ realitysync/
 │  │  │  ├─ matching/             # blocking.py, features.py, scorer.py, primary.py (primary-account order)
 │  │  │  ├─ rules/                # base.py, registry.py, field_rules.py, status_rules.py, temporal_rules.py, structural_rules.py, missing_evidence_rules.py
 │  │  │  ├─ scoring/              # confidence.py, priority.py, fingerprint.py, trail.py (facts → inferences → conclusion)
-│  │  │  └─ risk/                 # signals.py (four signals), model.py (weights, levels, risk confidence)
+│  │  │  ├─ risk/                 # signals.py (four signals), model.py (weights, levels, risk confidence)
+│  │  │  └─ timemachine/          # asof.py (pure context_at: winning versions, as-of membership, AsOfResult)
 │  │  ├─ realtime/                # bus.py (interface + InMemoryEventBus), pg_bus.py (PgNotifyEventBus), ws_manager.py, events.py
 │  │  ├─ workers/                 # queue.py (ingest loop), detection_loop.py, explain_worker.py, run.py, pipeline.py
 │  │  ├─ ai/                      # gemini_client.py, prompts/, schemas.py, fallback.py, redaction.py

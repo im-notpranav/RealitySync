@@ -112,8 +112,8 @@ Keywords **MUST**, **SHOULD**, **MAY** follow RFC 2119. Every requirement has an
 | FR-SIM-007 | The evaluation service MUST compute detection precision, recall, F1 (overall and per type) by matching findings to injected issues, and matching quality (auto-match precision, auto+review recall) against ground truth. |
 | FR-SIM-008 | With `anomaly_rate = 0` and decoys on, a run MUST produce zero findings (noise alone must never trigger a rule, R001–R018) and no entity risk level ≥ `warning`. |
 | FR-SIM-009 | The simulator MUST generate month-scale histories with realistic recorded times and these **scenarios** (03 §M9): `churn_with_early_signals`, `churn_without_signals`, `signals_without_churn`. Ground truth stores the incident time and, for scenarios with signals, `expected_crossing_at` computed by the reference risk model on the noise-free history. |
-| FR-SIM-010 | Decoys MUST include `late_within_grace` (expected evidence arrives just before its deadline → no finding) and `system_feed_outage` (one system silent for the last 40 days of the run → `cannot_assess`, no missing-evidence findings). |
-| FR-SIM-011 | Evaluation MUST also report: lead-time absolute error and within-1-day rate, detectable-churn detection rate, no-false-hindsight rate, risk precision, missing-evidence findings during outages, and the result of the no-lookahead check (FR-TMX-006). |
+| FR-SIM-010 | Decoys MUST include `late_within_grace` (expected evidence arrives just before its deadline → no finding) and, through the `feed_outage` run option, a system outage (one system silent for the last 40 days of the run → `cannot_assess`, no missing-evidence findings for that system). |
+| FR-SIM-011 | Evaluation MUST also report: lead-time absolute error and within-1-day rate, detectable-churn detection rate, no-false-hindsight rate, signals-without-churn detection rate, missing-evidence findings during outages, and the result of the no-lookahead check (FR-TMX-006). |
 
 ### 1.10 Dashboard and analytics (DSH)
 | ID | Requirement |
@@ -148,7 +148,7 @@ Keywords **MUST**, **SHOULD**, **MAY** follow RFC 2119. Every requirement has an
 | ID | Requirement | Priority |
 |----|-------------|----------|
 | FR-TRL-001 | Every finding and every risk assessment MUST carry a `trail` with `facts`, `inferences` and a `conclusion` (schema in 03 §M5). | Must |
-| FR-TRL-002 | Every `record_field` fact MUST reference a record id and version present in the evaluated context, with its system and recorded time. Every inference MUST cite at least one fact; the conclusion MUST cite at least one inference. | Must |
+| FR-TRL-002 | Every `record_field` fact MUST reference a record id and version present in the evaluated context, with its system and recorded time. Every inference MUST cite at least one fact; the conclusion MUST cite at least one inference. (Only exception: a risk assessment with score 0 has an empty trail, 03 §M12.) | Must |
 | FR-TRL-003 | Facts MUST contain only values stated by source records, or `absence` observations (what our data does not contain up to a time, with the feed watermark). Anything RealitySync computes — deadlines, scores, suggested authority — is an inference. | Must |
 | FR-TRL-004 | The trail MUST be built deterministically by rules and scoring (never by the LLM) and MUST NOT be part of `evidence_hash`. | Must |
 
