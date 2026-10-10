@@ -234,6 +234,16 @@ Full-page list grouped by day; unread have accent dot; filters by type/severity;
 ### 7.7 Settings
 `Tabs`: **Profile** (name, email, role, change password form) · **Users** (admin: table + create/deactivate) · **API keys** (admin: list, create — secret shown once in a copyable field with a warning, revoke) · **Audit log** (admin: filterable table). Reached from the Settings pill and the avatar menu.
 
+### 7.8 Time Machine, risk and investigations — content contract only
+**Visual design is pending:** the product owner will provide frontend changes before any UI work (T-059 is blocked until then). This section fixes only **what must be shown and how it is worded**; layout, components and tokens for these screens will be added later.
+- **Risk is never shown without confidence.** Wherever a risk level or score appears, the risk confidence appears next to it ("Risk: Warning · confidence 100%"). Never merge them into one number or one color.
+- Risk level labels: "Low", "Watch", "Warning", "Critical". Finding severity keeps its own labels; do not reuse severity colors for risk without a design decision.
+- **Missing evidence wording** (FR-MEV-004): "Payment unconfirmed", "No response recorded", "Cannot assess — no Billing data recorded since {date}". Never "not paid", "ignored", "never responded".
+- Expectation outcomes: `pending` → "Waiting until {deadline}"; `cannot_assess` → "Cannot assess"; both shown in a separate group from findings.
+- **Trail:** facts, inferences and conclusion are visibly separate groups labelled "Facts (from source systems)", "What RealitySync inferred" and "Conclusion". Every fact shows its system, record id and recorded time. AI explanations highlight their cited facts.
+- **As-of view:** a persistent banner "Viewing as of {date time UTC} — data recorded by then, today's rules"; records not linkable yet are listed as "Not yet linkable at this time".
+- **Investigation result:** the caveat text from the API is always shown on screen and in exports, unedited and not collapsible. Outcome copy: `crossed` → "RealitySync could have flagged this {lead time} before the incident"; `never_crossed` → "With the data recorded before the incident, RealitySync would not have flagged this".
+
 ## 8. Motion
 - Duration 160–240 ms, easing `cubic-bezier(0.2, 0.8, 0.2, 1)`.
 - **One orchestrated moment:** on first dashboard load, KPI numbers count up (600 ms) and cards fade in with 40 ms stagger. Nothing else animates on load.
