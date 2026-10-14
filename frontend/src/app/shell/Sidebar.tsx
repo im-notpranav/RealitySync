@@ -1,8 +1,9 @@
 import { LogOut, Plus } from "lucide-react";
 import { motion } from "motion/react";
-import { Link, NavLink, useNavigate } from "react-router-dom";
+import { Link, NavLink } from "react-router-dom";
 
 import { ButtonLink } from "../../components/ui";
+import { useSignOut } from "../../features/auth/useSignOut";
 import { cn } from "../../lib/cn";
 import { hasRole, useSession } from "../../store/session";
 import { adminNav, primaryNav, settingsNav, visibleEntries, type NavEntry } from "../nav";
@@ -49,8 +50,7 @@ function SidebarItem({ entry }: { entry: NavEntry }) {
 
 export function Sidebar() {
   const user = useSession((state) => state.user);
-  const clear = useSession((state) => state.clear);
-  const navigate = useNavigate();
+  const signOut = useSignOut();
   const primary = visibleEntries(primaryNav, user);
   const admin = visibleEntries(adminNav, user);
 
@@ -84,10 +84,7 @@ export function Sidebar() {
         <button
           type="button"
           title="Sign out"
-          onClick={() => {
-            clear();
-            navigate("/login");
-          }}
+          onClick={() => void signOut()}
           className={cn(itemBase, "text-on-dark-muted pointer:hover:bg-white/5 pointer:hover:text-on-dark")}
         >
           <LogOut size={20} strokeWidth={1.75} className="shrink-0" aria-hidden="true" />

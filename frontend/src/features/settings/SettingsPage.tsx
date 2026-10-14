@@ -1,5 +1,6 @@
 import { Copy, KeyRound, Plus } from "lucide-react";
 import { useId, useState } from "react";
+import { useSearchParams } from "react-router-dom";
 
 import {
   Avatar,
@@ -216,7 +217,7 @@ function Audit() {
 
 export function Component() {
   const user = useSession((state) => state.user);
-  const [tab, setTab] = useState("profile");
+  const [searchParams, setSearchParams] = useSearchParams();
   const items = [
     { value: "profile", label: "Profile" },
     ...(hasRole(user, "admin")
@@ -227,6 +228,12 @@ export function Component() {
         ]
       : []),
   ];
+  // The tab lives in the URL so the account menu can link to `?tab=users` (T-008); unknown or
+  // unavailable tabs fall back to Profile.
+  const requested = searchParams.get("tab");
+  const tab = items.some((item) => item.value === requested) ? (requested as string) : "profile";
+  const setTab = (value: string) =>
+    setSearchParams(value === "profile" ? {} : { tab: value }, { replace: true });
   return (
     <>
       <PageHeader
