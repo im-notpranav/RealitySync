@@ -9,7 +9,7 @@
 
 | Field | Value |
 |-------|-------|
-| Last updated | 2026-10-15 by `claude-code-1` (T-009 core schema, in review) |
+| Last updated | 2026-10-15 by `claude-code-1` (T-010 normalization, in review) |
 | Project phase | **Phase 1 — Foundation.** Backend skeleton + DB foundation work and are verified (`make check-backend`, `make dev`, `make migrate`). No business features yet. |
 | Repository state | GitHub `im-notpranav/RealitySync`. Foundation, contract and frontend design are merged into `main` (2026-10-10). T-006 merged 2026-10-14. |
 | Default branch | `main` |
@@ -34,7 +34,7 @@
 ## 2. Next step for the next agent
 
 1. All foundation, contract and frontend-design work is merged into `main` (2026-10-10, product owner: "git push to main").
-2. **T-006** is merged; **T-007** is merged (2026-10-14); **T-008** is merged (2026-10-15); **T-009** is merged (2026-10-15); **T-010** Normalization library is in progress. Then T-011, T-016, T-026, T-009, T-013, T-029.
+2. **T-006** is merged; **T-007** is merged (2026-10-14); **T-008** is merged (2026-10-15); **T-009** is merged (2026-10-15); **T-010** Normalization library is in review on `agent/T-010-normalization`. Then T-011, T-016, T-026, T-009, T-013, T-029.
 3. Read `03 §M12–M14` and `04 §17` before any E10 task; the critical path now runs T-009 → T-011 → T-012 → T-019 → T-024 → T-053 → T-055 → T-056 (≈ 96 h total).
 4. Setup: `README.md` → "Local development (backend)". Docker Desktop must be running for DB tests (`docker version` must show a server).
 
@@ -117,6 +117,8 @@
 | D-045 | 2026-10-10 | Simulator: month-scale histories (`history_days` 365) emitted in recorded-time order, 3 new anomaly types, 3 scenarios (`is_scenario`, excluded from precision/recall) with `expected_crossing_at`, decoy `late_within_grace`, run option `feed_outage`; investigation metrics in `evaluation_runs.investigation` | Lead time and no-lookahead must be measurable | 03 §M9, 04 §11 |
 | D-046 | 2026-10-10 | Record versions are never pruned; retention prunes only processed ingest events (Q-008) | The Time Machine needs the full history | 01 NFR-DAT-002, T-047 |
 | D-047 | 2026-10-10 | **Frontend visual direction v2** replaces D-008: the product owner's "Capsule" reference (dark frosted sidebar + light frosted work panel over a blurred scene, white cards, one dark primary button, soft tinted pills, moss accent). Frontend unblocked (lifts D-037). `motion` added to the approved npm list for shared-layout indicators, exit animations, count-up and gestures only | Product owner instruction ("use this as a reference for the frontend … improve the ui/ux") | 06 v2, 02 §2.1, T-060 |
+| D-062 | 2026-10-15 | `name_block` nickname-expands the first token before taking its initial ("Bob Smith" and "Robert Smith" share `SM0:r`); when metaphone yields nothing (non-Latin scripts) the last token itself is the code | More true candidates per block at no cost in precision (scoring decides); Arabic or CJK names still get a key | `domain/normalize/names.py` |
+| D-061 | 2026-10-15 | Normalizers take everything they need as arguments: `normalize_phone(value, region)` (caller passes `DEFAULT_PHONE_REGION`), `normalize_status(status_mapping, record_type, value)` (the system's `source_systems.status_mapping`, not a system key). Missing input → `None`; unreadable names / emails / plans / priorities → `None`; phones → `e164=None` with `raw`; statuses → `unmapped=True`; timestamps and amounts raise `InvalidTimestamp` / `InvalidAmount` (`ValueError`). Amounts need a currency (field or symbol) and reject comma decimals (`1.299,00`, `12,34`); rounding is half-up to 2 dp. Unambiguous nicknames only | `app.domain` may not read settings or the DB (07); a guessed amount or time would create false findings | `domain/normalize/` |
 | D-060 | 2026-10-15 | Indexes 05 names keep their names; unnamed ones are `ix_<table>_<columns>` (unique ones `uq_…`). All three source systems start with the 05 default `reliability_weight` 0.80 (04's 0.9 is an example) | Stable names for later migrations; no unspecified per-system values | `alembic/versions/202610151000_core_schema.py`, `db/seed.py` |
 | D-059 | 2026-10-15 | Closed value lists in 05 without an explicit CHECK (`entity_links.match_method`, `finding_events.action`) still get a CHECK | 05 conventions: enumerations are `text` with `CHECK`; extend via migration | `models/entity.py`, `models/finding.py` |
 | D-058 | 2026-10-15 | `source_systems.status_mapping` = `{record_type: {raw status → canonical}}`; keys are trimmed lower case and the lookup must `strip().casefold()` the raw value; every canonical status maps to itself; defaults add a few synonyms per system (crm `customer`/`lead`/`former customer`, billing `trial`/`canceled`/`past due`/`open`/`voided`, support `new`/`on hold`/`resolved`) | `normalize_status(system, record_type, s)` needs the record type; case differences must not make a status unmapped | `db/seed.py`; T-010 |
@@ -171,7 +173,7 @@ Add a row when you start a task that creates a migration; remove it when the PR 
 |------|------|---------|-------------|-----------|------|
 | E0 Foundation (T-001…T-005, T-043, T-051, T-060) | 0 | 0 | 0 | 0 | 8 |
 | E1 Auth (T-006…T-008) | 0 | 0 | 0 | 0 | 3 |
-| E2 Data & ingest (T-009…T-012, T-044, T-047) | 4 | 0 | 1 | 0 | 1 |
+| E2 Data & ingest (T-009…T-012, T-044, T-047) | 4 | 0 | 0 | 1 | 1 |
 | E3 Simulation (T-013…T-015) | 3 | 0 | 0 | 0 | 0 |
 | E4 Matching (T-016…T-018) | 3 | 0 | 0 | 0 | 0 |
 | E5 Detection (T-019…T-025, T-045) | 8 | 0 | 0 | 0 | 0 |
@@ -180,7 +182,7 @@ Add a row when you start a task that creates a migration; remove it when the PR 
 | E8 Frontend features (T-031…T-038, T-049, T-061) | 9 | 0 | 0 | 0 | 1 |
 | E9 Quality & polish (T-039…T-042, T-048) | 5 | 0 | 0 | 0 | 0 |
 | E10 Investigation (T-052…T-059) | 7 | 0 | 0 | 0 | 1 |
-| **Total (61)** | **46** | **0** | **1** | **0** | **14** |
+| **Total (61)** | **46** | **0** | **0** | **1** | **14** |
 
 Frontend tasks follow `06` v2 (D-047); T-004 needs T-060 merged first.
 
@@ -204,6 +206,17 @@ Frontend tasks follow `06` v2 (D-047); T-004 needs T-060 merged first.
 - **Exact next step for the next agent:** (one imperative sentence + command if useful)
 - **Docs updated:** (contract changes? Y/N and which)
 ```
+
+### 2026-10-15 — claude-code-1 — T-010 Normalization library
+- **Outcome:** done (T-010 in `review`).
+- **Branch / PR:** `agent/T-010-normalization` (pushed) / not opened.
+- **Last commit:** head of `agent/T-010-normalization`.
+- **What I did:** `app/domain/normalize/` as in the 02 tree: `names.py` (`normalize_name` → `NormalizedName(full, tokens)`, `name_block`), `nicknames.py` (unambiguous English nicknames only; `expand_nickname`, `nicknames_for` for the simulator), `emails.py` (`NormalizedEmail(display, canonical, domain)`, gmail/googlemail dots and `+tag` dropped in `canonical` only; syntax check via `email-validator` without DNS), `phones.py` (`NormalizedPhone(e164, raw)`, `phonenumbers.is_valid_number`), `statuses.py` (vocabulary, `normalize_status`, `normalize_priority`), `plans.py` (catalog + `normalize_plan`), `timestamps.py` (`normalize_ts`, `InvalidTimestamp`), `amounts.py` (`normalize_amount` → `NormalizedAmount`, `InvalidAmount`). The package docstring states the error policy.
+- **Decisions made:** D-061 (signatures and error policy), D-062 (name block expands the first name; non-Latin last tokens).
+- **For the next tasks:** T-012 builds `normalized` with keys `email_canonical`, `phone_e164`, `name_block` (05 §2.6 indexes) and passes `settings.DEFAULT_PHONE_REGION` and the system's `status_mapping` in. T-013 must generate phone numbers that `phonenumbers.is_valid_number` accepts, or every phone becomes unmatched. `app/db/seed.py` keeps a copy of the status vocabulary; a unit test fails if it drifts (the next task that touches `seed.py` can import it from `app.domain.normalize` instead).
+- **Tests:** `tests/unit/domain/normalize/` (159 tests; all 03 §M2 examples; empty / None / emoji / RTL / bidi marks / full-width / two-digit years / comma decimals). Coverage of `app/domain/normalize` 100 %. `make check` green: backend 332, frontend 62.
+- **Exact next step for the next agent:** after the product owner merges T-010, take **T-011** Ingest API & API keys (depends on T-007, T-009, T-010; all merged then).
+- **Docs updated:** N (08, 09, `PROGRESS.md`).
 
 ### 2026-10-15 — claude-code-1 — T-009 Core schema migration & models
 - **Outcome:** done (T-009 in `review`).
