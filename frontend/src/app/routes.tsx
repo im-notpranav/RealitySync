@@ -2,6 +2,7 @@ import type { RouteObject } from "react-router-dom";
 
 import { RequireAuth } from "../features/auth/RequireAuth";
 import { RequireRole } from "../features/auth/RequireRole";
+import { SessionSplash } from "../features/auth/SessionSplash";
 import { env } from "../lib/env";
 import type { Role } from "../store/session";
 import { AppShell } from "./shell/AppShell";
@@ -30,9 +31,11 @@ function guarded(min: Role, title: string, route: RouteObject): RouteObject {
 
 /** Every route in 02 §3.1, lazy-loaded. Everything except `/login` needs a session. */
 export const routes: RouteObject[] = [
-  { path: "/login", lazy: () => import("../features/auth/LoginPage") },
+  { path: "/login", lazy: () => import("../features/auth/LoginPage"), HydrateFallback: SessionSplash },
   {
     element: <RequireAuth />,
+    // Shown while the first route module loads, instead of an empty scene.
+    HydrateFallback: SessionSplash,
     children: [
       {
         path: "/",

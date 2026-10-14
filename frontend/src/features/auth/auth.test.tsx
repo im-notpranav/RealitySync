@@ -163,9 +163,11 @@ describe("account menu", () => {
       .setSession({ id: "u1", email: "ana.lopez@example.com", fullName: "Ana Lopez", role: "admin" }, "t");
     const router = renderLogin("/");
     const user = userEvent.setup({ delay: null });
+    // The shell renders before the lazy page settles; open the menu only once the page is in.
+    await screen.findByRole("heading", { level: 1, name: "Overview" });
 
-    await user.click(await screen.findByRole("button", { name: "Account menu" }));
-    expect(screen.getByText("ana.lopez@example.com")).toBeInTheDocument();
+    await user.click(screen.getByRole("button", { name: "Account menu" }));
+    expect(await screen.findByText("ana.lopez@example.com")).toBeInTheDocument();
     expect(screen.getByRole("link", { name: "Profile" })).toHaveAttribute("href", "/settings");
     expect(screen.getByRole("link", { name: "Users" })).toHaveAttribute("href", "/settings?tab=users");
 
@@ -191,8 +193,10 @@ describe("account menu", () => {
       );
     renderLogin("/");
     const user = userEvent.setup({ delay: null });
+    // The shell renders before the lazy page settles; open the menu only once the page is in.
+    await screen.findByRole("heading", { level: 1, name: "Overview" });
 
-    const trigger = await screen.findByRole("button", { name: "Account menu" });
+    const trigger = screen.getByRole("button", { name: "Account menu" });
     await user.click(trigger);
     expect(screen.queryByRole("link", { name: "Users" })).not.toBeInTheDocument();
 
