@@ -34,7 +34,7 @@
 ## 2. Next step for the next agent
 
 1. All foundation, contract and frontend-design work is merged into `main` (2026-10-10, product owner: "git push to main").
-2. **T-006** is merged; **T-007** is merged (2026-10-14); **T-008** Frontend auth is in progress. Then **T-010** Normalization library, T-016, T-026, T-009, T-013, T-029.
+2. **T-006** is merged; **T-007** is merged (2026-10-14); **T-008** Frontend auth is in progress on `agent/T-008-frontend-auth` (see its session entry). Then **T-010** Normalization library, T-016, T-026, T-009, T-013, T-029.
 3. Read `03 §M12–M14` and `04 §17` before any E10 task; the critical path now runs T-009 → T-011 → T-012 → T-019 → T-024 → T-053 → T-055 → T-056 (≈ 96 h total).
 4. Setup: `README.md` → "Local development (backend)". Docker Desktop must be running for DB tests (`docker version` must show a server).
 
@@ -199,6 +199,16 @@ Frontend tasks follow `06` v2 (D-047); T-004 needs T-060 merged first.
 - **Exact next step for the next agent:** (one imperative sentence + command if useful)
 - **Docs updated:** (contract changes? Y/N and which)
 ```
+
+### 2026-10-14 — claude-code-1 — T-008 Frontend auth (partial)
+- **Outcome:** partial (T-008 `in_progress`); stopped at the product owner's request.
+- **Branch / PR:** `agent/T-008-frontend-auth` (pushed) / not opened.
+- **Last commit:** head of `agent/T-008-frontend-auth` (`feat(frontend): real sign-in, silent refresh, route guards and account menu (WIP)`).
+- **What I did:** `lib/api/auth.ts` (sign-in, single-flight refresh, sign-out), `client.ts` (one refresh + retry on 401, `retryAfter` on `ApiError`), `store/session.ts` (`status`, `isDemo`; dev auto-admin removed), `features/auth/*` (LoginPage, RequireAuth, RequireRole, splash, redirect sanitising), `app/shell/UserMenu.tsx`, Settings tab from `?tab=` (one small change in `features/settings`). `pages/LoginPage.tsx` moved to `features/auth/`. The store stays `store/session.ts` (task text says `store/auth.ts`; renaming would touch every consumer).
+- **Problems / surprises:** the two "account menu" tests in `frontend/src/features/auth/auth.test.tsx` are flaky: they open the menu before the lazy Overview page has loaded. Fix: `await screen.findByRole("heading", { level: 1, name: "Overview" })` before clicking "Account menu".
+- **Tests:** typecheck and lint pass; 62 frontend tests, the account-menu ones intermittent.
+- **Exact next step for the next agent:** check out `agent/T-008-frontend-auth`, apply the fix above, run `make check` three times green, set T-008 to `review`, add a session entry.
+- **Docs updated:** N (08 only; plain-language summary in `PROGRESS.md`).
 
 ### 2026-10-14 — claude-code-1 — T-007 Auth & users backend
 - **Outcome:** done (T-007 in `review`).
