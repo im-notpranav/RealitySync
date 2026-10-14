@@ -121,7 +121,7 @@ def _key_out(key: ApiKey, systems: dict[uuid.UUID, str]) -> ApiKeyOut:
 
 
 async def create_api_key(
-    session: AsyncSession, *, actor: User, data: ApiKeyCreate
+    session: AsyncSession, *, actor: User, data: ApiKeyCreate, now: datetime
 ) -> tuple[ApiKey, str]:
     """Create a key and return it with its secret; only the sha256 of the secret is stored."""
     system_id: uuid.UUID | None = None
@@ -141,6 +141,7 @@ async def create_api_key(
         key_hash=hash_token(secret),
         source_system_id=system_id,
         created_by=actor.id,
+        created_at=now,
     )
     session.add(key)
     await session.flush()
@@ -549,7 +550,7 @@ async def list_events(
         .offset((page - 1) * page_size)
         .limit(page_size)
     )
-    return [_event_out(event, key) for event, key in rows.tuples()], total
+    return [_event_out(event, key) for event, key in rows], total
 
 
 async def retry_event(session: AsyncSession, *, actor: User, event_id: uuid.UUID) -> IngestEventOut:

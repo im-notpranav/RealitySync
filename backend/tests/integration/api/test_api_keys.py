@@ -68,8 +68,11 @@ async def test_create_returns_the_secret_once(
     assert entry.metadata_ == {"source_system": None}
 
 
-async def test_list_never_returns_secrets(async_client: AsyncClient, admin: dict[str, str]) -> None:
+async def test_list_never_returns_secrets(
+    async_client: AsyncClient, admin: dict[str, str], clock: MutableClock
+) -> None:
     first = await create(async_client, admin)
+    clock.advance(seconds=1)  # distinct created_at, so newest-first is well defined
     await create(async_client, admin, name="billing feed", source_system="billing")
 
     response = await async_client.get(URL, headers=admin)

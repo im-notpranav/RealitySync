@@ -29,9 +29,11 @@ async def list_api_keys(
 
 @router.post("", status_code=status.HTTP_201_CREATED)
 async def create_api_key(
-    body: ApiKeyCreate, actor: AdminUser, session: SessionDep
+    body: ApiKeyCreate, actor: AdminUser, session: SessionDep, clock: ClockDep
 ) -> ApiKeyCreated:
-    key, secret = await ingest_service.create_api_key(session, actor=actor, data=body)
+    key, secret = await ingest_service.create_api_key(
+        session, actor=actor, data=body, now=clock.now()
+    )
     return ApiKeyCreated(id=key.id, name=key.name, key=secret, created_at=key.created_at)
 
 

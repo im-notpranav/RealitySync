@@ -43,7 +43,7 @@ async def systems(db_session: AsyncSession) -> dict[str, uuid.UUID]:
     )
     await db_session.commit()
     rows = await db_session.execute(select(SourceSystem.key, SourceSystem.id))
-    return {key: system_id for key, system_id in rows.tuples()}
+    return {key: system_id for key, system_id in rows}
 
 
 @pytest.fixture(autouse=True)
@@ -580,7 +580,7 @@ async def test_list_filters(
     clock: MutableClock,
 ) -> None:
     await send(async_client, admin, ACCOUNT_EVENT)
-    clock.advance(hours=1)
+    clock.advance(minutes=10)  # stays inside the 15-minute access token
     await send(async_client, admin, SUBSCRIPTION_EVENT, TICKET_EVENT)
     await db_session.execute(
         update(IngestEvent).where(IngestEvent.external_id == "T-1").values(status="failed")
@@ -594,8 +594,8 @@ async def test_list_filters(
 
     assert await ids(source="billing") == ["SUB-7781"]
     assert await ids(status="failed") == ["T-1"]
-    assert await ids(**{"from": "2026-10-14T09:30:00Z"}) == ["SUB-7781", "T-1"]
-    assert await ids(to="2026-10-14T09:30:00+00:00") == ["C-1042"]
+    assert await ids(**{"from": "2026-10-14T09:05:00Z"}) == ["SUB-7781", "T-1"]
+    assert await ids(to="2026-10-14T09:05:00+00:00") == ["C-1042"]
     assert await ids(sort="-attempts") == ["C-1042", "SUB-7781", "T-1"]
 
 
