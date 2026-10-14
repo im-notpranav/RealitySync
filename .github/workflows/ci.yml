@@ -26,7 +26,7 @@ jobs:
     env:
       APP_ENV: test
       # Dummy value: CI never issues real tokens.
-      JWT_SECRET: ci-only-not-a-secret
+      JWT_SECRET: ci-only-not-a-secret-but-32-chars-long
       DATABASE_URL: postgresql+asyncpg://realitysync:realitysync@localhost:5432/realitysync
       # Setting this makes DB tests run against the service instead of skipping.
       DATABASE_URL_TEST: postgresql+asyncpg://realitysync:realitysync@localhost:5432/realitysync

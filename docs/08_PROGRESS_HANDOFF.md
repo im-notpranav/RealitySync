@@ -9,7 +9,7 @@
 
 | Field | Value |
 |-------|-------|
-| Last updated | 2026-10-14 by `claude-code-1` (T-006 auth data model, in review) |
+| Last updated | 2026-10-14 by `claude-code-1` (T-007 auth & users backend, in review) |
 | Project phase | **Phase 1 — Foundation.** Backend skeleton + DB foundation work and are verified (`make check-backend`, `make dev`, `make migrate`). No business features yet. |
 | Repository state | GitHub `im-notpranav/RealitySync`. Foundation, contract and frontend design are merged into `main` (2026-10-10). T-006 merged 2026-10-14. |
 | Default branch | `main` |
@@ -34,7 +34,7 @@
 ## 2. Next step for the next agent
 
 1. All foundation, contract and frontend-design work is merged into `main` (2026-10-10, product owner: "git push to main").
-2. **T-006** Auth data model is merged (2026-10-14); next **T-007** Auth & users backend and **T-010** Normalization library; then T-016, T-026, T-009, T-013, T-029.
+2. **T-006** is merged; **T-007** Auth & users backend is in review on `agent/T-007-auth-backend`. Then **T-008** Frontend auth, **T-010** Normalization library, T-016, T-026, T-009, T-013, T-029.
 3. Read `03 §M12–M14` and `04 §17` before any E10 task; the critical path now runs T-009 → T-011 → T-012 → T-019 → T-024 → T-053 → T-055 → T-056 (≈ 96 h total).
 4. Setup: `README.md` → "Local development (backend)". Docker Desktop must be running for DB tests (`docker version` must show a server).
 
@@ -59,7 +59,8 @@
 
 | ID | Description | Found by | Affects | Repro / notes | Status |
 |----|-------------|----------|---------|---------------|--------|
-| K-001 | `JWT_SECRET` accepts empty/short values and `.env.example` ships it empty, so the app can start with a weak secret | claude-code-1 | T-007 | `JWT_SECRET= uvicorn app.main:app` starts. Add a minimum-length check (≥ 32 chars) when T-007 builds `core/security.py` | open → T-007 |
+| K-001 | `JWT_SECRET` accepts empty/short values and `.env.example` ships it empty, so the app can start with a weak secret | claude-code-1 | T-007 | Fixed in T-007: `Settings` rejects secrets shorter than 32 chars | resolved |
+| K-006 | The general rate limit "others: 300 req/min/user" (04 §15) is not implemented; only login and change-password are limited | claude-code-1 | T-042 | Add a per-user limiter dependency during hardening | open → T-042 |
 | K-002 | Frontend ESLint cannot parse TypeScript (placeholder `typescript-eslint@0.0.1-alpha.0`, no TS parser); frontend deps use `^` ranges | claude-code-1 | T-004 | `cd frontend && npx eslint` on a file containing `const x: number = 1` → parsing error. Moved into T-004 acceptance | open → T-004 |
 | K-003 | One unexplained `make check` exit 2, right after `docker compose stop`; output not captured; 3 later runs passed | claude-code-1 | tests | If it recurs, capture the full output (`make check > check.log 2>&1`) and look at the test-container start | watching |
 | K-004 | `PytestCollectionWarning` for `test_router` in `tests/integration/api/test_health_errors.py` (name starts with `test_`) | claude-code-1 | tests | Harmless; rename to `error_routes` next time the file is touched | open |
@@ -116,6 +117,12 @@
 | D-045 | 2026-10-10 | Simulator: month-scale histories (`history_days` 365) emitted in recorded-time order, 3 new anomaly types, 3 scenarios (`is_scenario`, excluded from precision/recall) with `expected_crossing_at`, decoy `late_within_grace`, run option `feed_outage`; investigation metrics in `evaluation_runs.investigation` | Lead time and no-lookahead must be measurable | 03 §M9, 04 §11 |
 | D-046 | 2026-10-10 | Record versions are never pruned; retention prunes only processed ingest events (Q-008) | The Time Machine needs the full history | 01 NFR-DAT-002, T-047 |
 | D-047 | 2026-10-10 | **Frontend visual direction v2** replaces D-008: the product owner's "Capsule" reference (dark frosted sidebar + light frosted work panel over a blurred scene, white cards, one dark primary button, soft tinted pills, moss accent). Frontend unblocked (lifts D-037). `motion` added to the approved npm list for shared-layout indicators, exit animations, count-up and gestures only | Product owner instruction ("use this as a reference for the frontend … improve the ui/ux") | 06 v2, 02 §2.1, T-060 |
+| D-055 | 2026-10-14 | Passwords are taken verbatim (not trimmed), although 04 §1.5 trims strings | Trimming silently changes the secret | `schemas/common.py`, T-007 |
+| D-054 | 2026-10-14 | The role and `is_active` are read from the database on every request (not trusted from the JWT); an admin password reset or a deactivation revokes all the user's refresh tokens | Demotion and deactivation take effect immediately instead of after up to 15 min | `core/deps.py`, `services/user_service.py` |
+| D-053 | 2026-10-14 | The last active admin cannot be demoted or deactivated → `409 CONFLICT` | Otherwise the system can lock out every administrator | `services/user_service.py`; Q-012 |
+| D-052 | 2026-10-14 | `POST /auth/refresh` without `X-Requested-With: fetch` → `401 UNAUTHENTICATED` (04 lists only 401 for refresh); `change-password` keeps the caller's own refresh-token family when its cookie is sent and revokes the rest | Smallest reading of 04 §2 | `api/v1/auth.py`, `services/auth_service.py` |
+| D-051 | 2026-10-14 | Login rate limit counts failures only, keyed by IP + lower-cased email; a success does not reset the window | A correct guess must not buy more attempts | `core/rate_limit.py` |
+| D-050 | 2026-10-14 | User object gains `last_login_at` (additive, 04 §2/§3) | The admin user list (Settings → Users) shows last sign-in; the column already exists (05 §2.1) | 04 §2, T-007, T-049 |
 | D-049 | 2026-10-10 | Screens are built before their APIs exist: query hooks in `lib/api/queries.ts` serve synthetic data from `lib/demo` (shaped like `04`) when `env.demoData` (development and `VITE_DEMO_DATA` ≠ `off`); feature tasks replace each demo branch with the real call | Product owner asked to complete the frontend design now; the backend endpoints come later | T-061, `frontend/src/lib/api/queries.ts` |
 | D-048 | 2026-10-10 | Motion rules: purpose-driven, `ease-out`-first custom curves, ≤ 320 ms UI motion, press `scale(0.97)`, no animation on keyboard/high-frequency actions, transform/opacity only, CSS transitions preferred, full reduced-motion/transparency fallbacks; every animation must be listed in the 06 §8 catalogue | Design-engineering review (Emil Kowalski principles) applied to the reference | 06 §8 |
 
@@ -133,6 +140,7 @@
 | Q-008 | Retention: keep all record versions (the Time Machine needs them) or a configurable history horizon? | Keep all; prune only processed ingest events | Pranav | answered 2026-10-10: product owner accepted the recommendation (default column) |
 | Q-009 | Replay with today's rule config (recorded in each result) or keep a config history and replay with then-current config? | Today's config, recorded | Pranav | answered 2026-10-10: product owner accepted the recommendation (default column) |
 | Q-010 | Investigation incident types first: churn only, or also "first appearance of a finding"? | Both | Pranav | answered 2026-10-10: product owner accepted the recommendation (default column) |
+| Q-012 | Should the last active admin be protected from demotion/deactivation? | Yes, `409 CONFLICT` (D-053) | Pranav | open |
 | Q-011 | Adopt "RealitySync — Organizational Reality Intelligence" and the new USP in the PRD? | Yes | Pranav | answered 2026-10-10: product owner accepted the recommendation (default column) |
 
 ## 8. Locks (exclusive resources)
@@ -157,7 +165,7 @@ Add a row when you start a task that creates a migration; remove it when the PR 
 | Epic | Todo | Blocked | In progress | In review | Done |
 |------|------|---------|-------------|-----------|------|
 | E0 Foundation (T-001…T-005, T-043, T-051, T-060) | 0 | 0 | 0 | 0 | 8 |
-| E1 Auth (T-006…T-008) | 1 | 0 | 1 | 0 | 1 |
+| E1 Auth (T-006…T-008) | 1 | 0 | 0 | 1 | 1 |
 | E2 Data & ingest (T-009…T-012, T-044, T-047) | 6 | 0 | 0 | 0 | 0 |
 | E3 Simulation (T-013…T-015) | 3 | 0 | 0 | 0 | 0 |
 | E4 Matching (T-016…T-018) | 3 | 0 | 0 | 0 | 0 |
@@ -167,7 +175,7 @@ Add a row when you start a task that creates a migration; remove it when the PR 
 | E8 Frontend features (T-031…T-038, T-049, T-061) | 9 | 0 | 0 | 0 | 1 |
 | E9 Quality & polish (T-039…T-042, T-048) | 5 | 0 | 0 | 0 | 0 |
 | E10 Investigation (T-052…T-059) | 7 | 0 | 0 | 0 | 1 |
-| **Total (61)** | **49** | **0** | **1** | **0** | **11** |
+| **Total (61)** | **49** | **0** | **0** | **1** | **11** |
 
 Frontend tasks follow `06` v2 (D-047); T-004 needs T-060 merged first.
 
@@ -191,6 +199,26 @@ Frontend tasks follow `06` v2 (D-047); T-004 needs T-060 merged first.
 - **Exact next step for the next agent:** (one imperative sentence + command if useful)
 - **Docs updated:** (contract changes? Y/N and which)
 ```
+
+### 2026-10-14 — claude-code-1 — T-007 Auth & users backend
+- **Outcome:** done (T-007 in `review`).
+- **Branch / PR:** `agent/T-007-auth-backend` / not opened (branch pushed to GitHub).
+- **Last commit:** head of `agent/T-007-auth-backend`.
+- **What I did:**
+  - `core/security.py`: Argon2id hashing (dummy verify for unknown emails), HS256 access JWT (`sub`, `role`, `exp`, `jti`, 15 min, expiry checked against the injected clock), opaque 256-bit refresh tokens stored as sha256, in-memory single-use WebSocket tickets (60 s) for T-026.
+  - `core/rate_limit.py`: sliding-window failure limiter; login 5 failures/min/IP+email, change-password 5 failures/min/user → `429` + `Retry-After`.
+  - `core/deps.py`: `get_clock`, `get_current_user`, `require_role` (viewer < analyst < admin).
+  - `services/{auth,user,audit}_service.py`, `schemas/{common,auth,user}.py`, routers `api/v1/{auth,users}.py` for every endpoint in 04 §2 and the users part of §3. Refresh rotation with reuse detection (reuse revokes the family; row locked `FOR UPDATE`). Cookie `refresh_token`: httpOnly, SameSite=Lax, path `/api/v1/auth`, Secure only when `APP_ENV=production`.
+  - First-admin bootstrap in the lifespan (`main.py`, one line); skips with a warning when `ADMIN_EMAIL`/`ADMIN_PASSWORD` are unset or the DB is not migrated.
+  - Audit rows: `user.login`, `user.create`, `user.update` (`metadata.fields` names only), `user.password_change`.
+  - K-001 fixed: `JWT_SECRET` shorter than 32 chars stops startup; CI secret lengthened (one line in `.github/workflows/ci.yml`).
+- **Files outside `Touches`:** `app/api/v1/router.py` (two `include_router` lines), `app/schemas/common.py`, `core/config.py` (validator for K-001), CI secret, test helpers.
+- **Decisions made:** D-050 (contract: `last_login_at` in the user object), D-051…D-055.
+- **Problems / surprises:** pytest-asyncio is in strict mode: async fixtures need `@pytest_asyncio.fixture`. Two `conftest.py` files exist, so test helpers live in `tests/integration/api/authkit.py` (import it, not `conftest`). Live smoke test not run: `.env` has no `ADMIN_EMAIL`/`ADMIN_PASSWORD`.
+- **Tests:** unit `test_security.py`, `test_rate_limit.py`, `test_config.py` (short secrets); integration `test_auth.py`, `test_users.py`, `test_rbac.py` (every role on sample viewer/analyst/admin routes). `make check-backend`: ruff, format, import-linter, mypy strict, pytest all green.
+- **Not done / left over:** the general limit "others 300 req/min/user" (04 §15) is not part of T-007's acceptance; recorded as K-006.
+- **Exact next step for the next agent:** after the product owner merges T-007, take **T-008** (frontend auth: replace the dev session in `frontend/src/store/session.ts` with `/auth/login` + refresh) or **T-010** (normalization library). To try it locally: set `ADMIN_EMAIL`/`ADMIN_PASSWORD` in `.env`, `make dev`, `make migrate`, restart the backend.
+- **Docs updated:** Y — `04 §2` (D-050), `08`, `09`.
 
 ### 2026-10-14 — claude-code-1 — T-006 Auth data model
 - **Outcome:** done (T-006 in `review`).

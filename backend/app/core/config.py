@@ -49,6 +49,14 @@ class Settings(BaseSettings):
             return json.loads(text)
         return [origin.strip() for origin in text.split(",") if origin.strip()]
 
+    @field_validator("JWT_SECRET")
+    @classmethod
+    def require_strong_jwt_secret(cls, value: str) -> str:
+        # HS256 needs a key at least as long as its 256-bit output (RFC 7518 §3.2).
+        if len(value) < 32:
+            raise ValueError("JWT_SECRET must be at least 32 characters")
+        return value
+
     @model_validator(mode="after")
     def validate_worker_mode(self) -> "Settings":
         if self.WORKER_MODE == "separate" and self.EVENT_BUS != "pg_notify":

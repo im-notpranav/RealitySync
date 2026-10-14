@@ -94,7 +94,7 @@ Response `200`: same shape as login (new access token; refresh cookie rotated). 
 Revokes refresh token family, clears cookie. `204`.
 
 ### GET `/auth/me` — viewer
-`200`: user object `{ id, email, full_name, role, is_active, created_at }`.
+`200`: user object `{ id, email, full_name, role, is_active, created_at, last_login_at }` (`last_login_at` is `null` until the first sign-in).
 
 ### POST `/auth/change-password` — viewer
 Request `{ "current_password": "…", "new_password": "Min12chars!pass" }` (new ≥ 12 chars). `204`; revokes the user's other refresh-token families; audit entry `user.password_change`. Errors: `401 INVALID_CREDENTIALS` (wrong current password), `422`. Rate limit as login.

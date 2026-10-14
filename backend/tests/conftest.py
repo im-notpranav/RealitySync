@@ -4,7 +4,7 @@ from collections.abc import AsyncGenerator, Generator
 from pathlib import Path
 
 # Settings are read at import time; give tests a dummy secret so a clean checkout needs no .env.
-os.environ.setdefault("JWT_SECRET", "test-only-not-a-secret")
+os.environ.setdefault("JWT_SECRET", "test-only-not-a-secret-but-32-bytes-long")
 os.environ.setdefault("APP_ENV", "test")
 
 import pytest
