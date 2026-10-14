@@ -10,8 +10,8 @@ _Last updated: 2026-10-15._ Plain-language summary. The detailed, agent-facing r
 |---|---:|
 | Done | 15 |
 | In progress | 0 |
-| In review | 1 (T-011) |
-| To do | 45 |
+| In review | 2 (T-011, T-044) |
+| To do | 44 |
 | **Total** | **61** |
 
 **What works today:** the frontend (every screen designed, running on synthetic demo data), the
@@ -52,16 +52,23 @@ Billing and Support (or the simulator) send record events to.
 - API keys for machines (`/api-keys`): created once with the secret shown one time, stored
   only as a hash, can be tied to one system, limited to 60 requests a minute, can be revoked.
 - Admin list of received events with filters, and a retry button for failed ones.
-- All checks pass (`make check`: 434 backend and 62 frontend tests).
+- All checks pass.
 
-Events are stored but not processed yet; that is the ingest worker (T-044), next.
+## In review — T-044 Ingest worker
+
+Same branch. The background worker that picks up received events: it wakes the moment an event
+arrives (with a once-a-second check as a fallback), several workers can run side by side without
+handling the same event twice, failed events are retried up to 5 times, and events left behind
+by a crashed worker are picked up again after 5 minutes. It runs inside the API by default or
+as its own process (`python -m app.workers.run`). For now it only marks events as processed;
+turning them into customer records is T-012, next.
 
 ---
 
 ## What should be done next (in order)
 
 **1. Data in** — get CRM, Billing and Support records into the database
-- T-011 Ingest API and API keys (in review) · T-012 Record versioning · T-044 Ingest worker
+- T-011 Ingest API and API keys (in review) · T-044 Ingest worker (in review) · T-012 Record versioning
 
 **2. Test data** — a built-in simulator so there is something to detect
 - T-013 Synthetic customers · T-014 Injected problems with answer keys · T-015 Simulation runner

@@ -9,7 +9,7 @@
 
 | Field | Value |
 |-------|-------|
-| Last updated | 2026-10-15 by `claude-code-1` (T-011 ingest API, in review) |
+| Last updated | 2026-10-15 by `claude-code-1` (T-011 ingest API and T-044 ingest worker, in review) |
 | Project phase | **Phase 1 — Foundation.** Backend skeleton + DB foundation work and are verified (`make check-backend`, `make dev`, `make migrate`). No business features yet. |
 | Repository state | GitHub `im-notpranav/RealitySync`. Foundation, contract and frontend design are merged into `main` (2026-10-10). T-006 merged 2026-10-14. |
 | Default branch | `main` |
@@ -34,7 +34,7 @@
 ## 2. Next step for the next agent
 
 1. All foundation, contract and frontend-design work is merged into `main` (2026-10-10, product owner: "git push to main").
-2. **T-006** is merged; **T-007** is merged (2026-10-14); **T-008** is merged (2026-10-15); **T-009** is merged (2026-10-15); **T-010** is merged (2026-10-15); **T-011** Ingest API & API keys is in `review` (branch `claude/determined-shannon-650svp`). Next: **T-044** Ingest worker loop (depends only on T-009), then T-012; in parallel T-016, T-026, T-013, T-029.
+2. **T-006** is merged; **T-007** is merged (2026-10-14); **T-008** is merged (2026-10-15); **T-009** is merged (2026-10-15); **T-010** is merged (2026-10-15); **T-011** Ingest API & API keys and **T-044** Ingest worker loop are in `review` (both on branch `claude/determined-shannon-650svp`). Next: **T-012** Record upsert & versioning (fills `app/workers/pipeline.py::process_event`); in parallel T-013, T-016, T-026, T-029.
 3. Read `03 §M12–M14` and `04 §17` before any E10 task; the critical path now runs T-009 → T-011 → T-012 → T-019 → T-024 → T-053 → T-055 → T-056 (≈ 96 h total).
 4. Setup: `README.md` → "Local development (backend)". Docker Desktop must be running for DB tests (`docker version` must show a server).
 
@@ -117,6 +117,7 @@
 | D-045 | 2026-10-10 | Simulator: month-scale histories (`history_days` 365) emitted in recorded-time order, 3 new anomaly types, 3 scenarios (`is_scenario`, excluded from precision/recall) with `expected_crossing_at`, decoy `late_within_grace`, run option `feed_outage`; investigation metrics in `evaluation_runs.investigation` | Lead time and no-lookahead must be measurable | 03 §M9, 04 §11 |
 | D-046 | 2026-10-10 | Record versions are never pruned; retention prunes only processed ingest events (Q-008) | The Time Machine needs the full history | 01 NFR-DAT-002, T-047 |
 | D-047 | 2026-10-10 | **Frontend visual direction v2** replaces D-008: the product owner's "Capsule" reference (dark frosted sidebar + light frosted work panel over a blurred scene, white cards, one dark primary button, soft tinted pills, moss accent). Frontend unblocked (lifts D-037). `motion` added to the approved npm list for shared-layout indicators, exit animations, count-up and gestures only | Product owner instruction ("use this as a reference for the frontend … improve the ui/ux") | 06 v2, 02 §2.1, T-060 |
+| D-065 | 2026-10-15 | Ingest loop: a claim increments `attempts` and sets `locked_at`; `(id, attempts)` is the claim's lease, so a worker whose event was re-queued and re-claimed skips it. Any failed attempt (exception or a `processing` row older than 5 min) goes back to `pending` while `attempts < 5`, else `failed`; an admin retry therefore buys one more attempt. `error` holds the class name only, except `PipelineError` messages (declared PII-free); a timeout stores `processing timed out`. One transaction per event; claim batches of 100, oldest first. If `LISTEN` cannot be set up the loop only polls (1 s) | 03 §M1 says "mark failed … after 5 attempts stay failed", read as automatic retries up to 5; driver messages can quote record values | `workers/queue.py`, `workers/pipeline.py` |
 | D-064 | 2026-10-15 | Ingest: an event for another system sent with a bound API key is a per-event `FORBIDDEN` rejection (the rest of the batch is still accepted); `delete` events skip payload field checks; retry keeps `attempts`; revoking a revoked key is a no-op `204`; `X-API-Key` wins over a bearer token. API-key logic and its 60/min limiter live in `services/ingest_service.py` (02 §7 lists no separate service; `core/rate_limit.py` is outside the T-011 Touches) | Partial rejection is the 04 §5 model; a delete only identifies the record | `services/ingest_service.py`, `api/v1/ingest.py` |
 | D-063 | 2026-10-15 | API key `key_prefix` = `rs_live_` + the first 8 random characters of the secret (16 chars shown in lists); the secret is 32 random bytes (url-safe) and only its sha256 is stored. `api_keys.created_at` is set from the injected clock | Enough to tell keys apart without weakening them; clock injection keeps tests deterministic | `services/ingest_service.py` |
 | D-062 | 2026-10-15 | `name_block` nickname-expands the first token before taking its initial ("Bob Smith" and "Robert Smith" share `SM0:r`); when metaphone yields nothing (non-Latin scripts) the last token itself is the code | More true candidates per block at no cost in precision (scoring decides); Arabic or CJK names still get a key | `domain/normalize/names.py` |
@@ -175,7 +176,7 @@ Add a row when you start a task that creates a migration; remove it when the PR 
 |------|------|---------|-------------|-----------|------|
 | E0 Foundation (T-001…T-005, T-043, T-051, T-060) | 0 | 0 | 0 | 0 | 8 |
 | E1 Auth (T-006…T-008) | 0 | 0 | 0 | 0 | 3 |
-| E2 Data & ingest (T-009…T-012, T-044, T-047) | 3 | 0 | 0 | 1 | 2 |
+| E2 Data & ingest (T-009…T-012, T-044, T-047) | 2 | 0 | 0 | 2 | 2 |
 | E3 Simulation (T-013…T-015) | 3 | 0 | 0 | 0 | 0 |
 | E4 Matching (T-016…T-018) | 3 | 0 | 0 | 0 | 0 |
 | E5 Detection (T-019…T-025, T-045) | 8 | 0 | 0 | 0 | 0 |
@@ -184,7 +185,7 @@ Add a row when you start a task that creates a migration; remove it when the PR 
 | E8 Frontend features (T-031…T-038, T-049, T-061) | 9 | 0 | 0 | 0 | 1 |
 | E9 Quality & polish (T-039…T-042, T-048) | 5 | 0 | 0 | 0 | 0 |
 | E10 Investigation (T-052…T-059) | 7 | 0 | 0 | 0 | 1 |
-| **Total (61)** | **45** | **0** | **0** | **1** | **15** |
+| **Total (61)** | **44** | **0** | **0** | **2** | **15** |
 
 Frontend tasks follow `06` v2 (D-047); T-004 needs T-060 merged first.
 
@@ -208,6 +209,18 @@ Frontend tasks follow `06` v2 (D-047); T-004 needs T-060 merged first.
 - **Exact next step for the next agent:** (one imperative sentence + command if useful)
 - **Docs updated:** (contract changes? Y/N and which)
 ```
+
+### 2026-10-15 — claude-code-1 — T-044 Ingest worker loop
+- **Outcome:** done (T-044 in `review`).
+- **Branch / PR:** `claude/determined-shannon-650svp` (on top of T-011) / not opened. The claim commit is on this branch, not on `main` (this session may push only to its own branch).
+- **Last commit:** head of `claude/determined-shannon-650svp`.
+- **What I did:** `app/workers/queue.py` (`claim_batch` with `FOR UPDATE SKIP LOCKED`, `requeue_stuck`, `process_claim`, `IngestWorker` with `LISTEN ingest_pending` + 1 s polling fallback; the loop survives DB errors), `app/workers/pipeline.py` (`process_event` stub, `PipelineError`), `app/workers/run.py` (`inline_worker` context manager for the lifespan; `python -m app.workers.run` stops on SIGINT/SIGTERM, 10 s grace then cancel); `main.py` lifespan wraps `yield` in `inline_worker(enabled=settings.WORKER_MODE == "inline")`.
+- **Decisions made:** D-065 (attempts, lease, retry policy, error text).
+- **Manual check:** uvicorn against a local Postgres: an ingested event was `processed` 15 ms after the 202 (NOTIFY wake-up); clean `worker_stopped` on shutdown. `WORKER_MODE=separate EVENT_BUS=pg_notify python -m app.workers.run` processed a row and stopped on SIGTERM.
+- **Tests:** `tests/integration/workers/test_ingest_queue.py` (26: oldest-first, batch limit, concurrent workers, claims skip rows another worker holds — verified to fail without `SKIP LOCKED`, failure → retry → `failed`, no PII in `error`, rollback of pipeline work, admin retry, crash re-queue at 5 min, lost lease, live rows not re-queued, NOTIFY wake-up, polling fallback, broken listener, loop survives DB errors, inline/separate modes), `tests/unit/workers/test_describe_error.py` (4). `make check` green: backend 464, frontend 62; worker tests 8 consecutive green runs.
+- **Not done / left over:** no `worker` service in `docker-compose.yml` (T-050's Touches). The loop does not re-establish a lost `LISTEN` connection (polling covers it); revisit in T-050 if latency matters.
+- **Exact next step for the next agent:** after the product owner merges T-011 and T-044, take **T-012**: implement `app/workers/pipeline.py::process_event` (raise `PipelineError` with a PII-free message for permanent problems).
+- **Docs updated:** N (08, 09, `PROGRESS.md`).
 
 ### 2026-10-15 — claude-code-1 — T-011 Ingest API & API keys (finished)
 - **Outcome:** done (T-011 in `review`).

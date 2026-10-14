@@ -81,7 +81,7 @@ The implementation plan, split into discrete tasks that individual agents can cl
 | T-041 | Demo seed, README, performance check | E9 | P1 | M | T-030, T-036, T-039 | 14 | todo |
 | T-042 | Hardening & security review | E9 | P1 | M | T-011, T-015, T-018, T-027, T-028, T-030, T-039, T-046, T-056 | 13 | todo |
 | T-043 | Design system — data-viz & composite components | E0 | P0 | M | T-005 | 8 | done |
-| T-044 | Ingest worker loop | E2 | P0 | M | T-009 | 6 | in_progress |
+| T-044 | Ingest worker loop | E2 | P0 | M | T-009 | 6 | review |
 | T-045 | Alert service & policy | E5 | P0 | M | T-024 | 10 | todo |
 | T-046 | Dashboard endpoints | E6 | P0 | M | T-017, T-024, T-026 | 10 | todo |
 | T-047 | Retention prune job | E2 | P2 | S | T-012, T-052 | 8 | todo |
@@ -400,7 +400,7 @@ The implementation plan, split into discrete tasks that individual agents can cl
   - Invariant 1: replay-twice yields identical DB state; concurrent same-record events end in a deterministic state (test).
 
 ### T-044 — Ingest worker loop
-- Status: in_progress | Priority: P0 | Size: M | Depends: T-009 | Wave: 6 | Agent: claude-code-1 | Claimed: 2026-10-15
+- Status: review | Priority: P0 | Size: M | Depends: T-009 | Wave: 6 | Agent: claude-code-1 | Claimed: 2026-10-15
 - Blocks: T-012
 - Touches: `backend/app/workers/{queue,run,pipeline}.py`, `backend/app/main.py` (one lifespan line), tests
 - Requirements: FR-ING-006, FR-ING-009, NFR-REL-001/002
