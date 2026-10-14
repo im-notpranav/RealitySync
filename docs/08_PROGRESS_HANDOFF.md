@@ -11,7 +11,7 @@
 |-------|-------|
 | Last updated | 2026-10-14 by `claude-code-1` (T-006 auth data model, in review) |
 | Project phase | **Phase 1 — Foundation.** Backend skeleton + DB foundation work and are verified (`make check-backend`, `make dev`, `make migrate`). No business features yet. |
-| Repository state | GitHub `im-notpranav/RealitySync`. Foundation, contract and frontend design are merged into `main` (2026-10-10). T-006 is on `agent/T-006-auth-data-model`, not merged. |
+| Repository state | GitHub `im-notpranav/RealitySync`. Foundation, contract and frontend design are merged into `main` (2026-10-10). T-006 merged 2026-10-14. |
 | Default branch | `main` |
 | Last known green commit | `main` (`make check` passes); T-006 branch also green. |
 | CI status | Workflow fixed but never run (no remote) |
@@ -22,7 +22,7 @@
 
 ### What exists
 - Contract docs `00`–`07` (on the T-052 branch: including the investigation features), task plan `09`, notes in `docs/notes/` (doc review, investigation features plan).
-- Backend: FastAPI app factory, settings, clock, structlog with PII scrubbing, error envelope, `/health` + `/health/ready` (04 §13 shape), async SQLAlchemy + Alembic (migrations: extensions `pgcrypto`, `citext`, `pg_trgm`; auth tables `users`, `refresh_tokens`, `audit_logs` on the T-006 branch), test fixtures against a real Postgres 16, import-linter purity contract for `app.domain`.
+- Backend: FastAPI app factory, settings, clock, structlog with PII scrubbing, error envelope, `/health` + `/health/ready` (04 §13 shape), async SQLAlchemy + Alembic (migrations: extensions `pgcrypto`, `citext`, `pg_trgm`; auth tables `users`, `refresh_tokens`, `audit_logs`), test fixtures against a real Postgres 16, import-linter purity contract for `app.domain`.
 - Infra: `backend/Dockerfile`, `docker-compose.yml` (db + backend; frontend behind a profile), Makefile with backend/frontend sub-targets, CI workflow, pre-commit, detect-secrets baseline, `.gitattributes` (LF).
 - Frontend: only `package.json`, lockfile, `tsconfig.json`, an empty `src/index.ts`.
 
@@ -34,7 +34,7 @@
 ## 2. Next step for the next agent
 
 1. All foundation, contract and frontend-design work is merged into `main` (2026-10-10, product owner: "git push to main").
-2. **T-006** Auth data model is in review on `agent/T-006-auth-data-model`; merge it, then **T-007** Auth & users backend and **T-010** Normalization library; then T-016, T-026, T-009, T-013, T-029.
+2. **T-006** Auth data model is merged (2026-10-14); next **T-007** Auth & users backend and **T-010** Normalization library; then T-016, T-026, T-009, T-013, T-029.
 3. Read `03 §M12–M14` and `04 §17` before any E10 task; the critical path now runs T-009 → T-011 → T-012 → T-019 → T-024 → T-053 → T-055 → T-056 (≈ 96 h total).
 4. Setup: `README.md` → "Local development (backend)". Docker Desktop must be running for DB tests (`docker version` must show a server).
 
@@ -139,7 +139,7 @@
 
 | Resource | Held by | Task | Since | Release when |
 |----------|---------|------|-------|--------------|
-| Alembic migrations (`backend/alembic/versions`) | claude-code-1 | T-006 | 2026-10-14 | PR merged |
+| Alembic migrations (`backend/alembic/versions`) | — | — | — | PR merged |
 | Dependency manifests (`pyproject.toml`, `package.json`) | — | — | — | (soft lock; additive edits OK, see 07 §5.3) |
 
 Add a row when you start a task that creates a migration; remove it when the PR merges.
@@ -157,7 +157,7 @@ Add a row when you start a task that creates a migration; remove it when the PR 
 | Epic | Todo | Blocked | In progress | In review | Done |
 |------|------|---------|-------------|-----------|------|
 | E0 Foundation (T-001…T-005, T-043, T-051, T-060) | 0 | 0 | 0 | 0 | 8 |
-| E1 Auth (T-006…T-008) | 2 | 0 | 0 | 1 | 0 |
+| E1 Auth (T-006…T-008) | 2 | 0 | 0 | 0 | 1 |
 | E2 Data & ingest (T-009…T-012, T-044, T-047) | 6 | 0 | 0 | 0 | 0 |
 | E3 Simulation (T-013…T-015) | 3 | 0 | 0 | 0 | 0 |
 | E4 Matching (T-016…T-018) | 3 | 0 | 0 | 0 | 0 |
@@ -167,7 +167,7 @@ Add a row when you start a task that creates a migration; remove it when the PR 
 | E8 Frontend features (T-031…T-038, T-049, T-061) | 9 | 0 | 0 | 0 | 1 |
 | E9 Quality & polish (T-039…T-042, T-048) | 5 | 0 | 0 | 0 | 0 |
 | E10 Investigation (T-052…T-059) | 7 | 0 | 0 | 0 | 1 |
-| **Total (61)** | **50** | **0** | **0** | **1** | **10** |
+| **Total (61)** | **50** | **0** | **0** | **0** | **11** |
 
 Frontend tasks follow `06` v2 (D-047); T-004 needs T-060 merged first.
 
