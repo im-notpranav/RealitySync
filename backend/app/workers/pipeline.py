@@ -6,7 +6,10 @@
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.core.config import settings
 from app.models import IngestEvent
+from app.services import record_service
+from app.services.record_service import InvalidRecord
 
 
 class PipelineError(Exception):
@@ -18,5 +21,13 @@ class PipelineError(Exception):
 
 
 async def process_event(session: AsyncSession, event: IngestEvent) -> None:
-    """Normalize the event and upsert its record (T-012). Until then events are only marked
-    processed by the loop."""
+    """Normalize the event and upsert its record and history (T-012)."""
+    try:
+        change = await record_service.apply_event(
+            session, event, phone_region=settings.DEFAULT_PHONE_REGION
+        )
+    except InvalidRecord as exc:
+        raise PipelineError(str(exc)) from exc
+    if not change.state_changed:
+        return
+    # Entity resolution (T-017) hooks in here: resolve `change`, then request detection.

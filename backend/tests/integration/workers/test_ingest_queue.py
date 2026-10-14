@@ -17,10 +17,10 @@ from sqlalchemy.dialects.postgresql import insert
 from sqlalchemy.ext.asyncio import AsyncEngine, AsyncSession, async_sessionmaker
 
 from app.db.seed import default_source_systems
-from app.models import IngestEvent, SourceSystem
+from app.models import IngestEvent, SourceRecord, SourceSystem
 from app.services import ingest_service
 from app.services.ingest_service import IngestCaller
-from app.workers import pipeline, run
+from app.workers import run
 from app.workers.pipeline import PipelineError
 from app.workers.queue import (
     MAX_ATTEMPTS,
@@ -81,6 +81,7 @@ async def factory(db_engine: AsyncEngine) -> AsyncGenerator[Factory, None]:
     finally:
         async with factory() as session:
             await session.execute(delete(IngestEvent))
+            await session.execute(delete(SourceRecord))  # versions cascade
             await session.execute(delete(SourceSystem).where(SourceSystem.id.in_(created)))
             await session.commit()
 
@@ -194,7 +195,7 @@ async def test_the_default_pipeline_marks_events_processed(
 ) -> None:
     (event_id,) = await add_events(factory, 1)
 
-    await worker(factory, clock).run_once()  # pipeline.process_event, a stub until T-012
+    await worker(factory, clock).run_once()  # the real pipeline.process_event
 
     assert (await load(factory, event_id)).status == "processed"
 
@@ -552,5 +553,27 @@ async def test_stopping_cancels_a_loop_that_does_not_finish(
     assert task.cancelled()
 
 
-async def test_the_pipeline_stub_does_nothing() -> None:
-    assert await pipeline.process_event(None, None) is None  # type: ignore[arg-type]
+async def test_the_pipeline_turns_events_into_records(
+    factory: Factory, clock: MutableClock
+) -> None:
+    await add_events(factory, 1)
+
+    await worker(factory, clock).run_once()
+
+    async with factory() as session:
+        record = await session.scalar(select(SourceRecord))
+    assert record is not None
+    assert (record.external_id, record.normalized["name"]) == ("C-0", "jon smith")
+
+
+async def test_unreadable_payloads_fail_with_the_field_name(
+    factory: Factory, clock: MutableClock
+) -> None:
+    (event_id,) = await add_events(
+        factory, 1, payload={"name": "Jon Smith", "created_at": "yesterday"}
+    )
+
+    await worker(factory, clock).run_once()
+
+    event = await load(factory, event_id)
+    assert (event.status, event.error) == ("pending", "payload.created_at is invalid")
