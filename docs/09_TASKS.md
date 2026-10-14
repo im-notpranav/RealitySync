@@ -49,7 +49,7 @@ The implementation plan, split into discrete tasks that individual agents can cl
 | T-009 | Core schema migration & models | E2 | P0 | L | T-003, T-006, T-052 | 5 | done |
 | T-010 | Normalization library | E2 | P0 | M | T-002 | 2 | done |
 | T-011 | Ingest API & API keys | E2 | P0 | L | T-007, T-009, T-010 | 6 | review |
-| T-012 | Record upsert & versioning | E2 | P0 | M | T-010, T-011, T-044 | 7 | in_progress |
+| T-012 | Record upsert & versioning | E2 | P0 | M | T-010, T-011, T-044 | 7 | review |
 | T-013 | Synthetic data generator | E3 | P0 | L | T-002, T-010, T-052 | 5 | todo |
 | T-014 | Anomaly injector & labels | E3 | P0 | L | T-013, T-052 | 6 | todo |
 | T-015 | Simulation runner & endpoints | E3 | P1 | L | T-011, T-014, T-026, T-057 | 8 | todo |
@@ -388,7 +388,7 @@ The implementation plan, split into discrete tasks that individual agents can cl
   - Audit entries for API key create/revoke and event retry.
 
 ### T-012 — Record upsert & versioning
-- Status: in_progress | Priority: P0 | Size: M | Depends: T-010, T-011, T-044 | Wave: 7 | Agent: claude-code-1 | Claimed: 2026-10-15
+- Status: review | Priority: P0 | Size: M | Depends: T-010, T-011, T-044 | Wave: 7 | Agent: claude-code-1 | Claimed: 2026-10-15
 - Blocks: T-017, T-019, T-047, T-054
 - Touches: `backend/app/services/record_service.py`, `backend/app/workers/pipeline.py` (hook only), tests
 - Requirements: FR-ING-007, FR-ING-008, FR-NRM-*

@@ -9,7 +9,7 @@
 
 | Field | Value |
 |-------|-------|
-| Last updated | 2026-10-15 by `claude-code-1` (T-011 ingest API and T-044 ingest worker, in review) |
+| Last updated | 2026-10-15 by `claude-code-1` (T-011, T-044, T-012 in review) |
 | Project phase | **Phase 1 — Foundation.** Backend skeleton + DB foundation work and are verified (`make check-backend`, `make dev`, `make migrate`). No business features yet. |
 | Repository state | GitHub `im-notpranav/RealitySync`. Foundation, contract and frontend design are merged into `main` (2026-10-10). T-006 merged 2026-10-14. |
 | Default branch | `main` |
@@ -34,7 +34,7 @@
 ## 2. Next step for the next agent
 
 1. All foundation, contract and frontend-design work is merged into `main` (2026-10-10, product owner: "git push to main").
-2. **T-006** is merged; **T-007** is merged (2026-10-14); **T-008** is merged (2026-10-15); **T-009** is merged (2026-10-15); **T-010** is merged (2026-10-15); **T-011** Ingest API & API keys and **T-044** Ingest worker loop are in `review` (both on branch `claude/determined-shannon-650svp`). Next: **T-012** Record upsert & versioning (fills `app/workers/pipeline.py::process_event`); in parallel T-013, T-016, T-026, T-029.
+2. **T-006** is merged; **T-007** is merged (2026-10-14); **T-008** is merged (2026-10-15); **T-009** is merged (2026-10-15); **T-010** is merged (2026-10-15); **T-011** Ingest API & API keys, **T-044** Ingest worker loop and **T-012** Record upsert & versioning are in `review` (all on branch `claude/determined-shannon-650svp`). Next: **T-016** Matching domain logic (needs only T-010), then **T-017** Entity resolution and **T-019** Rule engine (both need T-012); in parallel T-013, T-026, T-029.
 3. Read `03 §M12–M14` and `04 §17` before any E10 task; the critical path now runs T-009 → T-011 → T-012 → T-019 → T-024 → T-053 → T-055 → T-056 (≈ 96 h total).
 4. Setup: `README.md` → "Local development (backend)". Docker Desktop must be running for DB tests (`docker version` must show a server).
 
@@ -60,6 +60,7 @@
 | ID | Description | Found by | Affects | Repro / notes | Status |
 |----|-------------|----------|---------|---------------|--------|
 | K-001 | `JWT_SECRET` accepts empty/short values and `.env.example` ships it empty, so the app can start with a weak secret | claude-code-1 | T-007 | Fixed in T-007: `Settings` rejects secrets shorter than 32 chars | resolved |
+| K-007 | The equal-time tie-break and the skipped-version lookup (D-066) query `ingest_events` by `(source_system_id, record_type, external_id, source_updated_at)`, which has no index; fine for the demo volume, a sequential scan per late/equal-time event at scale. Also, pruning processed events (T-047) loses the skipped points D-066 reads | claude-code-1 | T-012, T-047 | Add `ix_ingest_events_record_recorded` in the next migration; T-047 should prune only events older than the record's latest version | open |
 | K-006 | The general rate limit "others: 300 req/min/user" (04 §15) is not implemented; only login and change-password are limited | claude-code-1 | T-042 | Add a per-user limiter dependency during hardening | open → T-042 |
 | K-002 | Frontend ESLint cannot parse TypeScript (placeholder `typescript-eslint@0.0.1-alpha.0`, no TS parser); frontend deps use `^` ranges | claude-code-1 | T-004 | `cd frontend && npx eslint` on a file containing `const x: number = 1` → parsing error. Moved into T-004 acceptance | open → T-004 |
 | K-003 | One unexplained `make check` exit 2, right after `docker compose stop`; output not captured; 3 later runs passed | claude-code-1 | tests | If it recurs, capture the full output (`make check > check.log 2>&1`) and look at the test-container start | watching |
@@ -117,6 +118,8 @@
 | D-045 | 2026-10-10 | Simulator: month-scale histories (`history_days` 365) emitted in recorded-time order, 3 new anomaly types, 3 scenarios (`is_scenario`, excluded from precision/recall) with `expected_crossing_at`, decoy `late_within_grace`, run option `feed_outage`; investigation metrics in `evaluation_runs.investigation` | Lead time and no-lookahead must be measurable | 03 §M9, 04 §11 |
 | D-046 | 2026-10-10 | Record versions are never pruned; retention prunes only processed ingest events (Q-008) | The Time Machine needs the full history | 01 NFR-DAT-002, T-047 |
 | D-047 | 2026-10-10 | **Frontend visual direction v2** replaces D-008: the product owner's "Capsule" reference (dark frosted sidebar + light frosted work panel over a blurred scene, white cards, one dark primary button, soft tinted pills, moss accent). Frontend unblocked (lifts D-037). `motion` added to the approved npm list for shared-layout indicators, exit animations, count-up and gestures only | Product owner instruction ("use this as a reference for the frontend … improve the ui/ux") | 06 v2, 02 §2.1, T-060 |
+| D-067 | 2026-10-15 | `normalized` holds every key of its record type (`None` when missing/unreadable) plus `status`, `status_unmapped`, `parent_external_id`. account: `name`, `name_block`, `email` (display), `email_canonical`, `email_domain`, `phone_e164`, `company` (NFKC, case-folded), `plan`, `created_at`, `external_refs`; subscription: `plan`, `started_at`, `cancelled_at`, `quantity`, `amount`, `currency`; invoice: `amount`, `currency`, `issued_at`, `paid_at`, `due_at`, `subscription_external_id`; ticket: `subject`, `priority`, `opened_at`, `closed_at`, `first_response_at`. Timestamps ISO UTC with `Z`, amounts decimal strings. `source_created_at` = account `created_at` / subscription `started_at` / invoice `issued_at` / ticket `opened_at`. A delete keeps the last state in its version (a delete for an unknown record leaves a tombstone); `changed_fields` gains `is_deleted` when a version deletes or restores. An equal-state newer event advances `payload` and `source_updated_at` without a version; an event losing the equal-time tie-break (also when late) writes nothing. `source_records.version` = the latest (recorded time, version) version | 03 §M2 names functions, not stored keys; rules (M4) and matching (M3) need these | `services/record_service.py` |
+| D-066 | 2026-10-15 | Skipped versions are written when needed: an equal-state event writes no version, but when a late event would be inserted before such an event (between it and the next version), the earliest skipped point gets a version with the state it confirmed (found from processed `ingest_events`). Late events whose state equals the version before them write nothing. Verified by a randomized test: any processing order and any replay give the same as-of state at every time as a reference model | Without it the Time Machine showed the late event's state where the source had already confirmed another (found by the randomized test) | `services/record_service.py` |
 | D-065 | 2026-10-15 | Ingest loop: a claim increments `attempts` and sets `locked_at`; `(id, attempts)` is the claim's lease, so a worker whose event was re-queued and re-claimed skips it. Any failed attempt (exception or a `processing` row older than 5 min) goes back to `pending` while `attempts < 5`, else `failed`; an admin retry therefore buys one more attempt. `error` holds the class name only, except `PipelineError` messages (declared PII-free); a timeout stores `processing timed out`. One transaction per event; claim batches of 100, oldest first. If `LISTEN` cannot be set up the loop only polls (1 s) | 03 §M1 says "mark failed … after 5 attempts stay failed", read as automatic retries up to 5; driver messages can quote record values | `workers/queue.py`, `workers/pipeline.py` |
 | D-064 | 2026-10-15 | Ingest: an event for another system sent with a bound API key is a per-event `FORBIDDEN` rejection (the rest of the batch is still accepted); `delete` events skip payload field checks; retry keeps `attempts`; revoking a revoked key is a no-op `204`; `X-API-Key` wins over a bearer token. API-key logic and its 60/min limiter live in `services/ingest_service.py` (02 §7 lists no separate service; `core/rate_limit.py` is outside the T-011 Touches) | Partial rejection is the 04 §5 model; a delete only identifies the record | `services/ingest_service.py`, `api/v1/ingest.py` |
 | D-063 | 2026-10-15 | API key `key_prefix` = `rs_live_` + the first 8 random characters of the secret (16 chars shown in lists); the secret is 32 random bytes (url-safe) and only its sha256 is stored. `api_keys.created_at` is set from the injected clock | Enough to tell keys apart without weakening them; clock injection keeps tests deterministic | `services/ingest_service.py` |
@@ -176,7 +179,7 @@ Add a row when you start a task that creates a migration; remove it when the PR 
 |------|------|---------|-------------|-----------|------|
 | E0 Foundation (T-001…T-005, T-043, T-051, T-060) | 0 | 0 | 0 | 0 | 8 |
 | E1 Auth (T-006…T-008) | 0 | 0 | 0 | 0 | 3 |
-| E2 Data & ingest (T-009…T-012, T-044, T-047) | 2 | 0 | 0 | 2 | 2 |
+| E2 Data & ingest (T-009…T-012, T-044, T-047) | 1 | 0 | 0 | 3 | 2 |
 | E3 Simulation (T-013…T-015) | 3 | 0 | 0 | 0 | 0 |
 | E4 Matching (T-016…T-018) | 3 | 0 | 0 | 0 | 0 |
 | E5 Detection (T-019…T-025, T-045) | 8 | 0 | 0 | 0 | 0 |
@@ -185,7 +188,7 @@ Add a row when you start a task that creates a migration; remove it when the PR 
 | E8 Frontend features (T-031…T-038, T-049, T-061) | 9 | 0 | 0 | 0 | 1 |
 | E9 Quality & polish (T-039…T-042, T-048) | 5 | 0 | 0 | 0 | 0 |
 | E10 Investigation (T-052…T-059) | 7 | 0 | 0 | 0 | 1 |
-| **Total (61)** | **44** | **0** | **0** | **2** | **15** |
+| **Total (61)** | **43** | **0** | **0** | **3** | **15** |
 
 Frontend tasks follow `06` v2 (D-047); T-004 needs T-060 merged first.
 
@@ -209,6 +212,19 @@ Frontend tasks follow `06` v2 (D-047); T-004 needs T-060 merged first.
 - **Exact next step for the next agent:** (one imperative sentence + command if useful)
 - **Docs updated:** (contract changes? Y/N and which)
 ```
+
+### 2026-10-15 — claude-code-1 — T-012 Record upsert & versioning
+- **Outcome:** done (T-012 in `review`).
+- **Branch / PR:** `claude/determined-shannon-650svp` (on top of T-011 and T-044) / not opened. Claim commit on this branch, not on `main`.
+- **Last commit:** head of `claude/determined-shannon-650svp`.
+- **What I did:** `app/services/record_service.py`: `normalize_record` (pure; D-067 keys), `record_hash`, `changed_fields`, `lock_record` (`pg_advisory_xact_lock(hashtext(system||type||external_id))`, 02 §3.3), `apply_event` → `RecordChanged` (`outcome` created/updated/deleted/unchanged/out_of_order/superseded, `version`, `changed_fields`, `state_changed`). Equal-time tie-break by later `received_at`, then higher id, read from processed `ingest_events`. `InvalidRecord` (field name only) → `PipelineError` in `workers/pipeline.py`, which now calls `apply_event` and has the T-017 hook point.
+- **Decisions made:** D-066 (skipped versions written when a late event needs them), D-067 (normalized keys, formats, delete/tombstone, equal-state and tie-loser rules). Known issue K-007 (missing index; T-047 pruning).
+- **Problems / surprises:** a randomized order/replay test found three real history bugs (late event after an unchanged resend; late event at an existing version's time skipping the tie-break; replay check matching a non-winning version). All fixed; the test stays in the suite (12 seeds, ~1 s) and passed 600 seeds with longer streams once.
+- **Tests:** `tests/unit/services/test_normalize_record.py` (16), `tests/integration/services/test_record_service.py` (33: new/newer/unchanged/older/older-than-all/replay, equal-time both orders + id fallback, delete/restore/tombstone/late delete, skipped-state cases, replay twice = identical snapshot, concurrent events forward/reverse, randomized parity). Mutation checks: removing the advisory lock, the tie-break or the replay check each fails tests. Worker tests updated (pipeline creates records; unreadable payload → `payload.<field> is invalid`). `make check` green: backend 514, frontend 62. Manual: documented 04 §5 batch over HTTP → both records with expected normalized fields.
+- **Not done / left over:** no record/version read endpoints (T-027); no entity resolution (T-017 hooks into `pipeline.process_event` when `change.state_changed`).
+- **For T-017 / T-019 / T-053:** read `normalized` keys from D-067; `RecordVersion.source_updated_at` is the recorded time; the winning version at T is max (recorded time, version) ≤ T and deleted versions mean "absent"; `source_records.updated_at` has `onupdate`, so do not read it on an instance after a flush in async code without refreshing.
+- **Exact next step for the next agent:** after the product owner merges, take **T-016** (pure matching) then **T-017** (resolve in `pipeline.process_event`).
+- **Docs updated:** N (08, 09, `PROGRESS.md`).
 
 ### 2026-10-15 — claude-code-1 — T-044 Ingest worker loop
 - **Outcome:** done (T-044 in `review`).
