@@ -15,6 +15,7 @@ from app.core.errors import (
     validation_error_handler,
 )
 from app.core.logging import RequestIdMiddleware, setup_logging
+from app.db.seed import bootstrap_source_systems
 from app.db.session import async_session_factory
 from app.services.user_service import bootstrap_admin
 
@@ -22,6 +23,7 @@ from app.services.user_service import bootstrap_admin
 @asynccontextmanager
 async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
     # Setup goes here (e.g. database connect, start inline worker if WORKER_MODE=inline)
+    await bootstrap_source_systems(async_session_factory)
     await bootstrap_admin(
         async_session_factory, email=settings.ADMIN_EMAIL, password=settings.ADMIN_PASSWORD
     )

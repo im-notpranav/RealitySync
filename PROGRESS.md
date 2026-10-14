@@ -9,7 +9,7 @@ _Last updated: 2026-10-15._ Plain-language summary. The detailed, agent-facing r
 | | Tasks |
 |---|---:|
 | Done | 13 |
-| In progress | 1 (T-009) |
+| In review | 1 (T-009) |
 | To do | 47 |
 | **Total** | **61** |
 
@@ -38,18 +38,22 @@ CRM, Billing and Support) are not built yet.
 | T-007 | Backend sign-in: login, token refresh with theft detection, logout, change password, roles (viewer / analyst / admin), rate limits, user management, first-admin setup |
 | T-008 | Frontend sign-in: login page, silent refresh, role-based page access, account menu, demo-data mode |
 
-## In progress — T-009 Core database tables
+## In review — T-009 Core database tables
 
-Every remaining table from `docs/05_DATABASE_SCHEMA.md` (records, versions, customers, links,
-rules, findings, alerts, simulation, evaluation, risk, investigations) plus the three source
-systems created on startup.
+Branch `agent/T-009-core-schema` (pushed, **not merged yet**). Every remaining table from
+`docs/05_DATABASE_SCHEMA.md` (records, versions, customers, links, rules, findings, alerts,
+simulation, evaluation, risk, investigations) plus the CRM, Billing and Support systems, which
+the API creates on startup with default trust levels and status vocabularies. All checks green
+(173 backend, 62 frontend tests).
+
+Left to do: merge into `main`.
 
 ---
 
 ## What should be done next (in order)
 
 **1. Data in** — get CRM, Billing and Support records into the database
-- T-009 Core tables and models (in progress) · T-010 Normalization (names, emails, phones, plans)
+- T-009 Core tables and models (in review) · T-010 Normalization (names, emails, phones, plans)
 - T-011 Ingest API and API keys · T-012 Record versioning · T-044 Ingest worker
 
 **2. Test data** — a built-in simulator so there is something to detect
