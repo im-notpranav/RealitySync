@@ -47,7 +47,7 @@ The implementation plan, split into discrete tasks that individual agents can cl
 | T-007 | Auth & users backend | E1 | P0 | L | T-006 | 4 | done |
 | T-008 | Frontend auth | E1 | P0 | M | T-005, T-007, T-061 | 10 | done |
 | T-009 | Core schema migration & models | E2 | P0 | L | T-003, T-006, T-052 | 5 | done |
-| T-010 | Normalization library | E2 | P0 | M | T-002 | 2 | in_progress |
+| T-010 | Normalization library | E2 | P0 | M | T-002 | 2 | review |
 | T-011 | Ingest API & API keys | E2 | P0 | L | T-007, T-009, T-010 | 6 | todo |
 | T-012 | Record upsert & versioning | E2 | P0 | M | T-010, T-011, T-044 | 7 | todo |
 | T-013 | Synthetic data generator | E3 | P0 | L | T-002, T-010, T-052 | 5 | todo |
@@ -363,7 +363,7 @@ The implementation plan, split into discrete tasks that individual agents can cl
   - **Migration lock.**
 
 ### T-010 — Normalization library
-- Status: in_progress | Priority: P0 | Size: M | Depends: T-002 | Wave: 2 | Agent: claude-code-1 | Claimed: 2026-10-15
+- Status: review | Priority: P0 | Size: M | Depends: T-002 | Wave: 2 | Agent: claude-code-1 | Claimed: 2026-10-15
 - Blocks: T-011, T-012, T-013, T-016
 - Touches: `backend/app/domain/normalize/**`, `backend/tests/unit/domain/normalize/**`
 - Requirements: FR-NRM-001…006

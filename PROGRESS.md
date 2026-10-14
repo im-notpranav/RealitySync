@@ -9,7 +9,7 @@ _Last updated: 2026-10-15._ Plain-language summary. The detailed, agent-facing r
 | | Tasks |
 |---|---:|
 | Done | 14 |
-| In progress | 1 (T-010) |
+| In review | 1 (T-010) |
 | To do | 46 |
 | **Total** | **61** |
 
@@ -39,17 +39,21 @@ CRM, Billing and Support) are not built yet.
 | T-008 | Frontend sign-in: login page, silent refresh, role-based page access, account menu, demo-data mode |
 | T-009 | Every remaining database table, plus CRM, Billing and Support created on startup |
 
-## In progress — T-010 Normalization
+## In review — T-010 Normalization
 
-Pure functions that turn messy source values into comparable ones: names (titles, nicknames),
-emails (gmail dots and +tags), phones (E.164), statuses, plans, priorities, timestamps, amounts.
+Branch `agent/T-010-normalization` (pushed, **not merged yet**). Pure functions that turn messy
+source values into comparable ones: names (titles, nicknames, emoji, right-to-left text), emails
+(gmail dots and +tags), phones (E.164), statuses, plans, priorities, timestamps, amounts. All
+checks green (332 backend, 62 frontend tests; normalization code 100 % covered).
+
+Left to do: merge into `main`.
 
 ---
 
 ## What should be done next (in order)
 
 **1. Data in** — get CRM, Billing and Support records into the database
-- T-010 Normalization (names, emails, phones, plans) (in progress)
+- T-010 Normalization (names, emails, phones, plans) (in review)
 - T-011 Ingest API and API keys · T-012 Record versioning · T-044 Ingest worker
 
 **2. Test data** — a built-in simulator so there is something to detect
