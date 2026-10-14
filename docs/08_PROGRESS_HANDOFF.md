@@ -9,7 +9,7 @@
 
 | Field | Value |
 |-------|-------|
-| Last updated | 2026-10-15 by `claude-code-1` (T-011 ingest API, in progress) |
+| Last updated | 2026-10-15 by `claude-code-1` (T-011 ingest API, in review) |
 | Project phase | **Phase 1 — Foundation.** Backend skeleton + DB foundation work and are verified (`make check-backend`, `make dev`, `make migrate`). No business features yet. |
 | Repository state | GitHub `im-notpranav/RealitySync`. Foundation, contract and frontend design are merged into `main` (2026-10-10). T-006 merged 2026-10-14. |
 | Default branch | `main` |
@@ -34,7 +34,7 @@
 ## 2. Next step for the next agent
 
 1. All foundation, contract and frontend-design work is merged into `main` (2026-10-10, product owner: "git push to main").
-2. **T-006** is merged; **T-007** is merged (2026-10-14); **T-008** is merged (2026-10-15); **T-009** is merged (2026-10-15); **T-010** is merged (2026-10-15); **T-011** Ingest API & API keys is in progress. Then T-016, T-026, T-009, T-013, T-029.
+2. **T-006** is merged; **T-007** is merged (2026-10-14); **T-008** is merged (2026-10-15); **T-009** is merged (2026-10-15); **T-010** is merged (2026-10-15); **T-011** Ingest API & API keys is in `review` (branch `claude/determined-shannon-650svp`). Next: **T-044** Ingest worker loop (depends only on T-009), then T-012; in parallel T-016, T-026, T-013, T-029.
 3. Read `03 §M12–M14` and `04 §17` before any E10 task; the critical path now runs T-009 → T-011 → T-012 → T-019 → T-024 → T-053 → T-055 → T-056 (≈ 96 h total).
 4. Setup: `README.md` → "Local development (backend)". Docker Desktop must be running for DB tests (`docker version` must show a server).
 
@@ -117,6 +117,8 @@
 | D-045 | 2026-10-10 | Simulator: month-scale histories (`history_days` 365) emitted in recorded-time order, 3 new anomaly types, 3 scenarios (`is_scenario`, excluded from precision/recall) with `expected_crossing_at`, decoy `late_within_grace`, run option `feed_outage`; investigation metrics in `evaluation_runs.investigation` | Lead time and no-lookahead must be measurable | 03 §M9, 04 §11 |
 | D-046 | 2026-10-10 | Record versions are never pruned; retention prunes only processed ingest events (Q-008) | The Time Machine needs the full history | 01 NFR-DAT-002, T-047 |
 | D-047 | 2026-10-10 | **Frontend visual direction v2** replaces D-008: the product owner's "Capsule" reference (dark frosted sidebar + light frosted work panel over a blurred scene, white cards, one dark primary button, soft tinted pills, moss accent). Frontend unblocked (lifts D-037). `motion` added to the approved npm list for shared-layout indicators, exit animations, count-up and gestures only | Product owner instruction ("use this as a reference for the frontend … improve the ui/ux") | 06 v2, 02 §2.1, T-060 |
+| D-064 | 2026-10-15 | Ingest: an event for another system sent with a bound API key is a per-event `FORBIDDEN` rejection (the rest of the batch is still accepted); `delete` events skip payload field checks; retry keeps `attempts`; revoking a revoked key is a no-op `204`; `X-API-Key` wins over a bearer token. API-key logic and its 60/min limiter live in `services/ingest_service.py` (02 §7 lists no separate service; `core/rate_limit.py` is outside the T-011 Touches) | Partial rejection is the 04 §5 model; a delete only identifies the record | `services/ingest_service.py`, `api/v1/ingest.py` |
+| D-063 | 2026-10-15 | API key `key_prefix` = `rs_live_` + the first 8 random characters of the secret (16 chars shown in lists); the secret is 32 random bytes (url-safe) and only its sha256 is stored. `api_keys.created_at` is set from the injected clock | Enough to tell keys apart without weakening them; clock injection keeps tests deterministic | `services/ingest_service.py` |
 | D-062 | 2026-10-15 | `name_block` nickname-expands the first token before taking its initial ("Bob Smith" and "Robert Smith" share `SM0:r`); when metaphone yields nothing (non-Latin scripts) the last token itself is the code | More true candidates per block at no cost in precision (scoring decides); Arabic or CJK names still get a key | `domain/normalize/names.py` |
 | D-061 | 2026-10-15 | Normalizers take everything they need as arguments: `normalize_phone(value, region)` (caller passes `DEFAULT_PHONE_REGION`), `normalize_status(status_mapping, record_type, value)` (the system's `source_systems.status_mapping`, not a system key). Missing input → `None`; unreadable names / emails / plans / priorities → `None`; phones → `e164=None` with `raw`; statuses → `unmapped=True`; timestamps and amounts raise `InvalidTimestamp` / `InvalidAmount` (`ValueError`). Amounts need a currency (field or symbol) and reject comma decimals (`1.299,00`, `12,34`); rounding is half-up to 2 dp. Unambiguous nicknames only | `app.domain` may not read settings or the DB (07); a guessed amount or time would create false findings | `domain/normalize/` |
 | D-060 | 2026-10-15 | Indexes 05 names keep their names; unnamed ones are `ix_<table>_<columns>` (unique ones `uq_…`). All three source systems start with the 05 default `reliability_weight` 0.80 (04's 0.9 is an example) | Stable names for later migrations; no unspecified per-system values | `alembic/versions/202610151000_core_schema.py`, `db/seed.py` |
@@ -173,7 +175,7 @@ Add a row when you start a task that creates a migration; remove it when the PR 
 |------|------|---------|-------------|-----------|------|
 | E0 Foundation (T-001…T-005, T-043, T-051, T-060) | 0 | 0 | 0 | 0 | 8 |
 | E1 Auth (T-006…T-008) | 0 | 0 | 0 | 0 | 3 |
-| E2 Data & ingest (T-009…T-012, T-044, T-047) | 3 | 0 | 1 | 0 | 2 |
+| E2 Data & ingest (T-009…T-012, T-044, T-047) | 3 | 0 | 0 | 1 | 2 |
 | E3 Simulation (T-013…T-015) | 3 | 0 | 0 | 0 | 0 |
 | E4 Matching (T-016…T-018) | 3 | 0 | 0 | 0 | 0 |
 | E5 Detection (T-019…T-025, T-045) | 8 | 0 | 0 | 0 | 0 |
@@ -182,7 +184,7 @@ Add a row when you start a task that creates a migration; remove it when the PR 
 | E8 Frontend features (T-031…T-038, T-049, T-061) | 9 | 0 | 0 | 0 | 1 |
 | E9 Quality & polish (T-039…T-042, T-048) | 5 | 0 | 0 | 0 | 0 |
 | E10 Investigation (T-052…T-059) | 7 | 0 | 0 | 0 | 1 |
-| **Total (61)** | **45** | **0** | **1** | **0** | **15** |
+| **Total (61)** | **45** | **0** | **0** | **1** | **15** |
 
 Frontend tasks follow `06` v2 (D-047); T-004 needs T-060 merged first.
 
@@ -206,6 +208,18 @@ Frontend tasks follow `06` v2 (D-047); T-004 needs T-060 merged first.
 - **Exact next step for the next agent:** (one imperative sentence + command if useful)
 - **Docs updated:** (contract changes? Y/N and which)
 ```
+
+### 2026-10-15 — claude-code-1 — T-011 Ingest API & API keys (finished)
+- **Outcome:** done (T-011 in `review`).
+- **Branch / PR:** `claude/determined-shannon-650svp` (session branch; contains `agent/T-011-ingest-api` merged in plus the fixes below) / not opened.
+- **Last commit:** head of `claude/determined-shannon-650svp`.
+- **What I did:** ran the T-011 tests to green. Two test-only problems and one real one: `test_list_filters` advanced the clock 1 h, which expired the 15-min access token (now 10 min); `test_list_never_returns_secrets` was flaky because `api_keys.created_at` came from Postgres `now()`, which is the same for both keys inside the test transaction — the service now sets `created_at` from the injected clock (the router passes `clock.now()`, as revoke already did). Replaced deprecated `Result.tuples()` calls.
+- **Decisions made:** D-063 (key prefix, secret, clock-based `created_at`), D-064 (bound-key rejection, delete payloads, retry, revoke twice, key logic location). Both in §6.
+- **Problems / surprises:** this cloud container has no Docker daemon; the DB tests ran against the local Postgres 16 cluster (`pg_ctlcluster 16 main start`, `DATABASE_URL_TEST=postgresql+asyncpg://postgres:postgres@localhost:5432/realitysync_test`).
+- **Tests:** 102 T-011 tests (`test_ingest.py`, `test_api_keys.py`, `test_ingest_notify.py`). `make check` green: backend 434, frontend 62; the integration suite passed 6 consecutive runs.
+- **Not done / left over:** nothing in T-011 scope. Events stay `pending` until T-044 (worker loop) exists.
+- **Exact next step for the next agent:** after the product owner merges T-011, take **T-044** Ingest worker loop (it `LISTEN`s on `ingest_pending`; the payload is the `batch_id`, see `ingest_service.INGEST_CHANNEL`), then **T-012**.
+- **Docs updated:** N (08, 09, `PROGRESS.md`).
 
 ### 2026-10-15 — claude-code-1 — T-011 Ingest API & API keys (partial)
 - **Outcome:** partial (T-011 stays `in_progress`).

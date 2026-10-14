@@ -48,7 +48,7 @@ The implementation plan, split into discrete tasks that individual agents can cl
 | T-008 | Frontend auth | E1 | P0 | M | T-005, T-007, T-061 | 10 | done |
 | T-009 | Core schema migration & models | E2 | P0 | L | T-003, T-006, T-052 | 5 | done |
 | T-010 | Normalization library | E2 | P0 | M | T-002 | 2 | done |
-| T-011 | Ingest API & API keys | E2 | P0 | L | T-007, T-009, T-010 | 6 | in_progress |
+| T-011 | Ingest API & API keys | E2 | P0 | L | T-007, T-009, T-010 | 6 | review |
 | T-012 | Record upsert & versioning | E2 | P0 | M | T-010, T-011, T-044 | 7 | todo |
 | T-013 | Synthetic data generator | E3 | P0 | L | T-002, T-010, T-052 | 5 | todo |
 | T-014 | Anomaly injector & labels | E3 | P0 | L | T-013, T-052 | 6 | todo |
@@ -376,7 +376,7 @@ The implementation plan, split into discrete tasks that individual agents can cl
   - Edge cases tested (empty, None, emoji, RTL, 2-digit years rejected); pure (import-linter passes); ≥ 90% coverage.
 
 ### T-011 — Ingest API & API keys
-- Status: in_progress | Priority: P0 | Size: L | Depends: T-007, T-009, T-010 | Wave: 6 | Agent: claude-code-1 | Claimed: 2026-10-15
+- Status: review | Priority: P0 | Size: L | Depends: T-007, T-009, T-010 | Wave: 6 | Agent: claude-code-1 | Claimed: 2026-10-15
 - Blocks: T-012, T-015, T-037, T-042, T-048, T-049
 - Touches: `backend/app/api/v1/{ingest,api_keys}.py`, `backend/app/services/ingest_service.py`, `backend/app/schemas/{ingest,api_key}.py`, `backend/app/api/v1/router.py` (include lines)
 - Requirements: FR-ING-001…006, 009 (retry endpoint), 010, FR-AUT-005 (API keys), NFR-REL-001

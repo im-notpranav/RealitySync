@@ -9,7 +9,8 @@ _Last updated: 2026-10-15._ Plain-language summary. The detailed, agent-facing r
 | | Tasks |
 |---|---:|
 | Done | 15 |
-| In progress | 1 (T-011) |
+| In progress | 0 |
+| In review | 1 (T-011) |
 | To do | 45 |
 | **Total** | **61** |
 
@@ -40,31 +41,27 @@ CRM, Billing and Support) are not built yet.
 | T-009 | Every remaining database table, plus CRM, Billing and Support created on startup |
 | T-010 | Cleaning up names, emails, phones, statuses, plans, times and amounts so systems can be compared |
 
-## In progress — T-011 Ingest API and API keys
+## In review — T-011 Ingest API and API keys
 
-Branch `agent/T-011-ingest-api` (pushed, **not merged**). The endpoint that CRM, Billing and
-Support (or the simulator) send record events to.
+Branch `claude/determined-shannon-650svp` (pushed, **not merged**). The endpoint that CRM,
+Billing and Support (or the simulator) send record events to.
 
-Done:
 - `POST /ingest/events`: checks every event on its own, so one bad event does not block the
   rest; refuses batches over 500 events; spots replays and counts them as duplicates; stores
   events as "pending" and wakes the worker.
 - API keys for machines (`/api-keys`): created once with the secret shown one time, stored
   only as a hash, can be tied to one system, limited to 60 requests a minute, can be revoked.
 - Admin list of received events with filters, and a retry button for failed ones.
-- Lint and type checks pass.
+- All checks pass (`make check`: 434 backend and 62 frontend tests).
 
-Left to do:
-1. Run the new tests (`test_ingest.py`, `test_api_keys.py`, `test_ingest_notify.py`) and fix
-   anything that fails.
-2. Run `make check`, record the decisions in `docs/08`, then merge.
+Events are stored but not processed yet; that is the ingest worker (T-044), next.
 
 ---
 
 ## What should be done next (in order)
 
 **1. Data in** — get CRM, Billing and Support records into the database
-- T-011 Ingest API and API keys (in progress) · T-012 Record versioning · T-044 Ingest worker
+- T-011 Ingest API and API keys (in review) · T-012 Record versioning · T-044 Ingest worker
 
 **2. Test data** — a built-in simulator so there is something to detect
 - T-013 Synthetic customers · T-014 Injected problems with answer keys · T-015 Simulation runner
