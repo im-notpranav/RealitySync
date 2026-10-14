@@ -8,9 +8,9 @@ _Last updated: 2026-10-15._ Plain-language summary. The detailed, agent-facing r
 
 | | Tasks |
 |---|---:|
-| Done | 12 |
-| In review | 1 (T-008) |
-| To do | 48 |
+| Done | 13 |
+| In progress | 1 (T-009) |
+| To do | 47 |
 | **Total** | **61** |
 
 **What works today:** the frontend (every screen designed, running on synthetic demo data), the
@@ -36,29 +36,20 @@ CRM, Billing and Support) are not built yet.
 | T-061 | Every screen designed against demo data |
 | T-006 | Database tables for users, login tokens and the audit log |
 | T-007 | Backend sign-in: login, token refresh with theft detection, logout, change password, roles (viewer / analyst / admin), rate limits, user management, first-admin setup |
+| T-008 | Frontend sign-in: login page, silent refresh, role-based page access, account menu, demo-data mode |
 
-## In review — T-008 Frontend sign-in
+## In progress — T-009 Core database tables
 
-Branch `agent/T-008-frontend-auth` (pushed, **not merged yet**). Finished and checked in the browser.
-
-Built:
-- Sign-in page connected to the backend; the access token stays in memory only.
-- Silent refresh on page load and after a `401`, with one shared refresh for all requests.
-- Route guards by role (Link review needs analyst; Rules, Systems, Simulation need admin); anyone
-  signed out is sent to sign in and returned to the page they wanted afterwards.
-- Account menu: profile, users (admins only), sign out.
-- "Explore with demo data" button on the sign-in page (development builds only).
-- A "Checking your session…" screen while the first page loads.
-- All checks green: 138 backend and 62 frontend tests (stable over 5 runs), lint, types, build.
-
-Left to do: merge into `main`.
+Every remaining table from `docs/05_DATABASE_SCHEMA.md` (records, versions, customers, links,
+rules, findings, alerts, simulation, evaluation, risk, investigations) plus the three source
+systems created on startup.
 
 ---
 
 ## What should be done next (in order)
 
 **1. Data in** — get CRM, Billing and Support records into the database
-- T-009 Core tables and models · T-010 Normalization (names, emails, phones, plans)
+- T-009 Core tables and models (in progress) · T-010 Normalization (names, emails, phones, plans)
 - T-011 Ingest API and API keys · T-012 Record versioning · T-044 Ingest worker
 
 **2. Test data** — a built-in simulator so there is something to detect
@@ -110,4 +101,4 @@ make dev                # database, backend on :8000, frontend on :5173
 make migrate            # then restart the backend once so the first admin is created
 ```
 
-Without a backend, use **Explore with demo data** on the sign-in page (once T-008 is merged).
+Without a backend, use **Explore with demo data** on the sign-in page.
