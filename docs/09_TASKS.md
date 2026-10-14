@@ -44,7 +44,7 @@ The implementation plan, split into discrete tasks that individual agents can cl
 | T-004 | Frontend skeleton | E0 | P0 | M | T-001, T-060 | 6 | done |
 | T-005 | Design system — core primitives | E0 | P0 | L | T-004 | 7 | done |
 | T-006 | Auth data model | E1 | P0 | S | T-003 | 3 | done |
-| T-007 | Auth & users backend | E1 | P0 | L | T-006 | 4 | in_progress |
+| T-007 | Auth & users backend | E1 | P0 | L | T-006 | 4 | review |
 | T-008 | Frontend auth | E1 | P0 | M | T-005, T-007, T-061 | 10 | todo |
 | T-009 | Core schema migration & models | E2 | P0 | L | T-003, T-006, T-052 | 5 | todo |
 | T-010 | Normalization library | E2 | P0 | M | T-002 | 2 | todo |
@@ -321,7 +321,7 @@ The implementation plan, split into discrete tasks that individual agents can cl
   - **Migration lock.**
 
 ### T-007 — Auth & users backend
-- Status: in_progress | Priority: P0 | Size: L | Depends: T-006 | Wave: 4 | Agent: claude-code-1 | Claimed: 2026-10-14
+- Status: review | Priority: P0 | Size: L | Depends: T-006 | Wave: 4 | Agent: claude-code-1 | Claimed: 2026-10-14
 - Blocks: T-008, T-011, T-026
 - Touches: `backend/app/core/{security,deps,rate_limit}.py`, `backend/app/api/v1/{auth,users}.py`, `backend/app/services/{auth_service,user_service,audit_service}.py`, `backend/app/schemas/{auth,user}.py`, `backend/app/main.py` (one bootstrap line)
 - Requirements: FR-AUT-001…007, NFR-SEC-003/004
