@@ -9,7 +9,7 @@
 
 | Field | Value |
 |-------|-------|
-| Last updated | 2026-10-14 by `claude-code-1` (T-007 auth & users backend, in review) |
+| Last updated | 2026-10-15 by `claude-code-1` (T-009 core schema, in review) |
 | Project phase | **Phase 1 — Foundation.** Backend skeleton + DB foundation work and are verified (`make check-backend`, `make dev`, `make migrate`). No business features yet. |
 | Repository state | GitHub `im-notpranav/RealitySync`. Foundation, contract and frontend design are merged into `main` (2026-10-10). T-006 merged 2026-10-14. |
 | Default branch | `main` |
@@ -22,7 +22,7 @@
 
 ### What exists
 - Contract docs `00`–`07` (on the T-052 branch: including the investigation features), task plan `09`, notes in `docs/notes/` (doc review, investigation features plan).
-- Backend: FastAPI app factory, settings, clock, structlog with PII scrubbing, error envelope, `/health` + `/health/ready` (04 §13 shape), async SQLAlchemy + Alembic (migrations: extensions `pgcrypto`, `citext`, `pg_trgm`; auth tables `users`, `refresh_tokens`, `audit_logs`), test fixtures against a real Postgres 16, import-linter purity contract for `app.domain`.
+- Backend: FastAPI app factory, settings, clock, structlog with PII scrubbing, error envelope, `/health` + `/health/ready` (04 §13 shape), async SQLAlchemy + Alembic (migrations: extensions `pgcrypto`, `citext`, `pg_trgm`; auth tables `users`, `refresh_tokens`, `audit_logs`; T-009: every other table in 05, plus the startup bootstrap of the three source systems), test fixtures against a real Postgres 16, import-linter purity contract for `app.domain`.
 - Infra: `backend/Dockerfile`, `docker-compose.yml` (db + backend; frontend behind a profile), Makefile with backend/frontend sub-targets, CI workflow, pre-commit, detect-secrets baseline, `.gitattributes` (LF).
 - Frontend: only `package.json`, lockfile, `tsconfig.json`, an empty `src/index.ts`.
 
@@ -34,7 +34,7 @@
 ## 2. Next step for the next agent
 
 1. All foundation, contract and frontend-design work is merged into `main` (2026-10-10, product owner: "git push to main").
-2. **T-006** is merged; **T-007** is merged (2026-10-14); **T-008** is merged (2026-10-15); **T-009** Core schema is in progress. Then **T-010** Normalization library, T-016, T-026, T-009, T-013, T-029.
+2. **T-006** is merged; **T-007** is merged (2026-10-14); **T-008** is merged (2026-10-15); **T-009** Core schema is in review on `agent/T-009-core-schema`. Then **T-010** Normalization library, T-016, T-026, T-009, T-013, T-029.
 3. Read `03 §M12–M14` and `04 §17` before any E10 task; the critical path now runs T-009 → T-011 → T-012 → T-019 → T-024 → T-053 → T-055 → T-056 (≈ 96 h total).
 4. Setup: `README.md` → "Local development (backend)". Docker Desktop must be running for DB tests (`docker version` must show a server).
 
@@ -117,6 +117,9 @@
 | D-045 | 2026-10-10 | Simulator: month-scale histories (`history_days` 365) emitted in recorded-time order, 3 new anomaly types, 3 scenarios (`is_scenario`, excluded from precision/recall) with `expected_crossing_at`, decoy `late_within_grace`, run option `feed_outage`; investigation metrics in `evaluation_runs.investigation` | Lead time and no-lookahead must be measurable | 03 §M9, 04 §11 |
 | D-046 | 2026-10-10 | Record versions are never pruned; retention prunes only processed ingest events (Q-008) | The Time Machine needs the full history | 01 NFR-DAT-002, T-047 |
 | D-047 | 2026-10-10 | **Frontend visual direction v2** replaces D-008: the product owner's "Capsule" reference (dark frosted sidebar + light frosted work panel over a blurred scene, white cards, one dark primary button, soft tinted pills, moss accent). Frontend unblocked (lifts D-037). `motion` added to the approved npm list for shared-layout indicators, exit animations, count-up and gestures only | Product owner instruction ("use this as a reference for the frontend … improve the ui/ux") | 06 v2, 02 §2.1, T-060 |
+| D-060 | 2026-10-15 | Indexes 05 names keep their names; unnamed ones are `ix_<table>_<columns>` (unique ones `uq_…`). All three source systems start with the 05 default `reliability_weight` 0.80 (04's 0.9 is an example) | Stable names for later migrations; no unspecified per-system values | `alembic/versions/202610151000_core_schema.py`, `db/seed.py` |
+| D-059 | 2026-10-15 | Closed value lists in 05 without an explicit CHECK (`entity_links.match_method`, `finding_events.action`) still get a CHECK | 05 conventions: enumerations are `text` with `CHECK`; extend via migration | `models/entity.py`, `models/finding.py` |
+| D-058 | 2026-10-15 | `source_systems.status_mapping` = `{record_type: {raw status → canonical}}`; keys are trimmed lower case and the lookup must `strip().casefold()` the raw value; every canonical status maps to itself; defaults add a few synonyms per system (crm `customer`/`lead`/`former customer`, billing `trial`/`canceled`/`past due`/`open`/`voided`, support `new`/`on hold`/`resolved`) | `normalize_status(system, record_type, s)` needs the record type; case differences must not make a status unmapped | `db/seed.py`; T-010 |
 | D-057 | 2026-10-15 | Development builds no longer start as a demo admin; the sign-in page offers "Explore with demo data" (a local session without a token, flagged `isDemo`) | Real sign-in exists now; designers can still browse without a backend | `features/auth/LoginPage.tsx`, `store/session.ts` |
 | D-056 | 2026-10-15 | The auth store stays `store/session.ts` (T-008 text says `store/auth.ts`) | Every consumer already imports it; a rename would only churn files | `store/session.ts` |
 | D-055 | 2026-10-14 | Passwords are taken verbatim (not trimmed), although 04 §1.5 trims strings | Trimming silently changes the secret | `schemas/common.py`, T-007 |
@@ -168,7 +171,7 @@ Add a row when you start a task that creates a migration; remove it when the PR 
 |------|------|---------|-------------|-----------|------|
 | E0 Foundation (T-001…T-005, T-043, T-051, T-060) | 0 | 0 | 0 | 0 | 8 |
 | E1 Auth (T-006…T-008) | 0 | 0 | 0 | 0 | 3 |
-| E2 Data & ingest (T-009…T-012, T-044, T-047) | 5 | 0 | 1 | 0 | 0 |
+| E2 Data & ingest (T-009…T-012, T-044, T-047) | 5 | 0 | 0 | 1 | 0 |
 | E3 Simulation (T-013…T-015) | 3 | 0 | 0 | 0 | 0 |
 | E4 Matching (T-016…T-018) | 3 | 0 | 0 | 0 | 0 |
 | E5 Detection (T-019…T-025, T-045) | 8 | 0 | 0 | 0 | 0 |
@@ -177,7 +180,7 @@ Add a row when you start a task that creates a migration; remove it when the PR 
 | E8 Frontend features (T-031…T-038, T-049, T-061) | 9 | 0 | 0 | 0 | 1 |
 | E9 Quality & polish (T-039…T-042, T-048) | 5 | 0 | 0 | 0 | 0 |
 | E10 Investigation (T-052…T-059) | 7 | 0 | 0 | 0 | 1 |
-| **Total (61)** | **47** | **0** | **1** | **0** | **13** |
+| **Total (61)** | **47** | **0** | **0** | **1** | **13** |
 
 Frontend tasks follow `06` v2 (D-047); T-004 needs T-060 merged first.
 
@@ -201,6 +204,17 @@ Frontend tasks follow `06` v2 (D-047); T-004 needs T-060 merged first.
 - **Exact next step for the next agent:** (one imperative sentence + command if useful)
 - **Docs updated:** (contract changes? Y/N and which)
 ```
+
+### 2026-10-15 — claude-code-1 — T-009 Core schema migration & models
+- **Outcome:** done (T-009 in `review`).
+- **Branch / PR:** `agent/T-009-core-schema` (pushed) / not opened.
+- **Last commit:** head of `agent/T-009-core-schema`.
+- **What I did:** models for every table in 05 §2.3–2.23 (one module per aggregate in `app/models/`: `source_system`, `source_record`, `entity`, `finding`, `alert`, `simulation`, `risk`, `investigation`; shared enums in `models/enums.py`); one migration `202610151000_core_schema` (autogenerated from the models against a throwaway Postgres, then reviewed); startup bootstrap `app/db/seed.py::bootstrap_source_systems` (insert-if-missing, `ON CONFLICT (key) DO NOTHING`) called from the `main.py` lifespan before the admin bootstrap.
+- **Indexes:** every index named in 05 keeps its name (`idx_ingest_pending`, `idx_findings_needs_explanation`, `uq_investigations_inputs`, …); unnamed ones are `ix_<table>_<columns>` (D-060). Partial uniques: `uq_entity_links_active_record` (one non-rejected link per record) and `uq_investigations_inputs`.
+- **Decisions made:** D-058 (status mapping shape), D-059 (CHECKs on closed lists), D-060 (index names, default reliability).
+- **Tests:** `tests/integration/db/test_core_models.py` (constraints: single non-rejected link, rejected link does not block, `rejected_pairs` ordering + uniqueness, investigations `inputs_hash` partial unique + retry after failure, scenario/decoy CHECKs, ranges, cascades), `test_seed.py` (defaults, documented examples, idempotent, admin edits kept, missing system recreated), `test_migrations.py` (core round trip, named indexes exist; `alembic check` clean). `make check` green: backend 173, frontend 62.
+- **Exact next step for the next agent:** after the product owner merges T-009 (then release the migration lock in §8), take **T-010** Normalization (its `normalize_status` reads `status_mapping[record_type][raw.strip().casefold()]`, D-058), then **T-011** Ingest API.
+- **Docs updated:** N (08, 09, `PROGRESS.md`).
 
 ### 2026-10-15 — claude-code-1 — T-008 Frontend auth (finished)
 - **Outcome:** done (T-008 in `review`).
