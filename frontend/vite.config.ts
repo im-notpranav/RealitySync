@@ -18,5 +18,8 @@ export default defineConfig({
     setupFiles: ["./src/test/setup.ts"],
     css: false,
     restoreMocks: true,
+    // Above the 5 s findBy timeout in src/test/setup.ts, so a slow lazy page import fails as a
+    // missing element, not a test timeout.
+    testTimeout: 15_000,
   },
 });

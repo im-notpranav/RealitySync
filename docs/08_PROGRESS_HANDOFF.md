@@ -34,7 +34,7 @@
 ## 2. Next step for the next agent
 
 1. All foundation, contract and frontend-design work is merged into `main` (2026-10-10, product owner: "git push to main").
-2. **T-006** is merged; **T-007** is merged (2026-10-14); **T-008** Frontend auth is in progress on `agent/T-008-frontend-auth` (see its session entry). Then **T-010** Normalization library, T-016, T-026, T-009, T-013, T-029.
+2. **T-006** is merged; **T-007** is merged (2026-10-14); **T-008** Frontend auth is in review on `agent/T-008-frontend-auth`. Then **T-010** Normalization library, T-016, T-026, T-009, T-013, T-029.
 3. Read `03 §M12–M14` and `04 §17` before any E10 task; the critical path now runs T-009 → T-011 → T-012 → T-019 → T-024 → T-053 → T-055 → T-056 (≈ 96 h total).
 4. Setup: `README.md` → "Local development (backend)". Docker Desktop must be running for DB tests (`docker version` must show a server).
 
@@ -117,6 +117,8 @@
 | D-045 | 2026-10-10 | Simulator: month-scale histories (`history_days` 365) emitted in recorded-time order, 3 new anomaly types, 3 scenarios (`is_scenario`, excluded from precision/recall) with `expected_crossing_at`, decoy `late_within_grace`, run option `feed_outage`; investigation metrics in `evaluation_runs.investigation` | Lead time and no-lookahead must be measurable | 03 §M9, 04 §11 |
 | D-046 | 2026-10-10 | Record versions are never pruned; retention prunes only processed ingest events (Q-008) | The Time Machine needs the full history | 01 NFR-DAT-002, T-047 |
 | D-047 | 2026-10-10 | **Frontend visual direction v2** replaces D-008: the product owner's "Capsule" reference (dark frosted sidebar + light frosted work panel over a blurred scene, white cards, one dark primary button, soft tinted pills, moss accent). Frontend unblocked (lifts D-037). `motion` added to the approved npm list for shared-layout indicators, exit animations, count-up and gestures only | Product owner instruction ("use this as a reference for the frontend … improve the ui/ux") | 06 v2, 02 §2.1, T-060 |
+| D-057 | 2026-10-15 | Development builds no longer start as a demo admin; the sign-in page offers "Explore with demo data" (a local session without a token, flagged `isDemo`) | Real sign-in exists now; designers can still browse without a backend | `features/auth/LoginPage.tsx`, `store/session.ts` |
+| D-056 | 2026-10-15 | The auth store stays `store/session.ts` (T-008 text says `store/auth.ts`) | Every consumer already imports it; a rename would only churn files | `store/session.ts` |
 | D-055 | 2026-10-14 | Passwords are taken verbatim (not trimmed), although 04 §1.5 trims strings | Trimming silently changes the secret | `schemas/common.py`, T-007 |
 | D-054 | 2026-10-14 | The role and `is_active` are read from the database on every request (not trusted from the JWT); an admin password reset or a deactivation revokes all the user's refresh tokens | Demotion and deactivation take effect immediately instead of after up to 15 min | `core/deps.py`, `services/user_service.py` |
 | D-053 | 2026-10-14 | The last active admin cannot be demoted or deactivated → `409 CONFLICT` | Otherwise the system can lock out every administrator | `services/user_service.py`; Q-012 |
@@ -165,7 +167,7 @@ Add a row when you start a task that creates a migration; remove it when the PR 
 | Epic | Todo | Blocked | In progress | In review | Done |
 |------|------|---------|-------------|-----------|------|
 | E0 Foundation (T-001…T-005, T-043, T-051, T-060) | 0 | 0 | 0 | 0 | 8 |
-| E1 Auth (T-006…T-008) | 0 | 0 | 1 | 0 | 2 |
+| E1 Auth (T-006…T-008) | 0 | 0 | 0 | 1 | 2 |
 | E2 Data & ingest (T-009…T-012, T-044, T-047) | 6 | 0 | 0 | 0 | 0 |
 | E3 Simulation (T-013…T-015) | 3 | 0 | 0 | 0 | 0 |
 | E4 Matching (T-016…T-018) | 3 | 0 | 0 | 0 | 0 |
@@ -175,7 +177,7 @@ Add a row when you start a task that creates a migration; remove it when the PR 
 | E8 Frontend features (T-031…T-038, T-049, T-061) | 9 | 0 | 0 | 0 | 1 |
 | E9 Quality & polish (T-039…T-042, T-048) | 5 | 0 | 0 | 0 | 0 |
 | E10 Investigation (T-052…T-059) | 7 | 0 | 0 | 0 | 1 |
-| **Total (61)** | **48** | **0** | **1** | **0** | **12** |
+| **Total (61)** | **48** | **0** | **0** | **1** | **12** |
 
 Frontend tasks follow `06` v2 (D-047); T-004 needs T-060 merged first.
 
@@ -199,6 +201,17 @@ Frontend tasks follow `06` v2 (D-047); T-004 needs T-060 merged first.
 - **Exact next step for the next agent:** (one imperative sentence + command if useful)
 - **Docs updated:** (contract changes? Y/N and which)
 ```
+
+### 2026-10-15 — claude-code-1 — T-008 Frontend auth (finished)
+- **Outcome:** done (T-008 in `review`).
+- **Branch / PR:** `agent/T-008-frontend-auth` (pushed) / not opened.
+- **Last commit:** head of `agent/T-008-frontend-auth`.
+- **What I did:** fixed the flaky account-menu tests (they now wait for the Overview heading before opening the menu); added `HydrateFallback: SessionSplash` on the `/login` and guarded routes so the first lazy load shows "Checking your session…" instead of an empty scene (also removes React Router's "No HydrateFallback" warning).
+- **Manual check (built-in browser, dev server on :5174):** signed-out visit to `/findings?status=open` → `/login?next=…`; "Explore with demo data" returns to that page with the filter; account menu shows name, email, role and "Demo data", Users → `/settings?tab=users`; Sign out → `/login`, and Back does not reveal data; a failed sign-in shows a plain error and clears the password; menu fits at 375 px.
+- **Decisions made:** D-056 (store stays `store/session.ts`), D-057 (dev "Explore with demo data" replaces the automatic demo admin).
+- **Tests:** frontend 62 tests green on 5 consecutive runs; `make check` green (backend 138).
+- **Exact next step for the next agent:** after the product owner merges T-008, take **T-010** (normalization library) or **T-009** (core schema, critical path). Real sign-in against the Docker backend needs `ADMIN_EMAIL`/`ADMIN_PASSWORD` in `.env`.
+- **Docs updated:** N (08, 09, `PROGRESS.md`).
 
 ### 2026-10-14 — claude-code-1 — T-008 Frontend auth (partial)
 - **Outcome:** partial (T-008 `in_progress`); stopped at the product owner's request.

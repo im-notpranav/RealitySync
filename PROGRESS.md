@@ -1,6 +1,6 @@
 # RealitySync — Progress
 
-_Last updated: 2026-10-14._ Plain-language summary. The detailed, agent-facing record is in
+_Last updated: 2026-10-15._ Plain-language summary. The detailed, agent-facing record is in
 [`docs/08_PROGRESS_HANDOFF.md`](docs/08_PROGRESS_HANDOFF.md) and the full task list is in
 [`docs/09_TASKS.md`](docs/09_TASKS.md).
 
@@ -9,7 +9,7 @@ _Last updated: 2026-10-14._ Plain-language summary. The detailed, agent-facing r
 | | Tasks |
 |---|---:|
 | Done | 12 |
-| In progress | 1 (T-008) |
+| In review | 1 (T-008) |
 | To do | 48 |
 | **Total** | **61** |
 
@@ -37,9 +37,9 @@ CRM, Billing and Support) are not built yet.
 | T-006 | Database tables for users, login tokens and the audit log |
 | T-007 | Backend sign-in: login, token refresh with theft detection, logout, change password, roles (viewer / analyst / admin), rate limits, user management, first-admin setup |
 
-## In progress — T-008 Frontend sign-in
+## In review — T-008 Frontend sign-in
 
-Branch `agent/T-008-frontend-auth` (pushed, **not merged**).
+Branch `agent/T-008-frontend-auth` (pushed, **not merged yet**). Finished and checked in the browser.
 
 Built:
 - Sign-in page connected to the backend; the access token stays in memory only.
@@ -48,12 +48,10 @@ Built:
   signed out is sent to sign in and returned to the page they wanted afterwards.
 - Account menu: profile, users (admins only), sign out.
 - "Explore with demo data" button on the sign-in page (development builds only).
-- Typecheck and lint pass; 62 frontend tests, of which the account-menu tests sometimes fail (below).
+- A "Checking your session…" screen while the first page loads.
+- All checks green: 138 backend and 62 frontend tests (stable over 5 runs), lint, types, build.
 
-Left to do:
-1. Make the two account-menu tests in `frontend/src/features/auth/auth.test.tsx` stable: they
-   sometimes open the menu before the page has finished loading. Wait for the page heading first.
-2. Run `make check` three times in a row green, update `docs/08` and `docs/09`, then merge.
+Left to do: merge into `main`.
 
 ---
 

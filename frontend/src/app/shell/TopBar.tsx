@@ -1,10 +1,10 @@
 import { Bell, Search, Settings } from "lucide-react";
 import { useEffect, useRef } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
-import { Avatar, IconLink } from "../../components/ui";
+import { IconLink } from "../../components/ui";
 import { env } from "../../lib/env";
-import { useSession } from "../../store/session";
+import { UserMenu } from "./UserMenu";
 
 const isApplePlatform = typeof navigator !== "undefined" && /Mac|iPhone|iPad/i.test(navigator.userAgent);
 
@@ -26,7 +26,6 @@ function ConnectionStatus() {
 export function TopBar() {
   const inputRef = useRef<HTMLInputElement>(null);
   const navigate = useNavigate();
-  const user = useSession((state) => state.user);
 
   // Ctrl/⌘ K focuses search. Keyboard actions never animate (06 §8).
   useEffect(() => {
@@ -79,13 +78,7 @@ export function TopBar() {
         <IconLink to="/settings" label="Settings" className="max-md:hidden">
           <Settings size={18} strokeWidth={1.75} aria-hidden="true" />
         </IconLink>
-        <Link
-          to="/settings"
-          aria-label="Your profile"
-          className="rounded-pill transition-transform duration-press ease-out motion-safe:active:scale-[0.97]"
-        >
-          <Avatar name={user?.fullName ?? "Guest"} tone="user" />
-        </Link>
+        <UserMenu />
       </div>
     </header>
   );

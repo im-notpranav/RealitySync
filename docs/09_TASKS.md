@@ -45,7 +45,7 @@ The implementation plan, split into discrete tasks that individual agents can cl
 | T-005 | Design system — core primitives | E0 | P0 | L | T-004 | 7 | done |
 | T-006 | Auth data model | E1 | P0 | S | T-003 | 3 | done |
 | T-007 | Auth & users backend | E1 | P0 | L | T-006 | 4 | done |
-| T-008 | Frontend auth | E1 | P0 | M | T-005, T-007, T-061 | 10 | in_progress |
+| T-008 | Frontend auth | E1 | P0 | M | T-005, T-007, T-061 | 10 | review |
 | T-009 | Core schema migration & models | E2 | P0 | L | T-003, T-006, T-052 | 5 | todo |
 | T-010 | Normalization library | E2 | P0 | M | T-002 | 2 | todo |
 | T-011 | Ingest API & API keys | E2 | P0 | L | T-007, T-009, T-010 | 6 | todo |
@@ -335,7 +335,7 @@ The implementation plan, split into discrete tasks that individual agents can cl
   - Audit entries: login, user create/update, password change.
 
 ### T-008 — Frontend auth
-- Status: in_progress | Priority: P0 | Size: M | Depends: T-005, T-007, T-061 | Wave: 10 | Agent: claude-code-1 | Claimed: 2026-10-14
+- Status: review | Priority: P0 | Size: M | Depends: T-005, T-007, T-061 | Wave: 10 | Agent: claude-code-1 | Claimed: 2026-10-14
 - Blocks: T-031, T-032, T-034, T-037, T-038, T-049
 - Touches: `frontend/src/features/auth/**`, `frontend/src/lib/api/**`, `frontend/src/store/auth.ts`, `frontend/src/app/router.tsx` (guards), app shell nav (role filtering)
 - Requirements: FR-AUT-003, NFR-SEC-001
