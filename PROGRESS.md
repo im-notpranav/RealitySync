@@ -8,9 +8,9 @@ _Last updated: 2026-10-15._ Plain-language summary. The detailed, agent-facing r
 
 | | Tasks |
 |---|---:|
-| Done | 13 |
-| In review | 1 (T-009) |
-| To do | 47 |
+| Done | 14 |
+| In progress | 1 (T-010) |
+| To do | 46 |
 | **Total** | **61** |
 
 **What works today:** the frontend (every screen designed, running on synthetic demo data), the
@@ -37,23 +37,19 @@ CRM, Billing and Support) are not built yet.
 | T-006 | Database tables for users, login tokens and the audit log |
 | T-007 | Backend sign-in: login, token refresh with theft detection, logout, change password, roles (viewer / analyst / admin), rate limits, user management, first-admin setup |
 | T-008 | Frontend sign-in: login page, silent refresh, role-based page access, account menu, demo-data mode |
+| T-009 | Every remaining database table, plus CRM, Billing and Support created on startup |
 
-## In review — T-009 Core database tables
+## In progress — T-010 Normalization
 
-Branch `agent/T-009-core-schema` (pushed, **not merged yet**). Every remaining table from
-`docs/05_DATABASE_SCHEMA.md` (records, versions, customers, links, rules, findings, alerts,
-simulation, evaluation, risk, investigations) plus the CRM, Billing and Support systems, which
-the API creates on startup with default trust levels and status vocabularies. All checks green
-(173 backend, 62 frontend tests).
-
-Left to do: merge into `main`.
+Pure functions that turn messy source values into comparable ones: names (titles, nicknames),
+emails (gmail dots and +tags), phones (E.164), statuses, plans, priorities, timestamps, amounts.
 
 ---
 
 ## What should be done next (in order)
 
 **1. Data in** — get CRM, Billing and Support records into the database
-- T-009 Core tables and models (in review) · T-010 Normalization (names, emails, phones, plans)
+- T-010 Normalization (names, emails, phones, plans) (in progress)
 - T-011 Ingest API and API keys · T-012 Record versioning · T-044 Ingest worker
 
 **2. Test data** — a built-in simulator so there is something to detect

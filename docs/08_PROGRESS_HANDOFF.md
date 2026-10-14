@@ -34,7 +34,7 @@
 ## 2. Next step for the next agent
 
 1. All foundation, contract and frontend-design work is merged into `main` (2026-10-10, product owner: "git push to main").
-2. **T-006** is merged; **T-007** is merged (2026-10-14); **T-008** is merged (2026-10-15); **T-009** Core schema is in review on `agent/T-009-core-schema`. Then **T-010** Normalization library, T-016, T-026, T-009, T-013, T-029.
+2. **T-006** is merged; **T-007** is merged (2026-10-14); **T-008** is merged (2026-10-15); **T-009** is merged (2026-10-15); **T-010** Normalization library is in progress. Then T-011, T-016, T-026, T-009, T-013, T-029.
 3. Read `03 §M12–M14` and `04 §17` before any E10 task; the critical path now runs T-009 → T-011 → T-012 → T-019 → T-024 → T-053 → T-055 → T-056 (≈ 96 h total).
 4. Setup: `README.md` → "Local development (backend)". Docker Desktop must be running for DB tests (`docker version` must show a server).
 
@@ -152,7 +152,7 @@
 
 | Resource | Held by | Task | Since | Release when |
 |----------|---------|------|-------|--------------|
-| Alembic migrations (`backend/alembic/versions`) | claude-code-1 | T-009 | 2026-10-15 | PR merged |
+| Alembic migrations (`backend/alembic/versions`) | — | — | — | PR merged |
 | Dependency manifests (`pyproject.toml`, `package.json`) | — | — | — | (soft lock; additive edits OK, see 07 §5.3) |
 
 Add a row when you start a task that creates a migration; remove it when the PR merges.
@@ -171,7 +171,7 @@ Add a row when you start a task that creates a migration; remove it when the PR 
 |------|------|---------|-------------|-----------|------|
 | E0 Foundation (T-001…T-005, T-043, T-051, T-060) | 0 | 0 | 0 | 0 | 8 |
 | E1 Auth (T-006…T-008) | 0 | 0 | 0 | 0 | 3 |
-| E2 Data & ingest (T-009…T-012, T-044, T-047) | 5 | 0 | 0 | 1 | 0 |
+| E2 Data & ingest (T-009…T-012, T-044, T-047) | 4 | 0 | 1 | 0 | 1 |
 | E3 Simulation (T-013…T-015) | 3 | 0 | 0 | 0 | 0 |
 | E4 Matching (T-016…T-018) | 3 | 0 | 0 | 0 | 0 |
 | E5 Detection (T-019…T-025, T-045) | 8 | 0 | 0 | 0 | 0 |
@@ -180,7 +180,7 @@ Add a row when you start a task that creates a migration; remove it when the PR 
 | E8 Frontend features (T-031…T-038, T-049, T-061) | 9 | 0 | 0 | 0 | 1 |
 | E9 Quality & polish (T-039…T-042, T-048) | 5 | 0 | 0 | 0 | 0 |
 | E10 Investigation (T-052…T-059) | 7 | 0 | 0 | 0 | 1 |
-| **Total (61)** | **47** | **0** | **0** | **1** | **13** |
+| **Total (61)** | **46** | **0** | **1** | **0** | **14** |
 
 Frontend tasks follow `06` v2 (D-047); T-004 needs T-060 merged first.
 
