@@ -139,7 +139,7 @@
 
 | Resource | Held by | Task | Since | Release when |
 |----------|---------|------|-------|--------------|
-| Alembic migrations (`backend/alembic/versions`) | — | — | — | PR merged |
+| Alembic migrations (`backend/alembic/versions`) | claude-code-1 | T-006 | 2026-10-14 | PR merged |
 | Dependency manifests (`pyproject.toml`, `package.json`) | — | — | — | (soft lock; additive edits OK, see 07 §5.3) |
 
 Add a row when you start a task that creates a migration; remove it when the PR merges.
@@ -157,7 +157,7 @@ Add a row when you start a task that creates a migration; remove it when the PR 
 | Epic | Todo | Blocked | In progress | In review | Done |
 |------|------|---------|-------------|-----------|------|
 | E0 Foundation (T-001…T-005, T-043, T-051, T-060) | 0 | 0 | 0 | 0 | 8 |
-| E1 Auth (T-006…T-008) | 3 | 0 | 0 | 0 | 0 |
+| E1 Auth (T-006…T-008) | 2 | 0 | 1 | 0 | 0 |
 | E2 Data & ingest (T-009…T-012, T-044, T-047) | 6 | 0 | 0 | 0 | 0 |
 | E3 Simulation (T-013…T-015) | 3 | 0 | 0 | 0 | 0 |
 | E4 Matching (T-016…T-018) | 3 | 0 | 0 | 0 | 0 |
@@ -167,7 +167,7 @@ Add a row when you start a task that creates a migration; remove it when the PR 
 | E8 Frontend features (T-031…T-038, T-049, T-061) | 9 | 0 | 0 | 0 | 1 |
 | E9 Quality & polish (T-039…T-042, T-048) | 5 | 0 | 0 | 0 | 0 |
 | E10 Investigation (T-052…T-059) | 7 | 0 | 0 | 0 | 1 |
-| **Total (61)** | **51** | **0** | **0** | **0** | **10** |
+| **Total (61)** | **50** | **0** | **1** | **0** | **10** |
 
 Frontend tasks follow `06` v2 (D-047); T-004 needs T-060 merged first.
 
