@@ -43,7 +43,7 @@ The implementation plan, split into discrete tasks that individual agents can cl
 | T-003 | Database foundation | E0 | P0 | M | T-002 | 2 | done |
 | T-004 | Frontend skeleton | E0 | P0 | M | T-001, T-060 | 6 | done |
 | T-005 | Design system — core primitives | E0 | P0 | L | T-004 | 7 | done |
-| T-006 | Auth data model | E1 | P0 | S | T-003 | 3 | in_progress |
+| T-006 | Auth data model | E1 | P0 | S | T-003 | 3 | review |
 | T-007 | Auth & users backend | E1 | P0 | L | T-006 | 4 | todo |
 | T-008 | Frontend auth | E1 | P0 | M | T-005, T-007, T-061 | 10 | todo |
 | T-009 | Core schema migration & models | E2 | P0 | L | T-003, T-006, T-052 | 5 | todo |
@@ -311,7 +311,7 @@ The implementation plan, split into discrete tasks that individual agents can cl
 # E1 — Authentication
 
 ### T-006 — Auth data model
-- Status: in_progress | Priority: P0 | Size: S | Depends: T-003 | Wave: 3 | Agent: claude-code-1 | Claimed: 2026-10-14
+- Status: review | Priority: P0 | Size: S | Depends: T-003 | Wave: 3 | Agent: claude-code-1 | Claimed: 2026-10-14
 - Blocks: T-007, T-009
 - Touches: `backend/app/models/{user,refresh_token,audit_log}.py`, new migration
 - Requirements: FR-AUT-001/002/006

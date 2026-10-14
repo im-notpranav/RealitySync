@@ -8,6 +8,7 @@ from sqlalchemy.ext.asyncio import AsyncEngine
 from alembic import command
 
 REQUIRED_EXTENSIONS = {"pgcrypto", "citext", "pg_trgm"}
+AUTH_TABLES = {"users", "refresh_tokens", "audit_logs"}
 
 
 async def installed_extensions(engine: AsyncEngine) -> set[str]:
@@ -27,6 +28,30 @@ async def test_migrations_round_trip(db_engine: AsyncEngine, alembic_cfg: Config
 
     await asyncio.to_thread(command.upgrade, alembic_cfg, "head")
     assert REQUIRED_EXTENSIONS <= await installed_extensions(db_engine)
+
+
+async def existing_tables(engine: AsyncEngine) -> set[str]:
+    async with engine.connect() as conn:
+        rows = await conn.execute(
+            text("SELECT tablename FROM pg_tables WHERE schemaname = 'public'")
+        )
+        return {row[0] for row in rows}
+
+
+@pytest.mark.db
+@pytest.mark.asyncio
+async def test_auth_tables_migration_is_reversible(
+    db_engine: AsyncEngine, alembic_cfg: Config
+) -> None:
+    """T-006: downgrading past the auth migration drops its tables; `upgrade head` restores them."""
+    assert AUTH_TABLES <= await existing_tables(db_engine)
+
+    await asyncio.to_thread(command.downgrade, alembic_cfg, "6804bb1df3a9")
+    assert not AUTH_TABLES & await existing_tables(db_engine)
+    assert REQUIRED_EXTENSIONS <= await installed_extensions(db_engine)
+
+    await asyncio.to_thread(command.upgrade, alembic_cfg, "head")
+    assert AUTH_TABLES <= await existing_tables(db_engine)
 
 
 @pytest.mark.db
