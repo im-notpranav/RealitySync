@@ -9,7 +9,7 @@
 
 | Field | Value |
 |-------|-------|
-| Last updated | 2026-10-15 by `claude-code-1` (T-010 normalization, in review) |
+| Last updated | 2026-10-15 by `claude-code-1` (T-011 ingest API, in progress) |
 | Project phase | **Phase 1 — Foundation.** Backend skeleton + DB foundation work and are verified (`make check-backend`, `make dev`, `make migrate`). No business features yet. |
 | Repository state | GitHub `im-notpranav/RealitySync`. Foundation, contract and frontend design are merged into `main` (2026-10-10). T-006 merged 2026-10-14. |
 | Default branch | `main` |
@@ -206,6 +206,16 @@ Frontend tasks follow `06` v2 (D-047); T-004 needs T-060 merged first.
 - **Exact next step for the next agent:** (one imperative sentence + command if useful)
 - **Docs updated:** (contract changes? Y/N and which)
 ```
+
+### 2026-10-15 — claude-code-1 — T-011 Ingest API & API keys (partial)
+- **Outcome:** partial (T-011 stays `in_progress`).
+- **Branch / PR:** `agent/T-011-ingest-api` (pushed) / not opened.
+- **Last commit:** head of `agent/T-011-ingest-api`.
+- **What I did:** `schemas/{ingest,api_key}.py`; `services/ingest_service.py` (ingest batch with per-event validation and partial rejection, 413 over 500, 16 KB payload limit, NaN rejected, 03 §M1 idempotency key, `ON CONFLICT DO NOTHING` duplicates, `pg_notify('ingest_pending', batch_id)` in the transaction so it is delivered on commit; API keys `rs_live_…` stored as sha256, `RequestLimiter` 60/min/key, bound-system check; event list with filters; retry `failed → pending`; audit `api_key.create`, `api_key.revoke`, `ingest_event.retry`); routers `api/v1/{ingest,api_keys}.py`; two `include_router` lines. Lint and strict mypy pass.
+- **Tests:** written in `tests/integration/api/{test_ingest,test_api_keys,test_ingest_notify}.py` (+ `ingestkit.py`) but **not yet run to green**. A first run hung: the NOTIFY tests waited on locks held by the rolled-back `db_session` fixture, so they were moved to `test_ingest_notify.py` without that fixture. One fixture bug (expired ORM objects) was fixed.
+- **Decisions to log when finishing:** D-063 `key_prefix` = `rs_live_` + first 8 random chars; D-064 bound-key mismatch is a per-event `FORBIDDEN` rejection, `delete` events skip payload field checks, retry keeps `attempts`, revoking twice is a no-op `204`; API-key logic lives in `ingest_service.py` (02 §7 lists no separate service) and the request limiter there (`core/rate_limit.py` is outside Touches).
+- **Exact next step for the next agent:** run `pytest tests/integration/api/test_ingest.py tests/integration/api/test_api_keys.py tests/integration/api/test_ingest_notify.py`, fix failures, then `make check`, log D-063/D-064 in §6, set T-011 to `review`.
+- **Docs updated:** N (08, 09, `PROGRESS.md`).
 
 ### 2026-10-15 — claude-code-1 — T-010 Normalization library
 - **Outcome:** done (T-010 in `review`).

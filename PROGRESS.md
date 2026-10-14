@@ -42,8 +42,22 @@ CRM, Billing and Support) are not built yet.
 
 ## In progress — T-011 Ingest API and API keys
 
-The endpoint that CRM, Billing and Support (or the simulator) send record events to, with
-duplicate detection, API keys for machines, a list of received events and a retry button.
+Branch `agent/T-011-ingest-api` (pushed, **not merged**). The endpoint that CRM, Billing and
+Support (or the simulator) send record events to.
+
+Done:
+- `POST /ingest/events`: checks every event on its own, so one bad event does not block the
+  rest; refuses batches over 500 events; spots replays and counts them as duplicates; stores
+  events as "pending" and wakes the worker.
+- API keys for machines (`/api-keys`): created once with the secret shown one time, stored
+  only as a hash, can be tied to one system, limited to 60 requests a minute, can be revoked.
+- Admin list of received events with filters, and a retry button for failed ones.
+- Lint and type checks pass.
+
+Left to do:
+1. Run the new tests (`test_ingest.py`, `test_api_keys.py`, `test_ingest_notify.py`) and fix
+   anything that fails.
+2. Run `make check`, record the decisions in `docs/08`, then merge.
 
 ---
 
