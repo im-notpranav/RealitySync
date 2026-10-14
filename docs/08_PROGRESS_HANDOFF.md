@@ -9,11 +9,11 @@
 
 | Field | Value |
 |-------|-------|
-| Last updated | 2026-10-10 by `claude-code-1` (T-052 contract update for the investigation features, in review) |
+| Last updated | 2026-10-14 by `claude-code-1` (T-006 auth data model, in review) |
 | Project phase | **Phase 1 — Foundation.** Backend skeleton + DB foundation work and are verified (`make check-backend`, `make dev`, `make migrate`). No business features yet. |
-| Repository state | Local git repo initialised 2026-10-09 (the earlier agents' history was not available; their work was imported as-is). **No remote yet.** T-051 is on branch `agent/T-051-foundation-repair`; T-052 is on `agent/T-052-investigation-contract`, **stacked on T-051**. Neither is merged. |
+| Repository state | GitHub `im-notpranav/RealitySync`. Foundation, contract and frontend design are merged into `main` (2026-10-10). T-006 is on `agent/T-006-auth-data-model`, not merged. |
 | Default branch | `main` |
-| Last known green commit | head of `agent/T-051-foundation-repair` (see session log). `main` itself does **not** pass `make check` until T-051 is merged. |
+| Last known green commit | `main` (`make check` passes); T-006 branch also green. |
 | CI status | Workflow fixed but never run (no remote) |
 | Next milestone | M0 Foundation (T-006, T-007 backend; frontend held — see below) |
 | Demo-able today? | No |
@@ -22,7 +22,7 @@
 
 ### What exists
 - Contract docs `00`–`07` (on the T-052 branch: including the investigation features), task plan `09`, notes in `docs/notes/` (doc review, investigation features plan).
-- Backend: FastAPI app factory, settings, clock, structlog with PII scrubbing, error envelope, `/health` + `/health/ready` (04 §13 shape), async SQLAlchemy + Alembic (one migration: `pgcrypto`, `citext`, `pg_trgm`), test fixtures against a real Postgres 16, import-linter purity contract for `app.domain`.
+- Backend: FastAPI app factory, settings, clock, structlog with PII scrubbing, error envelope, `/health` + `/health/ready` (04 §13 shape), async SQLAlchemy + Alembic (migrations: extensions `pgcrypto`, `citext`, `pg_trgm`; auth tables `users`, `refresh_tokens`, `audit_logs` on the T-006 branch), test fixtures against a real Postgres 16, import-linter purity contract for `app.domain`.
 - Infra: `backend/Dockerfile`, `docker-compose.yml` (db + backend; frontend behind a profile), Makefile with backend/frontend sub-targets, CI workflow, pre-commit, detect-secrets baseline, `.gitattributes` (LF).
 - Frontend: only `package.json`, lockfile, `tsconfig.json`, an empty `src/index.ts`.
 
@@ -34,7 +34,7 @@
 ## 2. Next step for the next agent
 
 1. All foundation, contract and frontend-design work is merged into `main` (2026-10-10, product owner: "git push to main").
-2. After the merges, backend tasks whose `Depends` are done: **T-006** Auth data model (critical path), **T-010** Normalization library; then T-007, T-016, T-026, T-009, T-013, T-029.
+2. **T-006** Auth data model is in review on `agent/T-006-auth-data-model`; merge it, then **T-007** Auth & users backend and **T-010** Normalization library; then T-016, T-026, T-009, T-013, T-029.
 3. Read `03 §M12–M14` and `04 §17` before any E10 task; the critical path now runs T-009 → T-011 → T-012 → T-019 → T-024 → T-053 → T-055 → T-056 (≈ 96 h total).
 4. Setup: `README.md` → "Local development (backend)". Docker Desktop must be running for DB tests (`docker version` must show a server).
 
@@ -157,7 +157,7 @@ Add a row when you start a task that creates a migration; remove it when the PR 
 | Epic | Todo | Blocked | In progress | In review | Done |
 |------|------|---------|-------------|-----------|------|
 | E0 Foundation (T-001…T-005, T-043, T-051, T-060) | 0 | 0 | 0 | 0 | 8 |
-| E1 Auth (T-006…T-008) | 2 | 0 | 1 | 0 | 0 |
+| E1 Auth (T-006…T-008) | 2 | 0 | 0 | 1 | 0 |
 | E2 Data & ingest (T-009…T-012, T-044, T-047) | 6 | 0 | 0 | 0 | 0 |
 | E3 Simulation (T-013…T-015) | 3 | 0 | 0 | 0 | 0 |
 | E4 Matching (T-016…T-018) | 3 | 0 | 0 | 0 | 0 |
@@ -167,7 +167,7 @@ Add a row when you start a task that creates a migration; remove it when the PR 
 | E8 Frontend features (T-031…T-038, T-049, T-061) | 9 | 0 | 0 | 0 | 1 |
 | E9 Quality & polish (T-039…T-042, T-048) | 5 | 0 | 0 | 0 | 0 |
 | E10 Investigation (T-052…T-059) | 7 | 0 | 0 | 0 | 1 |
-| **Total (61)** | **50** | **0** | **1** | **0** | **10** |
+| **Total (61)** | **50** | **0** | **0** | **1** | **10** |
 
 Frontend tasks follow `06` v2 (D-047); T-004 needs T-060 merged first.
 
@@ -191,6 +191,21 @@ Frontend tasks follow `06` v2 (D-047); T-004 needs T-060 merged first.
 - **Exact next step for the next agent:** (one imperative sentence + command if useful)
 - **Docs updated:** (contract changes? Y/N and which)
 ```
+
+### 2026-10-14 — claude-code-1 — T-006 Auth data model
+- **Outcome:** done (T-006 in `review`).
+- **Branch / PR:** `agent/T-006-auth-data-model` / not opened (branch pushed to GitHub).
+- **Last commit:** head of `agent/T-006-auth-data-model`.
+- **What I did:**
+  - Models `User`, `RefreshToken`, `AuditLog` in `backend/app/models/` exactly per `05 §2.1, 2.2, 2.19` (citext unique email, role CHECK, cascade/set-null FKs, self-FK `replaced_by`, `audit_logs` DESC indexes).
+  - Migration `202610141000_auth_tables.py` (revises `6804bb1df3a9`), reversible.
+  - `backend/app/models/__init__.py` imports every model; `alembic/env.py` imports `app.models` (one line) so `alembic check` and autogenerate see the tables. Both are outside the task's `Touches` list but required for the migration to be checked; later model tasks only add one import line to `app/models/__init__.py`.
+- **Decisions made:** `AuditLog.metadata_` maps the `metadata` column (the name is reserved on declarative classes). `updated_at` is maintained by SQLAlchemy `onupdate=now()`, not a trigger (05 conventions allow either).
+- **Problems / surprises:** Docker Desktop was stopped; DB tests skip without it (`docker version` must show a server). The first migration's filename (`6804bb1df3a9_enable_extensions.py`) predates the `YYYYMMDDHHMM_<slug>` rule in `05 §7`; left as is (never edit merged migrations).
+- **Tests:** `tests/integration/db/test_auth_models.py` (defaults, case-insensitive unique email, role CHECK, token-hash unique, rotation link and FK, cascade delete keeps audit rows with `actor_id` NULL, index columns and DESC order) and a reversible-migration test in `test_migrations.py`. `make check-backend`: ruff, format, import-linter, mypy strict, pytest 31 passed.
+- **Not done / left over:** nothing.
+- **Exact next step for the next agent:** after the product owner merges T-006, claim **T-007** (auth & users backend) or **T-010** (normalization library); the migration lock is released on merge.
+- **Docs updated:** N (no contract change); 08, 09 only.
 
 ### 2026-10-10 — claude-code-1 — T-060, T-004, T-005, T-043, T-061 Frontend v2 design
 - **Outcome:** done (all in `review`); pushed to GitHub on `agent/T-004-frontend-skeleton` (stacked on T-060 → T-052 → T-051).
