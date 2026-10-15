@@ -36,6 +36,11 @@ export function Component() {
 
   if (status === "authenticated") return <Navigate to={next} replace />;
 
+  function exploreDemo() {
+    startDemo(DEMO_USER);
+    navigate(next, { replace: true });
+  }
+
   async function onSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setPending(true);
@@ -65,59 +70,69 @@ export function Component() {
             <LogoMark className="size-10" />
             <span className="text-[19px] font-semibold tracking-[-0.02em] text-ink-950">RealitySync</span>
           </div>
-          <h1 className="mt-8 text-h2 text-ink-950">Sign in</h1>
-          <p className="mt-1 text-small text-ink-500">
-            Organizational Reality Intelligence for your CRM, Billing and Support data.
-          </p>
-          <form className="mt-6 flex flex-col gap-4" onSubmit={onSubmit}>
-            <Field label="Email" htmlFor={ids.email}>
-              <Input
-                id={ids.email}
-                type="email"
-                autoComplete="email"
-                placeholder="you@company.com"
-                required
-                value={email}
-                onChange={(event) => setEmail(event.target.value)}
-              />
-            </Field>
-            <Field label="Password" htmlFor={ids.password}>
-              <Input
-                id={ids.password}
-                type="password"
-                autoComplete="current-password"
-                required
-                value={password}
-                onChange={(event) => setPassword(event.target.value)}
-              />
-            </Field>
-            {error ? (
-              <p role="alert" className="text-small text-rose-fg">
-                {error}
+          {env.demoOnly ? (
+            <>
+              <h1 className="mt-8 text-h2 text-ink-950">Public demo</h1>
+              <p className="mt-1 text-small text-ink-500">
+                Organizational Reality Intelligence for your CRM, Billing and Support data. Every screen runs
+                on synthetic data; nothing you change is saved.
               </p>
-            ) : null}
-            <Button type="submit" variant="primary" className="mt-2 w-full" disabled={pending}>
-              {pending ? "Signing in…" : "Sign in"}
-            </Button>
-          </form>
-          {env.demoData ? (
-            <div className="mt-6 border-t border-ink-100 pt-5">
-              <Button
-                variant="secondary"
-                surface="paper"
-                className="w-full"
-                onClick={() => {
-                  startDemo(DEMO_USER);
-                  navigate(next, { replace: true });
-                }}
-              >
+              <Button variant="primary" className="mt-6 w-full" onClick={exploreDemo}>
                 Explore with demo data
               </Button>
               <p className="mt-2 text-center text-caption text-ink-500">
-                Development only. Synthetic data, no backend needed.
+                You browse as {DEMO_USER.fullName}, with access to every screen.
               </p>
-            </div>
-          ) : null}
+            </>
+          ) : (
+            <>
+              <h1 className="mt-8 text-h2 text-ink-950">Sign in</h1>
+              <p className="mt-1 text-small text-ink-500">
+                Organizational Reality Intelligence for your CRM, Billing and Support data.
+              </p>
+              <form className="mt-6 flex flex-col gap-4" onSubmit={onSubmit}>
+                <Field label="Email" htmlFor={ids.email}>
+                  <Input
+                    id={ids.email}
+                    type="email"
+                    autoComplete="email"
+                    placeholder="you@company.com"
+                    required
+                    value={email}
+                    onChange={(event) => setEmail(event.target.value)}
+                  />
+                </Field>
+                <Field label="Password" htmlFor={ids.password}>
+                  <Input
+                    id={ids.password}
+                    type="password"
+                    autoComplete="current-password"
+                    required
+                    value={password}
+                    onChange={(event) => setPassword(event.target.value)}
+                  />
+                </Field>
+                {error ? (
+                  <p role="alert" className="text-small text-rose-fg">
+                    {error}
+                  </p>
+                ) : null}
+                <Button type="submit" variant="primary" className="mt-2 w-full" disabled={pending}>
+                  {pending ? "Signing in…" : "Sign in"}
+                </Button>
+              </form>
+              {env.demoData ? (
+                <div className="mt-6 border-t border-ink-100 pt-5">
+                  <Button variant="secondary" surface="paper" className="w-full" onClick={exploreDemo}>
+                    Explore with demo data
+                  </Button>
+                  <p className="mt-2 text-center text-caption text-ink-500">
+                    Development only. Synthetic data, no backend needed.
+                  </p>
+                </div>
+              ) : null}
+            </>
+          )}
         </div>
       </motion.div>
     </div>

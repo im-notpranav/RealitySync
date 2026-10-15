@@ -323,6 +323,7 @@ scripts/                          # load test, demo seed helpers (T-041)
 | `LLM_REDACT_PII` | Mask emails/phones in prompts | `true` |
 | `LOG_LEVEL` | Logging | `INFO` |
 | `VITE_API_BASE_URL` | Frontend → API | `http://localhost:8000` |
+| `VITE_DEMO_DATA` | Frontend synthetic data (D-049, D-071): `off` disables it in development; `on` builds the public demo (demo data, no backend calls, demo-only login) | unset (on in development, off in production builds) |
 
 ## 9. Cross-cutting concerns
 

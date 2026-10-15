@@ -1,0 +1,9 @@
+# The public demo is the frontend only (T-062, D-071); keep uploads small and secret-free.
+.env
+.env.*
+backend/
+docs/
+.github/
+.claude/
+frontend/node_modules/
+frontend/dist/

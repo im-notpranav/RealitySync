@@ -9,14 +9,14 @@
 
 | Field | Value |
 |-------|-------|
-| Last updated | 2026-10-15 by `claude-code-1` (T-011, T-044, T-012, T-016, T-017 in review) |
+| Last updated | 2026-10-15 by `claude-code-1` (T-011, T-044, T-012, T-016, T-017, T-062 in review) |
 | Project phase | **Phase 1 — Foundation.** Backend skeleton + DB foundation work and are verified (`make check-backend`, `make dev`, `make migrate`). No business features yet. |
 | Repository state | GitHub `im-notpranav/RealitySync`. Foundation, contract and frontend design are merged into `main` (2026-10-10). T-006 merged 2026-10-14. |
 | Default branch | `main` |
 | Last known green commit | `main` (`make check` passes); T-006 branch also green. |
 | CI status | Workflow fixed but never run (no remote) |
 | Next milestone | M0 Foundation (T-006, T-007 backend; frontend held — see below) |
-| Demo-able today? | No |
+| Demo-able today? | Frontend only: public demo on synthetic data, deployable to Vercel (T-062, D-071). Backend not deployed. |
 | **Frontend** | **Designed 2026-10-10.** Shell, design system and every screen run against demo data (T-004, T-005, T-043, T-061 in review; D-049). Previously: unblocked 2026-10-10. The product owner shared the v2 reference (`docs/assets/reference-dashboard-v2.png`); `06` was rewritten to it (T-060, D-047/D-048). Build every screen against `06` v2. |
 | **New direction** | Product owner added four signature features (Time Machine, Evidence Trail, Missing Evidence, "Could We Have Known?"). Plan: `docs/notes/2026-10-09-investigation-features-plan.md`; tasks T-052…T-059 (epic E10). **The contract (docs 00–06) now specifies them** (T-052, branch above): modules M12 Risk, M13 Time Machine, M14 Investigation in `03`; API `04 §17`; tables `05 §2.20–2.23`. |
 
@@ -120,6 +120,7 @@
 | D-045 | 2026-10-10 | Simulator: month-scale histories (`history_days` 365) emitted in recorded-time order, 3 new anomaly types, 3 scenarios (`is_scenario`, excluded from precision/recall) with `expected_crossing_at`, decoy `late_within_grace`, run option `feed_outage`; investigation metrics in `evaluation_runs.investigation` | Lead time and no-lookahead must be measurable | 03 §M9, 04 §11 |
 | D-046 | 2026-10-10 | Record versions are never pruned; retention prunes only processed ingest events (Q-008) | The Time Machine needs the full history | 01 NFR-DAT-002, T-047 |
 | D-047 | 2026-10-10 | **Frontend visual direction v2** replaces D-008: the product owner's "Capsule" reference (dark frosted sidebar + light frosted work panel over a blurred scene, white cards, one dark primary button, soft tinted pills, moss accent). Frontend unblocked (lifts D-037). `motion` added to the approved npm list for shared-layout indicators, exit animations, count-up and gestures only | Product owner instruction ("use this as a reference for the frontend … improve the ui/ux") | 06 v2, 02 §2.1, T-060 |
+| D-071 | 2026-10-15 | Public demo = the frontend on Vercel with the synthetic data in `lib/demo` (`VITE_DEMO_DATA=on` at build time, set in `vercel.json`). In that build the login page offers only "Explore with demo data" (Demo Admin), the silent refresh is skipped and no backend is called; `/styleguide` stays development-only. Without `VITE_DEMO_DATA=on`, production builds still never serve demo data | Product owner asked for a Vercel deployment with data (answers Q-003); the backend has no screen endpoints yet, and Vercel serverless cannot run the ingest worker or WebSockets (02 §3) | `vercel.json`, `frontend/src/lib/env.ts`, 02 §8 |
 | D-070 | 2026-10-15 | Resolution details (T-017): a founding record's link is `auto_matched`, `blocking_score`, confidence 1.000, no features. Re-evaluation runs only when `name`, `name_block`, `email`, `email_canonical`, `phone_e164` or `is_deleted` changed; a confirmed link never moves; an account with other accounts in its entity is re-scored in place against its best peer (never moved, never split); an account alone in its entity may move to a better entity and takes its parent-linked children along. Strong (≥ `MATCH_AUTO`) candidates in a second entity make the link `needs_review`. Candidates: live (not deleted), linked accounts only, minus `rejected_pairs`; entities the record was rejected from are excluded. A deleted account keeps its link but is no candidate. A child whose parent becomes unknown loses its `parent` link and waits. Canonical name = the whitespace-collapsed raw `name` of the live account with the highest `name` authority (ties: primary order), fallback the founder's external id; canonical email = normalized display `email` by `email` authority. `detection_requested_at = now()` (DB time) for every touched entity, including the one an account or child left | 03 §M3 leaves these open; conservative choices that never merge or split entities automatically | `services/resolution_service.py` |
 | D-069 | 2026-10-15 | `external_ref`: a side's `external_refs` names the other record under `<system>_id` or `<system>` (Billing `{"crm_id": "C-1042"}`), or both sides carry the same key and value → 1; a reference to another id → 0; nothing concerning the other side → unavailable. T-013 should emit `crm_id` | 03 §M3 gave only "e.g. `crm_id` in Billing metadata" | 03 §M3, `domain/matching/features.py` |
 | D-068 | 2026-10-15 | **Contract change (03 §M3), approved 2026-10-15 (Q-013):** `name_sim` = token-sort ratio of nickname-expanded names; the `max(…, Jaro-Winkler)` term is dropped. Matching scores are rounded to 4 dp (stored `match_features`); `primary.py` ranks unknown `source_created_at` last and falls back to record id | Whole-name Jaro-Winkler scored "Rekha Iyer"/"Mohan Iyer" 0.80 and unrelated names ≈ 0.55: a family on a shared phone (0.889) and two people on info@ (0.852) were auto-linked in the labeled pairs. With token-sort both go to `needs_review`; recall unchanged (0.972) | 03 §M3, `domain/matching/` |
@@ -150,7 +151,7 @@
 |----|----------|----------------|-------|--------|
 | Q-001 | Exact Gemini model to use (and free-tier rate limits) | `GEMINI_MODEL=gemini-3.5-flash-lite` (2026-10-08: ai.google.dev lists 2.5 models as limited to existing users and recommends 3.5 Flash-Lite for low-latency, cost-efficient work). **T-029 agent re-verifies structured-output support and free-tier limits** and records them here | Pranav / T-029 agent | partially answered |
 | Q-002 | Time budget / deadline | No timeline constraint (product owner, 2026-10-09: "dont consider the timeline") | Pranav | answered |
-| Q-003 | Public demo deployment? | No (Docker Compose local only) | Pranav | open |
+| Q-003 | Public demo deployment? | No (Docker Compose local only) | Pranav | answered 2026-10-15: yes, frontend demo on Vercel (D-071, T-062) |
 | Q-004 | Project/repo name and license | `realitysync`, MIT | Pranav | open |
 | Q-005 | Currency and plan prices for synthetic data | INR; `starter` 499, `pro` 1299, `enterprise` 4999 per month (03 §M2) | Pranav | open |
 | Q-006 | Missing-evidence scope: customer domain only (R016–R018) or also HR/IT employee offboarding (new systems, record types, entity type)? | Customer domain only (plan note §3.4) | Pranav | answered 2026-10-10: product owner accepted the recommendation (default column) |
@@ -192,9 +193,9 @@ Add a row when you start a task that creates a migration; remove it when the PR 
 | E6 Real-time & API (T-026…T-028, T-046, T-050) | 5 | 0 | 0 | 0 | 0 |
 | E7 AI (T-029…T-030) | 2 | 0 | 0 | 0 | 0 |
 | E8 Frontend features (T-031…T-038, T-049, T-061) | 9 | 0 | 0 | 0 | 1 |
-| E9 Quality & polish (T-039…T-042, T-048, T-062) | 5 | 0 | 1 | 0 | 0 |
+| E9 Quality & polish (T-039…T-042, T-048, T-062) | 5 | 0 | 0 | 1 | 0 |
 | E10 Investigation (T-052…T-059) | 7 | 0 | 0 | 0 | 1 |
-| **Total (62)** | **41** | **0** | **1** | **5** | **15** |
+| **Total (62)** | **41** | **0** | **0** | **6** | **15** |
 
 Frontend tasks follow `06` v2 (D-047); T-004 needs T-060 merged first.
 
@@ -218,6 +219,19 @@ Frontend tasks follow `06` v2 (D-047); T-004 needs T-060 merged first.
 - **Exact next step for the next agent:** (one imperative sentence + command if useful)
 - **Docs updated:** (contract changes? Y/N and which)
 ```
+
+### 2026-10-15 — claude-code-1 — T-062 Public demo deployment on Vercel
+- **Outcome:** done (T-062 in `review`). Deploying needs the product owner's Vercel account (see README "Deploy the public demo").
+- **Branch / PR:** `agent/T-062-vercel-demo` / not opened. Claim commit `b826c7a` on `main`.
+- **Last commit:** head of `agent/T-062-vercel-demo`.
+- **What I did:** product owner asked to deploy on Vercel "with data init" and chose the frontend demo (backend has only auth + ingest; no screen endpoints). `env.ts` is now `readEnv(source)`; new `env.demoOnly` (`VITE_DEMO_DATA=on`) turns demo data on in a production build. Demo builds: login page shows only "Explore with demo data", `useSessionBootstrap` skips the silent refresh. Root `vercel.json` (install/build `frontend/`, `VITE_DEMO_DATA=on`, SPA rewrite, immutable cache for `/assets/*`, basic security headers) and `.vercelignore` (backend, docs, `.env*`).
+- **Files added/changed:** `vercel.json`, `.vercelignore`, `frontend/src/lib/env.ts` (+ `env.test.ts`), `frontend/src/features/auth/{LoginPage.tsx,useSessionBootstrap.ts,auth.test.tsx}`, README, 00 Q3, 02 §8.
+- **Decisions made:** D-071 (public demo = frontend on synthetic data). Q-003 answered.
+- **Problems / surprises:** none. The "data init" is the bundled synthetic dataset (`lib/demo/data.ts`); real seeding stays with T-041 (`make seed` is still a stub).
+- **Tests:** `env.test.ts` (flag matrix) and a demo-build login test (no form, no fetch, lands on Overview). Frontend lint, typecheck and 67 tests pass; `VITE_DEMO_DATA=on npm run build` passes and was checked in the browser (deep link → demo login → Overview, no `/api` requests, no console errors). Backend untouched.
+- **Not done / left over:** the actual Vercel project creation and first deploy (needs the owner's login). A backend deployment (Postgres + migrations + admin bootstrap) is out of scope until the screen endpoints exist.
+- **Exact next step for the next agent:** when a feature task removes a demo branch from `queries.ts`, keep the `env.demoData` path working so the public demo stays green.
+- **Docs updated:** Y — 02 §8 (`VITE_DEMO_DATA`), 00 Q3, 08, 09.
 
 ### 2026-10-15 — claude-code-1 — T-017 Entity resolution service
 - **Outcome:** done (T-017 in `review`).
