@@ -91,6 +91,7 @@ The implementation plan, split into discrete tasks that individual agents can cl
 | T-051 | Foundation repair (backend, infra, CI) | E0 | P0 | M | T-001, T-002, T-003 | 3 | done |
 | T-052 | Contract update: investigation features | E10 | P0 | L | T-051 | 4 | done |
 | T-061 | Screen designs with demo data | E8 | P0 | L | T-043 | 9 | done |
+| T-062 | Public demo deployment on Vercel (frontend, demo data) | E9 | P1 | S | T-061 | 10 | in_progress |
 | T-060 | Frontend visual direction v2 (contract) | E0 | P0 | S | T-052 | 5 | done |
 | T-053 | As-of snapshot service (Time Machine) | E10 | P0 | L | T-017, T-019, T-024, T-052 | 10 | todo |
 | T-054 | Missing-evidence rules R016–R018 & expectations | E10 | P1 | M | T-012, T-019, T-024, T-027, T-052 | 11 | todo |
@@ -852,6 +853,18 @@ The implementation plan, split into discrete tasks that individual agents can cl
   - Generated frontend types are up to date (`make api-types` produces no diff) in CI.
 
 ---
+
+### T-062 — Public demo deployment on Vercel (frontend, demo data)
+- Status: in_progress | Priority: P1 | Size: S | Depends: T-061 | Wave: 10 | Agent: claude-code-1 | Claimed: 2026-10-15
+- Note: Product owner asked for a Vercel deployment with demo data (2026-10-15), answering Q-003. The backend has no screen endpoints yet, so the public demo is the frontend on the synthetic data in `lib/demo` (D-049); the backend deployment comes later.
+- Blocks: —
+- Touches: `vercel.json`, `.vercelignore`, `frontend/src/lib/env.ts`, `frontend/src/features/auth/**`, `frontend/src/vite-env.d.ts`, `docs/02_ARCHITECTURE.md` (§8 env table), `README.md`
+- Requirements: PRD Q3
+- Acceptance:
+  - `VITE_DEMO_DATA=on` turns on demo data in a production build; without it production builds never serve demo data (T-061 rule otherwise unchanged); development unchanged.
+  - In a demo build the login page offers only "Explore with demo data" (no backend calls: no silent refresh, no credential form); `/styleguide` stays development-only.
+  - `vercel.json` builds `frontend/` with demo data on, serves the SPA with deep-link rewrites and long-cache headers for hashed assets.
+  - Tests for the env flag and the demo login; README documents the deploy.
 
 ---
 

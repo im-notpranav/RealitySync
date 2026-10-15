@@ -192,9 +192,9 @@ Add a row when you start a task that creates a migration; remove it when the PR 
 | E6 Real-time & API (T-026…T-028, T-046, T-050) | 5 | 0 | 0 | 0 | 0 |
 | E7 AI (T-029…T-030) | 2 | 0 | 0 | 0 | 0 |
 | E8 Frontend features (T-031…T-038, T-049, T-061) | 9 | 0 | 0 | 0 | 1 |
-| E9 Quality & polish (T-039…T-042, T-048) | 5 | 0 | 0 | 0 | 0 |
+| E9 Quality & polish (T-039…T-042, T-048, T-062) | 5 | 0 | 1 | 0 | 0 |
 | E10 Investigation (T-052…T-059) | 7 | 0 | 0 | 0 | 1 |
-| **Total (61)** | **41** | **0** | **0** | **5** | **15** |
+| **Total (62)** | **41** | **0** | **1** | **5** | **15** |
 
 Frontend tasks follow `06` v2 (D-047); T-004 needs T-060 merged first.
 
