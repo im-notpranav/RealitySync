@@ -125,9 +125,9 @@ Dependency rule: a module may only call modules **upstream** of it in this diagr
 | `email_exact` | canonical emails equal → 1 else 0 | 0.40 |
 | `email_local_sim` | Jaro-Winkler of local parts (if domains equal) | 0.05 |
 | `phone_exact` | E.164 equal → 1 else 0 | 0.20 |
-| `name_sim` | max(token-sort ratio, Jaro-Winkler) on normalized names with nickname expansion | 0.25 |
+| `name_sim` | token-sort ratio on normalized names with nickname expansion (D-068: whole-name Jaro-Winkler was dropped; it scored different first names with a shared surname ≈ 0.80 and auto-linked family members on a shared phone) | 0.25 |
 | `company_sim` | token-set ratio on company (if both present) | 0.05 |
-| `external_ref` | shared cross-reference id (e.g., `crm_id` in Billing metadata) → 1 | 0.05 (+ shortcut: if present and equal, score = 1.0) |
+| `external_ref` | shared cross-reference id → 1: one side's `external_refs` names the other record under `<system>_id` or `<system>` (e.g. Billing `{"crm_id": "C-1042"}`), or both carry the same key with the same value; a reference to a different id → 0; no reference concerning the other side → unavailable (D-069) | 0.05 (+ shortcut: if present and equal, score = 1.0) |
 
    `score = Σ weight_i × feature_i` over features that are **available on both sides**, re-normalized by the sum of available weights (so missing data does not penalize, but `available_weight < 0.4` caps the score at 0.59 → never auto-links on thin evidence).
 3. **Decision** (thresholds from config):
