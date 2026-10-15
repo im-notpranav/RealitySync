@@ -10,8 +10,8 @@ _Last updated: 2026-10-15._ Plain-language summary. The detailed, agent-facing r
 |---|---:|
 | Done | 15 |
 | In progress | 0 |
-| In review | 3 (T-011, T-044, T-012) |
-| To do | 43 |
+| In review | 4 (T-011, T-044, T-012, T-016) |
+| To do | 42 |
 | **Total** | **61** |
 
 **What works today:** the frontend (every screen designed, running on synthetic demo data), the
@@ -68,7 +68,16 @@ Same branch. Each event now becomes a cleaned-up record (names, emails, phones, 
 plans, dates and amounts in comparable form) with a full history of versions. Late events go
 into the history without overwriting newer data, deletes are kept as history, and processing
 the same events again or in a different order gives the same result (checked by a randomized
-test). Next: matching records that describe the same customer (T-016, T-017).
+test).
+
+## In review — T-016 Matching logic
+
+Same branch. Decides how likely two account records are the same customer, from email, phone,
+name (nicknames such as Bob/Robert understood), company and cross-references, and sorts pairs
+into "link", "ask a person" and "no link". On 64 hand-labelled pairs it finds 35 of 36 true
+matches and never auto-links two different people. **Needs your approval (Q-013):** one formula
+in the spec was changed because, as written, it auto-linked family members sharing a phone.
+Next: using it on incoming records (T-017).
 
 ---
 
@@ -81,7 +90,7 @@ test). Next: matching records that describe the same customer (T-016, T-017).
 - T-013 Synthetic customers · T-014 Injected problems with answer keys · T-015 Simulation runner
 
 **3. Matching** — work out which records are the same customer
-- T-016 Matching logic · T-017 Entity resolution · T-018 Link review endpoints
+- T-016 Matching logic (in review) · T-017 Entity resolution · T-018 Link review endpoints
 
 **4. Detection** — find the disagreements
 - T-019 Rule engine · T-020…T-023 Rules R001–R015 · T-024 Scoring and finding lifecycle

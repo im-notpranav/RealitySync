@@ -9,7 +9,7 @@
 
 | Field | Value |
 |-------|-------|
-| Last updated | 2026-10-15 by `claude-code-1` (T-011, T-044, T-012 in review) |
+| Last updated | 2026-10-15 by `claude-code-1` (T-011, T-044, T-012, T-016 in review) |
 | Project phase | **Phase 1 — Foundation.** Backend skeleton + DB foundation work and are verified (`make check-backend`, `make dev`, `make migrate`). No business features yet. |
 | Repository state | GitHub `im-notpranav/RealitySync`. Foundation, contract and frontend design are merged into `main` (2026-10-10). T-006 merged 2026-10-14. |
 | Default branch | `main` |
@@ -34,7 +34,7 @@
 ## 2. Next step for the next agent
 
 1. All foundation, contract and frontend-design work is merged into `main` (2026-10-10, product owner: "git push to main").
-2. **T-006** is merged; **T-007** is merged (2026-10-14); **T-008** is merged (2026-10-15); **T-009** is merged (2026-10-15); **T-010** is merged (2026-10-15); **T-011** Ingest API & API keys, **T-044** Ingest worker loop and **T-012** Record upsert & versioning are in `review` (all on branch `claude/determined-shannon-650svp`). Next: **T-016** Matching domain logic (needs only T-010), then **T-017** Entity resolution and **T-019** Rule engine (both need T-012); in parallel T-013, T-026, T-029.
+2. **T-006** is merged; **T-007** is merged (2026-10-14); **T-008** is merged (2026-10-15); **T-009** is merged (2026-10-15); **T-010** is merged (2026-10-15); **T-011** Ingest API & API keys, **T-044** Ingest worker loop, **T-012** Record upsert & versioning and **T-016** Matching domain logic are in `review` (all on branch `claude/determined-shannon-650svp`). T-016 carries a contract change to 03 §M3 awaiting approval (Q-013). Next: **T-017** Entity resolution and **T-019** Rule engine (both need T-012); in parallel T-013, T-026, T-029.
 3. Read `03 §M12–M14` and `04 §17` before any E10 task; the critical path now runs T-009 → T-011 → T-012 → T-019 → T-024 → T-053 → T-055 → T-056 (≈ 96 h total).
 4. Setup: `README.md` → "Local development (backend)". Docker Desktop must be running for DB tests (`docker version` must show a server).
 
@@ -60,6 +60,7 @@
 | ID | Description | Found by | Affects | Repro / notes | Status |
 |----|-------------|----------|---------|---------------|--------|
 | K-001 | `JWT_SECRET` accepts empty/short values and `.env.example` ships it empty, so the app can start with a weak secret | claude-code-1 | T-007 | Fixed in T-007: `Settings` rejects secrets shorter than 32 chars | resolved |
+| K-008 | Matching limits of the 03 §M3 weights (by design, documented by the labeled pairs): an email typo with the same name and phone scores 0.554 (no link; email carries 0.40); twins/family with very similar first names, a shared phone and no emails can still auto-link | claude-code-1 | T-016, T-017 | `tests/unit/domain/matching/test_labeled_pairs.py`; revisit weights only with evaluation data from T-039 | open |
 | K-007 | The equal-time tie-break and the skipped-version lookup (D-066) query `ingest_events` by `(source_system_id, record_type, external_id, source_updated_at)`, which has no index; fine for the demo volume, a sequential scan per late/equal-time event at scale. Also, pruning processed events (T-047) loses the skipped points D-066 reads | claude-code-1 | T-012, T-047 | Add `ix_ingest_events_record_recorded` in the next migration; T-047 should prune only events older than the record's latest version | open |
 | K-006 | The general rate limit "others: 300 req/min/user" (04 §15) is not implemented; only login and change-password are limited | claude-code-1 | T-042 | Add a per-user limiter dependency during hardening | open → T-042 |
 | K-002 | Frontend ESLint cannot parse TypeScript (placeholder `typescript-eslint@0.0.1-alpha.0`, no TS parser); frontend deps use `^` ranges | claude-code-1 | T-004 | `cd frontend && npx eslint` on a file containing `const x: number = 1` → parsing error. Moved into T-004 acceptance | open → T-004 |
@@ -118,6 +119,8 @@
 | D-045 | 2026-10-10 | Simulator: month-scale histories (`history_days` 365) emitted in recorded-time order, 3 new anomaly types, 3 scenarios (`is_scenario`, excluded from precision/recall) with `expected_crossing_at`, decoy `late_within_grace`, run option `feed_outage`; investigation metrics in `evaluation_runs.investigation` | Lead time and no-lookahead must be measurable | 03 §M9, 04 §11 |
 | D-046 | 2026-10-10 | Record versions are never pruned; retention prunes only processed ingest events (Q-008) | The Time Machine needs the full history | 01 NFR-DAT-002, T-047 |
 | D-047 | 2026-10-10 | **Frontend visual direction v2** replaces D-008: the product owner's "Capsule" reference (dark frosted sidebar + light frosted work panel over a blurred scene, white cards, one dark primary button, soft tinted pills, moss accent). Frontend unblocked (lifts D-037). `motion` added to the approved npm list for shared-layout indicators, exit animations, count-up and gestures only | Product owner instruction ("use this as a reference for the frontend … improve the ui/ux") | 06 v2, 02 §2.1, T-060 |
+| D-069 | 2026-10-15 | `external_ref`: a side's `external_refs` names the other record under `<system>_id` or `<system>` (Billing `{"crm_id": "C-1042"}`), or both sides carry the same key and value → 1; a reference to another id → 0; nothing concerning the other side → unavailable. T-013 should emit `crm_id` | 03 §M3 gave only "e.g. `crm_id` in Billing metadata" | 03 §M3, `domain/matching/features.py` |
+| D-068 | 2026-10-15 | **Contract change (03 §M3), pending approval Q-013:** `name_sim` = token-sort ratio of nickname-expanded names; the `max(…, Jaro-Winkler)` term is dropped. Matching scores are rounded to 4 dp (stored `match_features`); `primary.py` ranks unknown `source_created_at` last and falls back to record id | Whole-name Jaro-Winkler scored "Rekha Iyer"/"Mohan Iyer" 0.80 and unrelated names ≈ 0.55: a family on a shared phone (0.889) and two people on info@ (0.852) were auto-linked in the labeled pairs. With token-sort both go to `needs_review`; recall unchanged (0.972) | 03 §M3, `domain/matching/` |
 | D-067 | 2026-10-15 | `normalized` holds every key of its record type (`None` when missing/unreadable) plus `status`, `status_unmapped`, `parent_external_id`. account: `name`, `name_block`, `email` (display), `email_canonical`, `email_domain`, `phone_e164`, `company` (NFKC, case-folded), `plan`, `created_at`, `external_refs`; subscription: `plan`, `started_at`, `cancelled_at`, `quantity`, `amount`, `currency`; invoice: `amount`, `currency`, `issued_at`, `paid_at`, `due_at`, `subscription_external_id`; ticket: `subject`, `priority`, `opened_at`, `closed_at`, `first_response_at`. Timestamps ISO UTC with `Z`, amounts decimal strings. `source_created_at` = account `created_at` / subscription `started_at` / invoice `issued_at` / ticket `opened_at`. A delete keeps the last state in its version (a delete for an unknown record leaves a tombstone); `changed_fields` gains `is_deleted` when a version deletes or restores. An equal-state newer event advances `payload` and `source_updated_at` without a version; an event losing the equal-time tie-break (also when late) writes nothing. `source_records.version` = the latest (recorded time, version) version | 03 §M2 names functions, not stored keys; rules (M4) and matching (M3) need these | `services/record_service.py` |
 | D-066 | 2026-10-15 | Skipped versions are written when needed: an equal-state event writes no version, but when a late event would be inserted before such an event (between it and the next version), the earliest skipped point gets a version with the state it confirmed (found from processed `ingest_events`). Late events whose state equals the version before them write nothing. Verified by a randomized test: any processing order and any replay give the same as-of state at every time as a reference model | Without it the Time Machine showed the late event's state where the source had already confirmed another (found by the randomized test) | `services/record_service.py` |
 | D-065 | 2026-10-15 | Ingest loop: a claim increments `attempts` and sets `locked_at`; `(id, attempts)` is the claim's lease, so a worker whose event was re-queued and re-claimed skips it. Any failed attempt (exception or a `processing` row older than 5 min) goes back to `pending` while `attempts < 5`, else `failed`; an admin retry therefore buys one more attempt. `error` holds the class name only, except `PipelineError` messages (declared PII-free); a timeout stores `processing timed out`. One transaction per event; claim batches of 100, oldest first. If `LISTEN` cannot be set up the loop only polls (1 s) | 03 §M1 says "mark failed … after 5 attempts stay failed", read as automatic retries up to 5; driver messages can quote record values | `workers/queue.py`, `workers/pipeline.py` |
@@ -154,6 +157,7 @@
 | Q-009 | Replay with today's rule config (recorded in each result) or keep a config history and replay with then-current config? | Today's config, recorded | Pranav | answered 2026-10-10: product owner accepted the recommendation (default column) |
 | Q-010 | Investigation incident types first: churn only, or also "first appearance of a finding"? | Both | Pranav | answered 2026-10-10: product owner accepted the recommendation (default column) |
 | Q-012 | Should the last active admin be protected from demotion/deactivation? | Yes, `409 CONFLICT` (D-053) | Pranav | open |
+| Q-013 | Approve the 03 §M3 change: `name_sim` = token-sort ratio only (drop whole-name Jaro-Winkler, D-068)? | Applied on the T-016 branch; revert = restore `max(token_sort, JaroWinkler)` in `domain/matching/features.py::name_sim` and the 03 row | Pranav | open |
 | Q-011 | Adopt "RealitySync — Organizational Reality Intelligence" and the new USP in the PRD? | Yes | Pranav | answered 2026-10-10: product owner accepted the recommendation (default column) |
 
 ## 8. Locks (exclusive resources)
@@ -181,14 +185,14 @@ Add a row when you start a task that creates a migration; remove it when the PR 
 | E1 Auth (T-006…T-008) | 0 | 0 | 0 | 0 | 3 |
 | E2 Data & ingest (T-009…T-012, T-044, T-047) | 1 | 0 | 0 | 3 | 2 |
 | E3 Simulation (T-013…T-015) | 3 | 0 | 0 | 0 | 0 |
-| E4 Matching (T-016…T-018) | 3 | 0 | 0 | 0 | 0 |
+| E4 Matching (T-016…T-018) | 2 | 0 | 0 | 1 | 0 |
 | E5 Detection (T-019…T-025, T-045) | 8 | 0 | 0 | 0 | 0 |
 | E6 Real-time & API (T-026…T-028, T-046, T-050) | 5 | 0 | 0 | 0 | 0 |
 | E7 AI (T-029…T-030) | 2 | 0 | 0 | 0 | 0 |
 | E8 Frontend features (T-031…T-038, T-049, T-061) | 9 | 0 | 0 | 0 | 1 |
 | E9 Quality & polish (T-039…T-042, T-048) | 5 | 0 | 0 | 0 | 0 |
 | E10 Investigation (T-052…T-059) | 7 | 0 | 0 | 0 | 1 |
-| **Total (61)** | **43** | **0** | **0** | **3** | **15** |
+| **Total (61)** | **42** | **0** | **0** | **4** | **15** |
 
 Frontend tasks follow `06` v2 (D-047); T-004 needs T-060 merged first.
 
@@ -212,6 +216,17 @@ Frontend tasks follow `06` v2 (D-047); T-004 needs T-060 merged first.
 - **Exact next step for the next agent:** (one imperative sentence + command if useful)
 - **Docs updated:** (contract changes? Y/N and which)
 ```
+
+### 2026-10-15 — claude-code-1 — T-016 Matching domain logic
+- **Outcome:** done (T-016 in `review`), with a contract change awaiting approval (Q-013).
+- **Branch / PR:** `claude/determined-shannon-650svp` / not opened. Claim commit on this branch, not on `main`.
+- **Last commit:** head of `claude/determined-shannon-650svp`.
+- **What I did:** `app/domain/matching/` per the 02 tree: `blocking.py` (`blocking_keys` → sorted `field:value` for `email_canonical`, `phone_e164`, `name_block`, also the lock order for T-017; `share_a_block`), `features.py` (`AccountIdentity.from_normalized`; the six features, `None` = unavailable), `scorer.py` (`WEIGHTS`, `score_pair` → `MatchScore(score, features, available_weight, shortcut)` with renormalization, thin-evidence cap 0.59 under 0.4, external-ref shortcut; `decide(score, auto=, review=)` — thresholds passed in), `primary.py` (`LinkedAccount`, `split_primary` → primary per system + extras).
+- **Decisions made:** D-068 (contract change: `name_sim` token-sort only; 4-dp rounding; primary tie-breaks), D-069 (external-ref keys). Commit `docs(contract): …` edits the 03 §M3 rows. K-008 records the formula's known limits.
+- **Problems / surprises:** with the 03 formula as written, two labeled negatives auto-linked (family on a shared phone 0.889; shared info@ mailbox 0.852), failing "no false auto-match". Whole-name Jaro-Winkler was the cause (≈ 0.80 for different first names with one surname, ≈ 0.55 for unrelated names).
+- **Tests:** `tests/unit/domain/matching/` — `test_scoring.py` (blocking, each feature, renormalization, cap, shortcut, the 04 §6 0.97 example, thresholds, primary order under permutations), `test_labeled_pairs.py` (64 pairs: 36 true incl. nicknames, typos, transliteration, unicode width, Arabic script, refs, 5 same-system duplicates; 28 false incl. same name, shared phone, shared mailbox, twins, father/son). Recall 0.972 (only the email typo missed), no false auto-match; every non-ref true pair shares a block. `make check` green: backend 578, frontend 62.
+- **Exact next step for the next agent:** get Q-013 answered; then **T-017**: `resolution_service.py` calls `blocking_keys` (lock them sorted), loads candidates via the 05 §2.6 expression indexes, `score_pair` + `decide(settings.MATCH_AUTO, settings.MATCH_REVIEW)`, stores `MatchScore.features` as `match_features`; context builders use `split_primary`.
+- **Docs updated:** Y — 03 §M3 (`name_sim`, `external_ref` rows); 08, 09, `PROGRESS.md`.
 
 ### 2026-10-15 — claude-code-1 — T-012 Record upsert & versioning
 - **Outcome:** done (T-012 in `review`).
