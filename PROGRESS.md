@@ -9,8 +9,9 @@ _Last updated: 2026-10-15._ Plain-language summary. The detailed, agent-facing r
 | | Tasks |
 |---|---:|
 | Done | 15 |
-| In progress | 1 (T-011) |
-| To do | 45 |
+| In progress | 0 |
+| In review | 5 (T-011, T-044, T-012, T-016, T-017) |
+| To do | 41 |
 | **Total** | **61** |
 
 **What works today:** the frontend (every screen designed, running on synthetic demo data), the
@@ -40,37 +41,64 @@ CRM, Billing and Support) are not built yet.
 | T-009 | Every remaining database table, plus CRM, Billing and Support created on startup |
 | T-010 | Cleaning up names, emails, phones, statuses, plans, times and amounts so systems can be compared |
 
-## In progress — T-011 Ingest API and API keys
+## In review — T-011 Ingest API and API keys
 
-Branch `agent/T-011-ingest-api` (pushed, **not merged**). The endpoint that CRM, Billing and
-Support (or the simulator) send record events to.
+Branch `claude/determined-shannon-650svp` (pushed, **not merged**). The endpoint that CRM,
+Billing and Support (or the simulator) send record events to.
 
-Done:
 - `POST /ingest/events`: checks every event on its own, so one bad event does not block the
   rest; refuses batches over 500 events; spots replays and counts them as duplicates; stores
   events as "pending" and wakes the worker.
 - API keys for machines (`/api-keys`): created once with the secret shown one time, stored
   only as a hash, can be tied to one system, limited to 60 requests a minute, can be revoked.
 - Admin list of received events with filters, and a retry button for failed ones.
-- Lint and type checks pass.
+- All checks pass.
 
-Left to do:
-1. Run the new tests (`test_ingest.py`, `test_api_keys.py`, `test_ingest_notify.py`) and fix
-   anything that fails.
-2. Run `make check`, record the decisions in `docs/08`, then merge.
+## In review — T-044 Ingest worker
+
+Same branch. The background worker that picks up received events: it wakes the moment an event
+arrives (with a once-a-second check as a fallback), several workers can run side by side without
+handling the same event twice, failed events are retried up to 5 times, and events left behind
+by a crashed worker are picked up again after 5 minutes. It runs inside the API by default or
+as its own process (`python -m app.workers.run`).
+
+## In review — T-012 Record versioning
+
+Same branch. Each event now becomes a cleaned-up record (names, emails, phones, statuses,
+plans, dates and amounts in comparable form) with a full history of versions. Late events go
+into the history without overwriting newer data, deletes are kept as history, and processing
+the same events again or in a different order gives the same result (checked by a randomized
+test).
+
+## In review — T-016 Matching logic
+
+Same branch. Decides how likely two account records are the same customer, from email, phone,
+name (nicknames such as Bob/Robert understood), company and cross-references, and sorts pairs
+into "link", "ask a person" and "no link". On 64 hand-labelled pairs it finds 35 of 36 true
+matches and never auto-links two different people. One formula in the spec was changed (approved,
+Q-013) because, as written, it auto-linked family members sharing a phone.
+
+## In review — T-017 Entity resolution
+
+Same branch. Every incoming record is now attached to a customer: accounts are matched against
+existing customers (or start a new one), uncertain matches are flagged for a person to review,
+two existing customers are never merged automatically, and subscriptions, invoices and tickets
+follow their account (waiting if it has not arrived yet). Each changed customer is queued for
+checking. Data now flows from the API all the way to customers. Next: the rule engine that finds
+the disagreements (T-019).
 
 ---
 
 ## What should be done next (in order)
 
 **1. Data in** — get CRM, Billing and Support records into the database
-- T-011 Ingest API and API keys (in progress) · T-012 Record versioning · T-044 Ingest worker
+- T-011 Ingest API and API keys · T-044 Ingest worker · T-012 Record versioning (all in review)
 
 **2. Test data** — a built-in simulator so there is something to detect
 - T-013 Synthetic customers · T-014 Injected problems with answer keys · T-015 Simulation runner
 
 **3. Matching** — work out which records are the same customer
-- T-016 Matching logic · T-017 Entity resolution · T-018 Link review endpoints
+- T-016 Matching logic · T-017 Entity resolution (both in review) · T-018 Link review endpoints
 
 **4. Detection** — find the disagreements
 - T-019 Rule engine · T-020…T-023 Rules R001–R015 · T-024 Scoring and finding lifecycle

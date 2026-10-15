@@ -48,13 +48,13 @@ The implementation plan, split into discrete tasks that individual agents can cl
 | T-008 | Frontend auth | E1 | P0 | M | T-005, T-007, T-061 | 10 | done |
 | T-009 | Core schema migration & models | E2 | P0 | L | T-003, T-006, T-052 | 5 | done |
 | T-010 | Normalization library | E2 | P0 | M | T-002 | 2 | done |
-| T-011 | Ingest API & API keys | E2 | P0 | L | T-007, T-009, T-010 | 6 | in_progress |
-| T-012 | Record upsert & versioning | E2 | P0 | M | T-010, T-011, T-044 | 7 | todo |
+| T-011 | Ingest API & API keys | E2 | P0 | L | T-007, T-009, T-010 | 6 | review |
+| T-012 | Record upsert & versioning | E2 | P0 | M | T-010, T-011, T-044 | 7 | review |
 | T-013 | Synthetic data generator | E3 | P0 | L | T-002, T-010, T-052 | 5 | todo |
 | T-014 | Anomaly injector & labels | E3 | P0 | L | T-013, T-052 | 6 | todo |
 | T-015 | Simulation runner & endpoints | E3 | P1 | L | T-011, T-014, T-026, T-057 | 8 | todo |
-| T-016 | Matching domain logic | E4 | P0 | L | T-010 | 3 | todo |
-| T-017 | Entity resolution service | E4 | P0 | L | T-009, T-012, T-016 | 8 | todo |
+| T-016 | Matching domain logic | E4 | P0 | L | T-010 | 3 | review |
+| T-017 | Entity resolution service | E4 | P0 | L | T-009, T-012, T-016 | 8 | review |
 | T-018 | Link review endpoints | E4 | P1 | M | T-017 | 9 | todo |
 | T-019 | Rule engine framework | E5 | P0 | L | T-009, T-012, T-052 | 8 | todo |
 | T-020 | Rules R001–R003 (field conflicts) | E5 | P0 | M | T-019 | 9 | todo |
@@ -81,7 +81,7 @@ The implementation plan, split into discrete tasks that individual agents can cl
 | T-041 | Demo seed, README, performance check | E9 | P1 | M | T-030, T-036, T-039 | 14 | todo |
 | T-042 | Hardening & security review | E9 | P1 | M | T-011, T-015, T-018, T-027, T-028, T-030, T-039, T-046, T-056 | 13 | todo |
 | T-043 | Design system — data-viz & composite components | E0 | P0 | M | T-005 | 8 | done |
-| T-044 | Ingest worker loop | E2 | P0 | M | T-009 | 6 | todo |
+| T-044 | Ingest worker loop | E2 | P0 | M | T-009 | 6 | review |
 | T-045 | Alert service & policy | E5 | P0 | M | T-024 | 10 | todo |
 | T-046 | Dashboard endpoints | E6 | P0 | M | T-017, T-024, T-026 | 10 | todo |
 | T-047 | Retention prune job | E2 | P2 | S | T-012, T-052 | 8 | todo |
@@ -376,7 +376,7 @@ The implementation plan, split into discrete tasks that individual agents can cl
   - Edge cases tested (empty, None, emoji, RTL, 2-digit years rejected); pure (import-linter passes); ≥ 90% coverage.
 
 ### T-011 — Ingest API & API keys
-- Status: in_progress | Priority: P0 | Size: L | Depends: T-007, T-009, T-010 | Wave: 6 | Agent: claude-code-1 | Claimed: 2026-10-15
+- Status: review | Priority: P0 | Size: L | Depends: T-007, T-009, T-010 | Wave: 6 | Agent: claude-code-1 | Claimed: 2026-10-15
 - Blocks: T-012, T-015, T-037, T-042, T-048, T-049
 - Touches: `backend/app/api/v1/{ingest,api_keys}.py`, `backend/app/services/ingest_service.py`, `backend/app/schemas/{ingest,api_key}.py`, `backend/app/api/v1/router.py` (include lines)
 - Requirements: FR-ING-001…006, 009 (retry endpoint), 010, FR-AUT-005 (API keys), NFR-REL-001
@@ -388,7 +388,7 @@ The implementation plan, split into discrete tasks that individual agents can cl
   - Audit entries for API key create/revoke and event retry.
 
 ### T-012 — Record upsert & versioning
-- Status: todo | Priority: P0 | Size: M | Depends: T-010, T-011, T-044 | Wave: 7 | Agent: unassigned | Claimed: —
+- Status: review | Priority: P0 | Size: M | Depends: T-010, T-011, T-044 | Wave: 7 | Agent: claude-code-1 | Claimed: 2026-10-15
 - Blocks: T-017, T-019, T-047, T-054
 - Touches: `backend/app/services/record_service.py`, `backend/app/workers/pipeline.py` (hook only), tests
 - Requirements: FR-ING-007, FR-ING-008, FR-NRM-*
@@ -400,7 +400,7 @@ The implementation plan, split into discrete tasks that individual agents can cl
   - Invariant 1: replay-twice yields identical DB state; concurrent same-record events end in a deterministic state (test).
 
 ### T-044 — Ingest worker loop
-- Status: todo | Priority: P0 | Size: M | Depends: T-009 | Wave: 6 | Agent: unassigned | Claimed: —
+- Status: review | Priority: P0 | Size: M | Depends: T-009 | Wave: 6 | Agent: claude-code-1 | Claimed: 2026-10-15
 - Blocks: T-012
 - Touches: `backend/app/workers/{queue,run,pipeline}.py`, `backend/app/main.py` (one lifespan line), tests
 - Requirements: FR-ING-006, FR-ING-009, NFR-REL-001/002
@@ -467,7 +467,7 @@ The implementation plan, split into discrete tasks that individual agents can cl
 # E4 — Entity resolution
 
 ### T-016 — Matching domain logic
-- Status: todo | Priority: P0 | Size: L | Depends: T-010 | Wave: 3 | Agent: unassigned | Claimed: —
+- Status: review | Priority: P0 | Size: L | Depends: T-010 | Wave: 3 | Agent: claude-code-1 | Claimed: 2026-10-15
 - Blocks: T-017
 - Touches: `backend/app/domain/matching/**`, tests
 - Requirements: FR-ENT-002, FR-ENT-003, FR-ENT-009
@@ -477,7 +477,7 @@ The implementation plan, split into discrete tasks that individual agents can cl
   - Pure; labeled pair fixture set (≥ 60 pairs incl. nicknames, typos, shared phone, different people with the same name, same-system duplicates): recall ≥ 0.95 (auto + review) and no false auto-match.
 
 ### T-017 — Entity resolution service
-- Status: todo | Priority: P0 | Size: L | Depends: T-009, T-012, T-016 | Wave: 8 | Agent: unassigned | Claimed: —
+- Status: review | Priority: P0 | Size: L | Depends: T-009, T-012, T-016 | Wave: 8 | Agent: claude-code-1 | Claimed: 2026-10-15
 - Blocks: T-018, T-025, T-027, T-046, T-053
 - Touches: `backend/app/services/resolution_service.py`, `backend/app/workers/pipeline.py` (hook line), tests
 - Requirements: FR-ENT-001, 004…008, FR-DET-004
