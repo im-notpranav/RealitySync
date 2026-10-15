@@ -231,4 +231,4 @@ The exact task list for each milestone is in `09_TASKS.md` → "Milestone mappin
 |---|----------|-------|------------------------|
 | Q1 | Exact Gemini model name to use | Pranav | Configurable via `GEMINI_MODEL`; default `gemini-3.5-flash-lite`. As of 2026-10-08, Google limits Gemini 2.5 models to users who already used them. The T-029 agent re-verifies this against the docs. |
 | Q2 | Available time budget | Pranav | Answered 2026-10-09: no timeline constraint |
-| Q3 | Deploy publicly (demo URL)? | Pranav | Docker Compose local only |
+| Q3 | Deploy publicly (demo URL)? | Pranav | Answered 2026-10-15: yes, the frontend on synthetic data on Vercel (T-062, D-071); the backend stays Docker Compose for now |
