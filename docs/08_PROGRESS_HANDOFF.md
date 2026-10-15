@@ -9,7 +9,7 @@
 
 | Field | Value |
 |-------|-------|
-| Last updated | 2026-10-15 by `claude-code-1` (T-011, T-044, T-012, T-016 in review) |
+| Last updated | 2026-10-15 by `claude-code-1` (T-011, T-044, T-012, T-016, T-017 in review) |
 | Project phase | **Phase 1 — Foundation.** Backend skeleton + DB foundation work and are verified (`make check-backend`, `make dev`, `make migrate`). No business features yet. |
 | Repository state | GitHub `im-notpranav/RealitySync`. Foundation, contract and frontend design are merged into `main` (2026-10-10). T-006 merged 2026-10-14. |
 | Default branch | `main` |
@@ -34,7 +34,7 @@
 ## 2. Next step for the next agent
 
 1. All foundation, contract and frontend-design work is merged into `main` (2026-10-10, product owner: "git push to main").
-2. **T-006** is merged; **T-007** is merged (2026-10-14); **T-008** is merged (2026-10-15); **T-009** is merged (2026-10-15); **T-010** is merged (2026-10-15); **T-011** Ingest API & API keys, **T-044** Ingest worker loop, **T-012** Record upsert & versioning and **T-016** Matching domain logic are in `review` (all on branch `claude/determined-shannon-650svp`). T-016 carries an approved contract change to 03 §M3 (Q-013). Next: **T-017** Entity resolution and **T-019** Rule engine (both need T-012); in parallel T-013, T-026, T-029.
+2. **T-006** is merged; **T-007** is merged (2026-10-14); **T-008** is merged (2026-10-15); **T-009** is merged (2026-10-15); **T-010** is merged (2026-10-15); **T-011** Ingest API & API keys, **T-044** Ingest worker loop, **T-012** Record upsert & versioning, **T-016** Matching domain logic and **T-017** Entity resolution are in `review` (all on branch `claude/determined-shannon-650svp`; T-016 carries the approved 03 §M3 change, Q-013). Ingest → records → entities now runs end to end. Next: **T-019** Rule engine framework (critical path), **T-018** Link review endpoints; in parallel T-013, T-026, T-029.
 3. Read `03 §M12–M14` and `04 §17` before any E10 task; the critical path now runs T-009 → T-011 → T-012 → T-019 → T-024 → T-053 → T-055 → T-056 (≈ 96 h total).
 4. Setup: `README.md` → "Local development (backend)". Docker Desktop must be running for DB tests (`docker version` must show a server).
 
@@ -60,6 +60,7 @@
 | ID | Description | Found by | Affects | Repro / notes | Status |
 |----|-------------|----------|---------|---------------|--------|
 | K-001 | `JWT_SECRET` accepts empty/short values and `.env.example` ships it empty, so the app can start with a weak secret | claude-code-1 | T-007 | Fixed in T-007: `Settings` rejects secrets shorter than 32 chars | resolved |
+| K-009 | When an account alone in its entity moves to another entity (D-070), the old entity is left with no active links (not deleted, findings may reference it) | claude-code-1 | T-017, T-027 | T-027 lists should hide entities without active links, or a cleanup task deletes them once they have no findings | open |
 | K-008 | Matching limits of the 03 §M3 weights (by design, documented by the labeled pairs): an email typo with the same name and phone scores 0.554 (no link; email carries 0.40); twins/family with very similar first names, a shared phone and no emails can still auto-link | claude-code-1 | T-016, T-017 | `tests/unit/domain/matching/test_labeled_pairs.py`; revisit weights only with evaluation data from T-039 | open |
 | K-007 | The equal-time tie-break and the skipped-version lookup (D-066) query `ingest_events` by `(source_system_id, record_type, external_id, source_updated_at)`, which has no index; fine for the demo volume, a sequential scan per late/equal-time event at scale. Also, pruning processed events (T-047) loses the skipped points D-066 reads | claude-code-1 | T-012, T-047 | Add `ix_ingest_events_record_recorded` in the next migration; T-047 should prune only events older than the record's latest version | open |
 | K-006 | The general rate limit "others: 300 req/min/user" (04 §15) is not implemented; only login and change-password are limited | claude-code-1 | T-042 | Add a per-user limiter dependency during hardening | open → T-042 |
@@ -119,6 +120,7 @@
 | D-045 | 2026-10-10 | Simulator: month-scale histories (`history_days` 365) emitted in recorded-time order, 3 new anomaly types, 3 scenarios (`is_scenario`, excluded from precision/recall) with `expected_crossing_at`, decoy `late_within_grace`, run option `feed_outage`; investigation metrics in `evaluation_runs.investigation` | Lead time and no-lookahead must be measurable | 03 §M9, 04 §11 |
 | D-046 | 2026-10-10 | Record versions are never pruned; retention prunes only processed ingest events (Q-008) | The Time Machine needs the full history | 01 NFR-DAT-002, T-047 |
 | D-047 | 2026-10-10 | **Frontend visual direction v2** replaces D-008: the product owner's "Capsule" reference (dark frosted sidebar + light frosted work panel over a blurred scene, white cards, one dark primary button, soft tinted pills, moss accent). Frontend unblocked (lifts D-037). `motion` added to the approved npm list for shared-layout indicators, exit animations, count-up and gestures only | Product owner instruction ("use this as a reference for the frontend … improve the ui/ux") | 06 v2, 02 §2.1, T-060 |
+| D-070 | 2026-10-15 | Resolution details (T-017): a founding record's link is `auto_matched`, `blocking_score`, confidence 1.000, no features. Re-evaluation runs only when `name`, `name_block`, `email`, `email_canonical`, `phone_e164` or `is_deleted` changed; a confirmed link never moves; an account with other accounts in its entity is re-scored in place against its best peer (never moved, never split); an account alone in its entity may move to a better entity and takes its parent-linked children along. Strong (≥ `MATCH_AUTO`) candidates in a second entity make the link `needs_review`. Candidates: live (not deleted), linked accounts only, minus `rejected_pairs`; entities the record was rejected from are excluded. A deleted account keeps its link but is no candidate. A child whose parent becomes unknown loses its `parent` link and waits. Canonical name = the whitespace-collapsed raw `name` of the live account with the highest `name` authority (ties: primary order), fallback the founder's external id; canonical email = normalized display `email` by `email` authority. `detection_requested_at = now()` (DB time) for every touched entity, including the one an account or child left | 03 §M3 leaves these open; conservative choices that never merge or split entities automatically | `services/resolution_service.py` |
 | D-069 | 2026-10-15 | `external_ref`: a side's `external_refs` names the other record under `<system>_id` or `<system>` (Billing `{"crm_id": "C-1042"}`), or both sides carry the same key and value → 1; a reference to another id → 0; nothing concerning the other side → unavailable. T-013 should emit `crm_id` | 03 §M3 gave only "e.g. `crm_id` in Billing metadata" | 03 §M3, `domain/matching/features.py` |
 | D-068 | 2026-10-15 | **Contract change (03 §M3), approved 2026-10-15 (Q-013):** `name_sim` = token-sort ratio of nickname-expanded names; the `max(…, Jaro-Winkler)` term is dropped. Matching scores are rounded to 4 dp (stored `match_features`); `primary.py` ranks unknown `source_created_at` last and falls back to record id | Whole-name Jaro-Winkler scored "Rekha Iyer"/"Mohan Iyer" 0.80 and unrelated names ≈ 0.55: a family on a shared phone (0.889) and two people on info@ (0.852) were auto-linked in the labeled pairs. With token-sort both go to `needs_review`; recall unchanged (0.972) | 03 §M3, `domain/matching/` |
 | D-067 | 2026-10-15 | `normalized` holds every key of its record type (`None` when missing/unreadable) plus `status`, `status_unmapped`, `parent_external_id`. account: `name`, `name_block`, `email` (display), `email_canonical`, `email_domain`, `phone_e164`, `company` (NFKC, case-folded), `plan`, `created_at`, `external_refs`; subscription: `plan`, `started_at`, `cancelled_at`, `quantity`, `amount`, `currency`; invoice: `amount`, `currency`, `issued_at`, `paid_at`, `due_at`, `subscription_external_id`; ticket: `subject`, `priority`, `opened_at`, `closed_at`, `first_response_at`. Timestamps ISO UTC with `Z`, amounts decimal strings. `source_created_at` = account `created_at` / subscription `started_at` / invoice `issued_at` / ticket `opened_at`. A delete keeps the last state in its version (a delete for an unknown record leaves a tombstone); `changed_fields` gains `is_deleted` when a version deletes or restores. An equal-state newer event advances `payload` and `source_updated_at` without a version; an event losing the equal-time tie-break (also when late) writes nothing. `source_records.version` = the latest (recorded time, version) version | 03 §M2 names functions, not stored keys; rules (M4) and matching (M3) need these | `services/record_service.py` |
@@ -185,14 +187,14 @@ Add a row when you start a task that creates a migration; remove it when the PR 
 | E1 Auth (T-006…T-008) | 0 | 0 | 0 | 0 | 3 |
 | E2 Data & ingest (T-009…T-012, T-044, T-047) | 1 | 0 | 0 | 3 | 2 |
 | E3 Simulation (T-013…T-015) | 3 | 0 | 0 | 0 | 0 |
-| E4 Matching (T-016…T-018) | 2 | 0 | 0 | 1 | 0 |
+| E4 Matching (T-016…T-018) | 1 | 0 | 0 | 2 | 0 |
 | E5 Detection (T-019…T-025, T-045) | 8 | 0 | 0 | 0 | 0 |
 | E6 Real-time & API (T-026…T-028, T-046, T-050) | 5 | 0 | 0 | 0 | 0 |
 | E7 AI (T-029…T-030) | 2 | 0 | 0 | 0 | 0 |
 | E8 Frontend features (T-031…T-038, T-049, T-061) | 9 | 0 | 0 | 0 | 1 |
 | E9 Quality & polish (T-039…T-042, T-048) | 5 | 0 | 0 | 0 | 0 |
 | E10 Investigation (T-052…T-059) | 7 | 0 | 0 | 0 | 1 |
-| **Total (61)** | **42** | **0** | **0** | **4** | **15** |
+| **Total (61)** | **41** | **0** | **0** | **5** | **15** |
 
 Frontend tasks follow `06` v2 (D-047); T-004 needs T-060 merged first.
 
@@ -216,6 +218,17 @@ Frontend tasks follow `06` v2 (D-047); T-004 needs T-060 merged first.
 - **Exact next step for the next agent:** (one imperative sentence + command if useful)
 - **Docs updated:** (contract changes? Y/N and which)
 ```
+
+### 2026-10-15 — claude-code-1 — T-017 Entity resolution service
+- **Outcome:** done (T-017 in `review`).
+- **Branch / PR:** `claude/determined-shannon-650svp` / not opened. Claim commit on this branch, not on `main`.
+- **Last commit:** head of `claude/determined-shannon-650svp`.
+- **What I did:** `app/services/resolution_service.py`: `resolve(session, change, auto=, review=)` → `ResolutionResult(touched_entities, review_links)`. Accounts: `lock_blocking_keys` (sorted `pg_advisory_xact_lock(hashtext(key))`), candidates via the 05 §2.6 expression indexes (`literal_column("source_records.normalized ->> '…'")` so the indexes apply), `score_pair`/`decide`, join / found / ambiguity → `needs_review`, re-evaluation per D-070, waiting children attached. Children: `parent` links, move or detach when the parent changes. `refresh_canonical`, `request_detection`. `pipeline.process_event` now calls `resolve` (review links are for T-045 alerts).
+- **Decisions made:** D-070 (resolution details). Known issue K-009 (empty entities after a singleton moves). Q-013 recorded as approved.
+- **Tests:** `tests/integration/services/test_resolution_service.py` (22: found/join/separate, review band, external-ref, same-system duplicate, two strong entities → review, canonical by authority, rejected pairs, rejected links, children before/after parent, other-system parent ignored, child moves/detaches, identity change → review, confirmed stays, non-identity change → detection only, singleton moves with children, deleted account no candidate, 24 concurrent accounts of 8 customers → 8 entities, event replay unchanged, resolve twice = fixed point). Mutation checks: removing the blocking locks, the ambiguity check, the rejected-pair or rejected-link exclusion each fails a test. Worker test asserts the pipeline creates the entity. `make check` green: backend 600, frontend 62; integration 5× green, concurrency test 20× green. Manual: 04 §5 batch with the subscription first, then CRM and Billing accounts → one entity, all three linked, canonical "Jon Smith" from CRM.
+- **For T-018:** reject = set the link `rejected`, add `rejected_pairs` rows (ordered ids) for the record and each account of the entity, then call `resolution_service.resolve` with a `RecordChanged` whose `changed_fields` include an identity field; the record then resolves without that entity.
+- **Exact next step for the next agent:** after merge, **T-019** Rule engine framework (context builder: use `domain.matching.split_primary`; links `auto_matched`, `confirmed`, `needs_review`; skip deleted records).
+- **Docs updated:** N (08, 09, `PROGRESS.md`).
 
 ### 2026-10-15 — claude-code-1 — T-016 Matching domain logic
 - **Outcome:** done (T-016 in `review`), with a contract change awaiting approval (Q-013).

@@ -17,7 +17,7 @@ from sqlalchemy.dialects.postgresql import insert
 from sqlalchemy.ext.asyncio import AsyncEngine, AsyncSession, async_sessionmaker
 
 from app.db.seed import default_source_systems
-from app.models import IngestEvent, SourceRecord, SourceSystem
+from app.models import Entity, IngestEvent, SourceRecord, SourceSystem
 from app.services import ingest_service
 from app.services.ingest_service import IngestCaller
 from app.workers import run
@@ -81,7 +81,8 @@ async def factory(db_engine: AsyncEngine) -> AsyncGenerator[Factory, None]:
     finally:
         async with factory() as session:
             await session.execute(delete(IngestEvent))
-            await session.execute(delete(SourceRecord))  # versions cascade
+            await session.execute(delete(SourceRecord))  # versions and links cascade
+            await session.execute(delete(Entity))
             await session.execute(delete(SourceSystem).where(SourceSystem.id.in_(created)))
             await session.commit()
 
@@ -553,7 +554,7 @@ async def test_stopping_cancels_a_loop_that_does_not_finish(
     assert task.cancelled()
 
 
-async def test_the_pipeline_turns_events_into_records(
+async def test_the_pipeline_turns_events_into_linked_records(
     factory: Factory, clock: MutableClock
 ) -> None:
     await add_events(factory, 1)
@@ -562,8 +563,11 @@ async def test_the_pipeline_turns_events_into_records(
 
     async with factory() as session:
         record = await session.scalar(select(SourceRecord))
+        entity = await session.scalar(select(Entity))
     assert record is not None
     assert (record.external_id, record.normalized["name"]) == ("C-0", "jon smith")
+    assert entity is not None  # resolved (T-017) and queued for detection
+    assert (entity.canonical_name, entity.detection_requested_at is not None) == ("Jon Smith", True)
 
 
 async def test_unreadable_payloads_fail_with_the_field_name(

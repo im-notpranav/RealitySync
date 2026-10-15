@@ -54,7 +54,7 @@ The implementation plan, split into discrete tasks that individual agents can cl
 | T-014 | Anomaly injector & labels | E3 | P0 | L | T-013, T-052 | 6 | todo |
 | T-015 | Simulation runner & endpoints | E3 | P1 | L | T-011, T-014, T-026, T-057 | 8 | todo |
 | T-016 | Matching domain logic | E4 | P0 | L | T-010 | 3 | review |
-| T-017 | Entity resolution service | E4 | P0 | L | T-009, T-012, T-016 | 8 | in_progress |
+| T-017 | Entity resolution service | E4 | P0 | L | T-009, T-012, T-016 | 8 | review |
 | T-018 | Link review endpoints | E4 | P1 | M | T-017 | 9 | todo |
 | T-019 | Rule engine framework | E5 | P0 | L | T-009, T-012, T-052 | 8 | todo |
 | T-020 | Rules R001–R003 (field conflicts) | E5 | P0 | M | T-019 | 9 | todo |
@@ -477,7 +477,7 @@ The implementation plan, split into discrete tasks that individual agents can cl
   - Pure; labeled pair fixture set (≥ 60 pairs incl. nicknames, typos, shared phone, different people with the same name, same-system duplicates): recall ≥ 0.95 (auto + review) and no false auto-match.
 
 ### T-017 — Entity resolution service
-- Status: in_progress | Priority: P0 | Size: L | Depends: T-009, T-012, T-016 | Wave: 8 | Agent: claude-code-1 | Claimed: 2026-10-15
+- Status: review | Priority: P0 | Size: L | Depends: T-009, T-012, T-016 | Wave: 8 | Agent: claude-code-1 | Claimed: 2026-10-15
 - Blocks: T-018, T-025, T-027, T-046, T-053
 - Touches: `backend/app/services/resolution_service.py`, `backend/app/workers/pipeline.py` (hook line), tests
 - Requirements: FR-ENT-001, 004…008, FR-DET-004

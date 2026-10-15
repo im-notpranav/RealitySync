@@ -10,8 +10,8 @@ _Last updated: 2026-10-15._ Plain-language summary. The detailed, agent-facing r
 |---|---:|
 | Done | 15 |
 | In progress | 0 |
-| In review | 4 (T-011, T-044, T-012, T-016) |
-| To do | 42 |
+| In review | 5 (T-011, T-044, T-012, T-016, T-017) |
+| To do | 41 |
 | **Total** | **61** |
 
 **What works today:** the frontend (every screen designed, running on synthetic demo data), the
@@ -77,7 +77,15 @@ name (nicknames such as Bob/Robert understood), company and cross-references, an
 into "link", "ask a person" and "no link". On 64 hand-labelled pairs it finds 35 of 36 true
 matches and never auto-links two different people. One formula in the spec was changed (approved,
 Q-013) because, as written, it auto-linked family members sharing a phone.
-Next: using it on incoming records (T-017).
+
+## In review — T-017 Entity resolution
+
+Same branch. Every incoming record is now attached to a customer: accounts are matched against
+existing customers (or start a new one), uncertain matches are flagged for a person to review,
+two existing customers are never merged automatically, and subscriptions, invoices and tickets
+follow their account (waiting if it has not arrived yet). Each changed customer is queued for
+checking. Data now flows from the API all the way to customers. Next: the rule engine that finds
+the disagreements (T-019).
 
 ---
 
@@ -90,7 +98,7 @@ Next: using it on incoming records (T-017).
 - T-013 Synthetic customers · T-014 Injected problems with answer keys · T-015 Simulation runner
 
 **3. Matching** — work out which records are the same customer
-- T-016 Matching logic (in review) · T-017 Entity resolution · T-018 Link review endpoints
+- T-016 Matching logic · T-017 Entity resolution (both in review) · T-018 Link review endpoints
 
 **4. Detection** — find the disagreements
 - T-019 Rule engine · T-020…T-023 Rules R001–R015 · T-024 Scoring and finding lifecycle
