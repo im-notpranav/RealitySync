@@ -75,8 +75,8 @@ test).
 Same branch. Decides how likely two account records are the same customer, from email, phone,
 name (nicknames such as Bob/Robert understood), company and cross-references, and sorts pairs
 into "link", "ask a person" and "no link". On 64 hand-labelled pairs it finds 35 of 36 true
-matches and never auto-links two different people. **Needs your approval (Q-013):** one formula
-in the spec was changed because, as written, it auto-linked family members sharing a phone.
+matches and never auto-links two different people. One formula in the spec was changed (approved,
+Q-013) because, as written, it auto-linked family members sharing a phone.
 Next: using it on incoming records (T-017).
 
 ---
