@@ -27,7 +27,7 @@ The implementation plan, split into discrete tasks that individual agents can cl
 | 7 | T-005, T-012, T-057 |
 | 8 | T-015, T-017, T-019, T-043, T-047 |
 | 9 | T-018, T-020, T-021, T-022, T-023, T-024, T-061 |
-| 10 | T-008, T-027, T-045, T-046, T-053 |
+| 10 | T-008, T-027, T-045, T-046, T-053, T-062 |
 | 11 | T-025, T-032, T-034, T-038, T-049, T-054, T-055 |
 | 12 | T-028, T-030, T-031, T-033, T-035, T-039, T-050, T-056 |
 | 13 | T-036, T-037, T-042, T-048, T-058, T-059 |
@@ -91,7 +91,7 @@ The implementation plan, split into discrete tasks that individual agents can cl
 | T-051 | Foundation repair (backend, infra, CI) | E0 | P0 | M | T-001, T-002, T-003 | 3 | done |
 | T-052 | Contract update: investigation features | E10 | P0 | L | T-051 | 4 | done |
 | T-061 | Screen designs with demo data | E8 | P0 | L | T-043 | 9 | done |
-| T-062 | Public demo deployment on Vercel (frontend, demo data) | E9 | P1 | S | T-061 | 10 | in_progress |
+| T-062 | Public demo deployment on Vercel (frontend, demo data) | E9 | P1 | S | T-061 | 10 | review |
 | T-060 | Frontend visual direction v2 (contract) | E0 | P0 | S | T-052 | 5 | done |
 | T-053 | As-of snapshot service (Time Machine) | E10 | P0 | L | T-017, T-019, T-024, T-052 | 10 | todo |
 | T-054 | Missing-evidence rules R016–R018 & expectations | E10 | P1 | M | T-012, T-019, T-024, T-027, T-052 | 11 | todo |
@@ -702,7 +702,7 @@ The implementation plan, split into discrete tasks that individual agents can cl
 - Requirements: NFR-UX-001…005, `06` v2 §7
 - Acceptance:
   - Overview, Findings + drawer (evidence, explanation, trail, history, transitions), Customers + customer detail with the Time Machine as-of mode, Investigations (list, new dialog, running and completed result with caveat and replay chart), Link review (Y/N/J/K), Alerts, Rules, Systems, Simulation, Evaluation, Settings, Login.
-  - Data only through `lib/api/queries.ts`; demo data on in development unless `VITE_DEMO_DATA=off`, never in production builds.
+  - Data only through `lib/api/queries.ts`; demo data on in development unless `VITE_DEMO_DATA=off`, never in production builds (exception since T-062: the public demo build with `VITE_DEMO_DATA=on`, D-071).
   - Loading, empty and error states on every data view; motion per `06 §8`; role gating per `03 §M11`.
 
 ### T-031 — Dashboard page
@@ -855,7 +855,7 @@ The implementation plan, split into discrete tasks that individual agents can cl
 ---
 
 ### T-062 — Public demo deployment on Vercel (frontend, demo data)
-- Status: in_progress | Priority: P1 | Size: S | Depends: T-061 | Wave: 10 | Agent: claude-code-1 | Claimed: 2026-10-15
+- Status: review | Priority: P1 | Size: S | Depends: T-061 | Wave: 10 | Agent: claude-code-1 | Claimed: 2026-10-15
 - Note: Product owner asked for a Vercel deployment with demo data (2026-10-15), answering Q-003. The backend has no screen endpoints yet, so the public demo is the frontend on the synthetic data in `lib/demo` (D-049); the backend deployment comes later.
 - Blocks: —
 - Touches: `vercel.json`, `.vercelignore`, `frontend/src/lib/env.ts`, `frontend/src/features/auth/**`, `frontend/src/vite-env.d.ts`, `docs/02_ARCHITECTURE.md` (§8 env table), `README.md`

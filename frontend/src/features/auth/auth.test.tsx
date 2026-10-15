@@ -6,6 +6,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { Providers } from "../../app/providers";
 import { routerFuture, routes } from "../../app/routes";
 import { ApiError } from "../../lib/api/client";
+import { env } from "../../lib/env";
 import { useSession } from "../../store/session";
 import { signInErrorMessage } from "./messages";
 import { loginPath, safeNext } from "./redirect";
@@ -137,6 +138,32 @@ describe("login page", () => {
     expect(await screen.findByRole("heading", { level: 1, name: "Overview" })).toBeInTheDocument();
     expect(useSession.getState()).toMatchObject({ status: "authenticated", isDemo: true, accessToken: null });
     expect(fetchMock).not.toHaveBeenCalled();
+  });
+
+  it("offers only the demo in a public demo build and never calls the backend", async () => {
+    const fetchMock = vi.fn();
+    vi.stubGlobal("fetch", fetchMock);
+    const saved = env.demoOnly;
+    env.demoOnly = true;
+    // A first visit: the session is unknown until the bootstrap answers.
+    useSession.setState({ status: "unknown" });
+    try {
+      renderLogin();
+
+      expect(await screen.findByRole("heading", { level: 1, name: "Public demo" })).toBeInTheDocument();
+      expect(screen.queryByLabelText("Password")).not.toBeInTheDocument();
+      expect(useSession.getState().status).toBe("anonymous");
+
+      await userEvent
+        .setup({ delay: null })
+        .click(screen.getByRole("button", { name: "Explore with demo data" }));
+
+      expect(await screen.findByRole("heading", { level: 1, name: "Overview" })).toBeInTheDocument();
+      expect(useSession.getState()).toMatchObject({ status: "authenticated", isDemo: true });
+      expect(fetchMock).not.toHaveBeenCalled();
+    } finally {
+      env.demoOnly = saved;
+    }
   });
 
   it("sends a signed-in visitor straight on", async () => {
